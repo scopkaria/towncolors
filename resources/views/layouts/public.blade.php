@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title>{{ $title ? $title . ' · ' . config('app.name', 'Towncore') : config('app.name', 'Towncore') }}</title>
+
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=manrope:400,500,600,700,800|sora:400,500,600,700&display=swap" rel="stylesheet" />
+
+    {{-- Dark mode anti-flash: runs before paint --}}
+    <script>
+        (function(){
+            try{
+                var s=localStorage.getItem('darkMode');
+                var sys=window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if(s==='true'||(s===null&&sys)){document.documentElement.classList.add('dark');}
+            }catch(e){}
+        })();
+    </script>
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @include('partials.theme-vars')
+    @stack('head')
+</head>
+<body class="font-sans antialiased transition-colors duration-300">
+
+{{-- ═══════════════════════════════════════════════════════
+     SYNESTHETIC PARTICLES BACKGROUND
+═══════════════════════════════════════════════════════ --}}
+<div id="tsparticles" aria-hidden="true"></div>
+
+@php
+    $settings = \App\Models\Setting::instance();
+    $navLinks = [
+        ['label' => 'Home',        'url' => url('/'),                       'active' => request()->is('/')],
+        ['label' => 'Experiences', 'url' => route('experiences.index'),     'active' => request()->is('experiences*')],
+        ['label' => 'Services',    'url' => route('services.index'),        'active' => request()->is('services*')],
+        ['label' => 'Portfolio',   'url' => route('portfolio.public'),      'active' => request()->is('portfolio')],
+        ['label' => 'About',       'url' => route('about'),                 'active' => request()->is('about')],
+        ['label' => 'Contact',     'url' => route('contact.show'),          'active' => request()->is('contact')],
+    ];
+@endphp
+
+{{-- ══════════════════════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════════════════════ --}}
+<header x-data="{
+            open: false,
+            isDark: document.documentElement.classList.contains('dark'),
+            toggleDark() {
+                this.isDark = !this.isDark;
+                document.documentElement.classList.toggle('dark', this.isDark);
+                localStorage.setItem('darkMode', this.isDark.toString());
+            }
+        }"
+        class="sticky top-0 z-40 border-b border-white/70 bg-white/80 backdrop-blur-xl transition-colors duration-300
+               dark:border-[#222222]/60 dark:bg-black/85">
+
+    <div class="flex w-full items-center justify-between gap-4 px-5 py-3.5 sm:gap-6 sm:px-10 sm:py-4">
+
+        {{-- ── Logo ── --}}
+        <a href="{{ url('/') }}"
+           class="flex shrink-0 items-center gap-3 opacity-100 transition duration-200 hover:opacity-80">
+            <x-site-logo
+                icon-wrap-class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-950 text-white shadow-card dark:bg-white dark:text-slate-900"
+                icon-class="h-6 w-6"
+                name-class="font-display text-lg sm:text-xl text-brand-ink dark:text-slate-100"
+                logo-class="h-10 w-auto object-contain"
+            />
+        </a>
+
+        {{-- ── Desktop nav ── --}}
+        <nav class="hidden flex-1 items-center justify-center gap-0.5 md:flex" aria-label="Main navigation">
+            @foreach ($navLinks as $link)
+                <a href="{{ $link['url'] }}"
+                   class="relative rounded-xl px-3 py-2 text-[0.8125rem] font-semibold transition duration-200
+                          lg:px-4 lg:text-sm
+                          {{ $link['active']
+                              ? 'bg-orange-50 text-brand-primary dark:bg-orange-500/15'
+                              : 'text-brand-muted hover:bg-stone-100 hover:text-brand-ink dark:hover:bg-[#111111] dark:hover:text-white' }}">
+                    {{ $link['label'] }}
+                    @if ($link['active'])
+                        <span class="absolute bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-brand-primary"></span>
+                    @endif
+                </a>
+            @endforeach
+        </nav>
+
+        {{-- ── CTA + dark toggle + hamburger ── --}}
+        <div class="flex items-center gap-2 sm:gap-3">
+            {{-- Login --}}
+            <a href="{{ route('login.client') }}"
+               class="hidden items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-brand-ink shadow-sm transition duration-200 hover:border-orange-300 hover:bg-orange-50 hover:text-brand-primary sm:inline-flex
+                      dark:border-[#222222] dark:bg-[#111111] dark:text-slate-200 dark:hover:border-orange-400 dark:hover:bg-orange-500/15 dark:hover:text-brand-primary">
+                <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                </svg>
+                Login
+            </a>
+            {{-- Register --}}
+            <a href="{{ route('register.client') }}"
+               class="btn-primary hidden sm:inline-flex">
+                <svg class="mr-1.5 h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+                Register
+            </a>
+
+            {{-- ── Dark / Light mode toggle ── --}}
+            <button type="button"
+                    @click="toggleDark()"
+                    class="relative flex h-10 w-10 items-center justify-center rounded-xl border border-stone-200 bg-white text-brand-muted shadow-sm transition duration-200
+                           hover:border-orange-300 hover:bg-orange-50 hover:text-brand-primary
+                           dark:border-[#222222] dark:bg-[#111111] dark:text-[#A1A1AA] dark:hover:border-orange-400 dark:hover:bg-orange-500/15 dark:hover:text-brand-primary"
+                    :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+                    :title="isDark ? 'Light mode' : 'Dark mode'">
+                {{-- Sun (shown in dark mode → click to go light) --}}
+                <svg x-show="isDark" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364-.707-.707M6.343 6.343l-.707-.707m12.728 0-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                {{-- Moon (shown in light mode → click to go dark) --}}
+                <svg x-show="!isDark" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+            </button>
+
+            <button type="button"
+                    class="rounded-xl border border-stone-200 bg-white p-2.5 text-brand-muted
+                           shadow-sm transition duration-200 hover:bg-stone-50 hover:text-brand-ink
+                           dark:border-[#222222] dark:bg-[#111111] dark:text-[#A1A1AA] dark:hover:bg-[#1a1a1a] dark:hover:text-white md:hidden"
+                    :aria-expanded="open.toString()"
+                    aria-label="Toggle navigation"
+                    @click="open = !open">
+                <svg x-show="!open" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+                <svg x-show="open" x-cloak class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    {{-- ── Mobile drawer ── --}}
+    <div x-cloak
+         x-show="open"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 -translate-y-1"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 translate-y-0"
+         x-transition:leave-end="opacity-0 -translate-y-1"
+         class="border-t border-white/70 bg-white/95 px-5 pb-6 pt-3 backdrop-blur-xl md:hidden
+                dark:border-[#222222]/60 dark:bg-black/97">
+
+        <nav class="space-y-1" aria-label="Mobile navigation">
+            @foreach ($navLinks as $link)
+                <a href="{{ $link['url'] }}"
+                   class="flex items-center rounded-xl px-4 py-3 text-sm font-semibold
+                          transition duration-200
+                          {{ $link['active']
+                              ? 'bg-orange-50 text-brand-primary dark:bg-orange-500/15'
+                              : 'text-brand-ink hover:bg-stone-50 hover:text-brand-primary dark:text-white dark:hover:bg-[#111111] dark:hover:text-brand-primary' }}"
+                   @click="open = false">
+                    {{ $link['label'] }}
+                    @if ($link['active'])
+                        <span class="ml-auto h-2 w-2 rounded-full bg-brand-primary"></span>
+                    @endif
+                </a>
+            @endforeach
+        </nav>
+
+            <div class="mt-5 border-t border-stone-100 pt-5 dark:border-[#222222]">
+            <div class="flex gap-2">
+                <a href="{{ route('login.client') }}" class="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm font-semibold text-brand-ink transition hover:border-orange-300 hover:bg-orange-50 hover:text-brand-primary dark:border-[#222222] dark:bg-[#111111] dark:text-slate-200">
+                    <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                    </svg>
+                    Login
+                </a>
+                <a href="{{ route('register.client') }}" class="btn-primary flex-1 justify-center">
+                    <svg class="mr-1.5 h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                    </svg>
+                    Register
+                </a>
+            </div>
+            <button type="button" @click="toggleDark()"
+                    class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm font-semibold text-brand-muted transition hover:border-orange-300 hover:bg-orange-50 hover:text-brand-primary dark:border-[#222222] dark:bg-[#111111] dark:text-[#A1A1AA]">
+                <svg x-show="isDark" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364-.707-.707M6.343 6.343l-.707-.707m12.728 0-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <svg x-show="!isDark" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+                <span x-text="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'"></span>
+            </button>
+        </div>
+    </div>
+</header>
+
+{{-- ══════════════════════════════════════════════════════════
+     MAIN CONTENT
+══════════════════════════════════════════════════════════ --}}
+<main>
+    {{ $slot }}
+</main>
+
+{{-- ══════════════════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════════════ --}}
+<footer class="bg-white border-t border-stone-100">
+    <div class="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-20">
+
+        {{-- Top grid ──────────────────────────────────── --}}
+        <div class="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
+
+            {{-- Brand ──────── --}}
+            <div class="sm:col-span-2">
+                <a href="{{ url('/') }}" class="inline-flex items-center gap-3">
+                    <x-site-logo
+                        icon-wrap-class="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-50 text-brand-primary"
+                        icon-class="h-6 w-6"
+                        name-class="font-display text-xl text-brand-ink"
+                        logo-class="h-10 w-auto object-contain brightness-0"
+                    />
+                </a>
+
+                <p class="mt-5 max-w-xs text-sm leading-7 text-brand-muted">
+                    {{ $settings->address
+                        ?: 'A premium workspace for admin, client, and freelancer collaboration — delivering projects with clarity and speed.' }}
+                </p>
+
+                {{-- Social links --}}
+                <div class="mt-6 flex gap-3">
+                    @php
+                        $socials = [
+                            'twitter' => '<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>',
+                            'linkedin' => '<path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>',
+                            'github' => '<path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>',
+                        ];
+                    @endphp
+                    @foreach ($socials as $name => $iconPath)
+                        <a href="#"
+                           class="flex h-9 w-9 items-center justify-center rounded-xl border border-stone-200
+                                  bg-stone-50 text-brand-muted transition duration-200
+                                  hover:border-brand-primary/50 hover:bg-brand-primary/10 hover:text-brand-primary"
+                           aria-label="{{ ucfirst($name) }}">
+                            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"
+                                 aria-hidden="true">{!! $iconPath !!}</svg>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+
+            {{-- Quick Links ──────── --}}
+            <div>
+                <h3 class="text-xs font-semibold uppercase tracking-[0.28em] text-brand-muted">
+                    Quick Links
+                </h3>
+                <ul class="mt-5 space-y-3">
+                    @foreach ($navLinks as $link)
+                        <li>
+                            <a href="{{ $link['url'] }}"
+                               class="group flex items-center gap-2 text-sm text-brand-muted
+                                      transition duration-200 hover:text-brand-ink">
+                                <span class="h-px w-3 bg-stone-300 transition duration-200 group-hover:w-5 group-hover:bg-brand-primary"></span>
+                                {{ $link['label'] }}
+                            </a>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+
+            {{-- Contact ──────── --}}
+            <div>
+                <h3 class="text-xs font-semibold uppercase tracking-[0.28em] text-brand-muted">
+                    Contact Us
+                </h3>
+                <ul class="mt-5 space-y-4">
+                    @if ($settings->email)
+                        <li class="flex items-start gap-3">
+                            <span class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center
+                                         rounded-lg bg-brand-primary/15 text-brand-primary">
+                                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+                                     stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0
+                                             002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                            </span>
+                            <a href="mailto:{{ $settings->email }}"
+                               class="break-all text-sm text-brand-muted transition hover:text-brand-ink">
+                                {{ $settings->email }}
+                            </a>
+                        </li>
+                    @endif
+
+                    @if ($settings->phone)
+                        <li class="flex items-start gap-3">
+                            <span class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center
+                                         rounded-lg bg-brand-primary/15 text-brand-primary">
+                                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+                                     stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1
+                                             1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516
+                                             5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0
+                                             01.684.948V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                </svg>
+                            </span>
+                            <a href="tel:{{ $settings->phone }}"
+                               class="text-sm text-brand-muted transition hover:text-brand-ink">
+                                {{ $settings->phone }}
+                            </a>
+                        </li>
+                    @endif
+
+                    @if ($settings->address)
+                        <li class="flex items-start gap-3">
+                            <span class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center
+                                         rounded-lg bg-brand-primary/15 text-brand-primary">
+                                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+                                     stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827
+                                             0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </span>
+                            <span class="text-sm text-brand-muted">{{ $settings->address }}</span>
+                        </li>
+                    @endif
+
+                    @if (!$settings->email && !$settings->phone && !$settings->address)
+                        <li>
+                            <a href="{{ url('/page/contact') }}"
+                               class="inline-flex items-center gap-2 rounded-xl border border-stone-200
+                                      bg-stone-50 px-4 py-2.5 text-sm text-brand-muted transition
+                                      hover:border-brand-primary/40 hover:bg-brand-primary/10 hover:text-brand-primary">
+                                Get in touch
+                                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+                                     stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                          d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                </svg>
+                            </a>
+                        </li>
+                    @endif
+                </ul>
+            </div>
+        </div>
+
+        {{-- Newsletter strip ─────────────────────────── --}}
+        <div class="my-12 rounded-2xl border border-stone-200 bg-stone-50 px-6 py-8 sm:px-10">
+            <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h3 class="font-semibold text-lg text-brand-ink">Stay in the loop</h3>
+                    <p class="mt-1 text-sm text-brand-muted">Get updates on new services and articles.</p>
+                </div>
+
+                @if(session('newsletter_success'))
+                    <p class="flex items-center gap-2 rounded-lg bg-green-50 border border-green-200 px-4 py-3
+                              text-sm font-medium text-green-700 sm:shrink-0">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                        {{ session('newsletter_success') }}
+                    </p>
+                @else
+                    <form action="{{ route('newsletter.subscribe') }}" method="POST"
+                          class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+                        @csrf
+                        <div class="flex-1 sm:w-72">
+                            <input type="email" name="email" placeholder="your@email.com" required
+                                   value="{{ old('email') }}"
+                                   class="w-full rounded-xl border border-stone-200 bg-white px-4 py-2.5
+                                          text-sm text-brand-ink placeholder-brand-muted/50 outline-none
+                                          focus:border-brand-primary focus:ring-1 focus:ring-brand-primary
+                                          @error('email') border-red-400 @enderror">
+                            @error('email')
+                                <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <button type="submit"
+                                class="shrink-0 rounded-xl bg-brand-primary px-5 py-2.5 text-sm
+                                       font-semibold text-white shadow-sm transition hover:opacity-90">
+                            Subscribe
+                        </button>
+                    </form>
+                @endif
+            </div>
+        </div>
+
+        {{-- Bottom bar ──────────────────────────────── --}}
+        <div class="mt-16 flex flex-col items-center justify-between gap-4
+                    border-t border-stone-100 pt-8 sm:flex-row">
+            <p class="text-sm text-brand-muted">
+                &copy; {{ date('Y') }} {{ config('app.name', 'Towncore') }}. All rights reserved.
+            </p>
+            <div class="flex items-center gap-6 text-sm text-brand-muted">
+                <a href="{{ url('/page/privacy') }}" class="transition hover:text-brand-ink">Privacy Policy</a>
+                <a href="{{ url('/page/terms') }}" class="transition hover:text-brand-ink">Terms of Service</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+@stack('scripts')
+
+{{-- tsParticles CDN --}}
+<script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js" defer></script>
+
+{{-- Scroll-reveal: add class="reveal" (optionally reveal-delay-{1-4}) to any section --}}
+<script>
+    (function () {
+        if (!('IntersectionObserver' in window)) {
+            document.querySelectorAll('.reveal').forEach(function (el) {
+                el.classList.add('is-visible');
+            });
+            return;
+        }
+        var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    io.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+        document.querySelectorAll('.reveal').forEach(function (el) {
+            io.observe(el);
+        });
+    })();
+</script>
+
+{{-- Synesthetic Particles Initialization --}}
+<script>
+    (function initParticles() {
+        function loadParticles() {
+            if (typeof tsParticles === 'undefined') {
+                setTimeout(loadParticles, 100);
+                return;
+            }
+            var isDark = document.documentElement.classList.contains('dark');
+            tsParticles.load('tsparticles', {
+                detectRetina: true,
+                fpsLimit: 60,
+                background: { color: { value: 'transparent' } },
+                interactivity: {
+                    detectsOn: 'window',
+                    events: {
+                        onHover: { enable: true, mode: 'grab' },
+                        onClick: { enable: false },
+                        resize: true
+                    },
+                    modes: {
+                        grab: {
+                            distance: 180,
+                            links: { opacity: 0.55, color: '#f97316' }
+                        }
+                    }
+                },
+                particles: {
+                    color: {
+                        value: isDark
+                            ? ['#f97316', '#fb923c', '#a78bfa', '#38bdf8', '#f472b6', '#e2e8f0']
+                            : ['#f97316', '#ea580c', '#a78bfa', '#0ea5e9', '#ec4899', '#475569']
+                    },
+                    links: {
+                        color: '#f97316',
+                        distance: 145,
+                        enable: true,
+                        opacity: isDark ? 0.22 : 0.14,
+                        width: 1,
+                        triangles: { enable: false }
+                    },
+                    move: {
+                        enable: true,
+                        speed: 1.1,
+                        direction: 'none',
+                        random: true,
+                        straight: false,
+                        outModes: { default: 'bounce' }
+                    },
+                    number: { value: 65, density: { enable: true, area: 900 } },
+                    opacity: {
+                        value: { min: isDark ? 0.25 : 0.15, max: isDark ? 0.65 : 0.45 },
+                        animation: { enable: true, speed: 0.7, minimumValue: 0.1, sync: false }
+                    },
+                    shape: { type: 'circle' },
+                    size: {
+                        value: { min: 1, max: 3 },
+                        animation: { enable: true, speed: 1.2, minimumValue: 0.3, sync: false }
+                    }
+                }
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadParticles);
+        } else {
+            loadParticles();
+        }
+
+        /* Re-init particles on theme toggle for colour adaptation */
+        document.addEventListener('click', function(e) {
+            var btn = e.target.closest('[\\@click*="toggleDark"], [x-on\\:click*="toggleDark"]');
+            if (btn) {
+                setTimeout(function () {
+                    if (window.tsParticlesInstance) {
+                        window.tsParticlesInstance.destroy();
+                    }
+                    loadParticles();
+                }, 350);
+            }
+        });
+    })();
+</script>
+
+</body>
+</html>
