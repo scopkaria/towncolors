@@ -1,0 +1,29 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # ── 1. Remove /public/ from URL if someone bookmarked the old path ──────
+    RewriteCond %{THE_REQUEST} \s/+public/(\S*) [NC]
+    RewriteRule ^ /%1 [R=301,L,NE]
+
+    # ── 2. Pass Authorization header through ────────────────────────────────
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # ── 3. Serve real files that exist inside public/ directly ───────────────
+    #       (CSS, JS, images, fonts, robots.txt, favicon, etc.)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} -f
+    RewriteRule ^(.+)$ public/$1 [L,QSA]
+
+    # ── 4. Serve real directories that exist inside public/ directly ─────────
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} -d
+    RewriteRule ^(.+)$ public/$1 [L,QSA]
+
+    # ── 5. Route everything else through root index.php (Laravel) ───────────
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [L]
+</IfModule>
