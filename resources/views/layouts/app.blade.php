@@ -80,6 +80,7 @@
                             ['label' => 'Dashboard', 'route' => route('admin.dashboard'),       'match' => 'admin.dashboard',                  'icon' => $ic['dashboard']],
                             ['label' => 'Projects',  'route' => route('admin.projects.index'),  'match' => 'admin.projects.*',                 'icon' => $ic['projects']],
                             ['label' => 'Messages',  'route' => route('admin.messages'),        'match' => 'admin.messages|chat.*',            'icon' => $ic['messages']],
+                            ['label' => 'Live Chat', 'route' => route('admin.liveChat.index'),  'match' => 'admin.liveChat.*',                 'icon' => $ic['messages']],
                             ['label' => 'Invoices',  'route' => route('admin.invoices'),        'match' => 'admin.invoices|admin.invoices.*',  'icon' => $ic['invoices']],
                             ['label' => 'Leads',     'route' => route('admin.leads.index'),     'match' => 'admin.leads.*',                    'icon' => $ic['leads']],
                         ],
@@ -118,7 +119,7 @@
         }" class="flex h-screen">
             <div x-cloak x-show="sidebarOpen" class="fixed inset-0 z-40 bg-slate-950/45 backdrop-blur-sm lg:hidden" x-transition.opacity @click="sidebarOpen = false"></div>
 
-            <aside class="glass-panel fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-white/60 shadow-panel transition duration-300 dark:border-[#222222]/60 lg:translate-x-0" :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
+            <aside class="glass-panel fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-white/60 shadow-panel transition duration-300 dark:border-white/[0.08] lg:translate-x-0" :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
                 <div class="flex items-center justify-between px-5 pb-4 pt-5">
                     <a href="{{ route($role.'.dashboard') }}" class="flex items-center gap-4 opacity-100 transition duration-200 hover:opacity-75">
                         <x-site-logo
@@ -158,11 +159,11 @@
                                 });
                             @endphp
                             <div x-data="{ open: {{ $groupHasActive ? 'true' : 'true' }} }"
-                                 class="{{ $gi > 0 ? 'mt-3 border-t border-stone-100/80 pt-3 dark:border-[#222222]/60' : '' }}">
+                                 class="{{ $gi > 0 ? 'mt-3 border-t border-stone-100/80 pt-3 dark:border-white/[0.08]' : '' }}">
 
                                 {{-- Group header / toggle --}}
                                 <button type="button" @click="open = !open"
-                                        class="flex w-full items-center justify-between rounded-xl px-2 py-1.5 text-left transition duration-150 hover:bg-white/60 dark:hover:bg-[#1a1a1a]">
+                                        class="flex w-full items-center justify-between rounded-xl px-2 py-1.5 text-left transition duration-150 hover:bg-white/60 dark:hover:bg-white/[0.05]">
                                     <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-brand-muted/60 dark:text-[#A1A1AA]">{{ $group['label'] }}</span>
                                     <svg class="h-3 w-3 shrink-0 text-brand-muted/50 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
@@ -187,7 +188,7 @@
                                            class="group flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-semibold transition duration-150
                                                   {{ $isActive
                                                       ? 'bg-slate-950 text-white shadow-card dark:bg-brand-primary/20 dark:text-brand-primary'
-                                                      : 'text-brand-muted hover:bg-white hover:text-brand-ink dark:hover:bg-[#1a1a1a] dark:hover:text-white' }}">
+                                                      : 'text-brand-muted hover:bg-white hover:text-brand-ink dark:hover:bg-white/[0.05] dark:hover:text-white' }}">
                                             <svg class="h-4 w-4 shrink-0 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}" />
                                             </svg>
@@ -212,7 +213,7 @@
                                    class="group flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-semibold transition duration-150
                                           {{ $isActive
                                               ? 'bg-slate-950 text-white shadow-card dark:bg-brand-primary/20 dark:text-brand-primary'
-                                              : 'text-brand-muted hover:bg-white hover:text-brand-ink dark:hover:bg-[#1a1a1a] dark:hover:text-white' }}">
+                                              : 'text-brand-muted hover:bg-white hover:text-brand-ink dark:hover:bg-white/[0.05] dark:hover:text-white' }}">
                                     <svg class="h-4 w-4 shrink-0 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}" />
                                     </svg>
@@ -229,7 +230,7 @@
                 <div class="px-3 pb-5 pt-2 space-y-2">
                     <a href="{{ route('profile.edit') }}" class="btn-secondary w-full">Profile settings</a>
                     <a href="{{ url('/') }}"
-                       class="flex items-center justify-center gap-2 rounded-2xl border border-stone-200/70 bg-transparent px-4 py-2.5 text-sm font-semibold text-brand-muted transition duration-200 hover:border-orange-200 hover:bg-orange-50 hover:text-brand-primary dark:border-[#333333] dark:hover:border-orange-500/40 dark:hover:bg-orange-500/10 dark:hover:text-brand-primary">
+                       class="flex items-center justify-center gap-2 rounded-2xl border border-stone-200/70 bg-transparent px-4 py-2.5 text-sm font-semibold text-brand-muted transition duration-200 hover:border-orange-200 hover:bg-orange-50 hover:text-brand-primary dark:border-white/[0.10] dark:hover:border-orange-500/40 dark:hover:bg-orange-500/10 dark:hover:text-brand-primary">
                         <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253M3.284 14.253A8.959 8.959 0 0 1 3 12c0-1.016.168-1.993.457-2.918" />
                         </svg>
@@ -260,7 +261,7 @@
                             </div>
                             {{-- Dark mode toggle --}}
                             <button type="button" @click="toggleDark()"
-                                    class="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-stone-200 bg-white text-brand-muted transition hover:border-orange-300 hover:bg-orange-50 hover:text-brand-primary dark:border-[#222222] dark:bg-[#111111] dark:text-[#A1A1AA] dark:hover:border-orange-400 dark:hover:bg-orange-500/15 dark:hover:text-brand-primary"
+                                    class="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-stone-200 bg-white text-brand-muted transition hover:border-orange-300 hover:bg-orange-50 hover:text-brand-primary dark:border-white/[0.12] dark:bg-[#1a1a1e] dark:text-zinc-400 dark:hover:border-orange-400 dark:hover:bg-orange-500/15 dark:hover:text-brand-primary"
                                     :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'">
                                 <svg x-show="isDark" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364-.707-.707M6.343 6.343l-.707-.707m12.728 0-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -277,7 +278,7 @@
                                     @endif
                                 </button>
 
-                                <div x-show="open" x-cloak x-transition class="absolute right-0 z-50 mt-3 w-80 overflow-hidden rounded-3xl border border-white/70 bg-white shadow-panel">
+                                <div x-show="open" x-cloak x-transition class="absolute right-0 z-50 mt-3 w-80 overflow-hidden rounded-3xl border border-white/70 bg-white shadow-panel dark:border-white/[0.10] dark:bg-[#141416]">
                                     <div class="flex items-center justify-between border-b border-stone-100 px-5 py-4">
                                         <div>
                                             <p class="text-sm font-semibold text-brand-ink">Notifications</p>
@@ -325,10 +326,10 @@
                     </div>
                 </header>
 
-                <main class="flex-1 overflow-y-auto px-4 pb-6 pt-3 sm:px-6 lg:px-8">
-                    <div class="page-fade space-y-5">
+                <main class="flex-1 overflow-y-auto px-4 pb-8 pt-4 sm:px-6 lg:px-8">
+                    <div class="page-fade space-y-6">
                         @if (isset($header))
-                            <section class="rounded-3xl border border-white/70 bg-white/90 px-5 py-5 shadow-panel">
+                            <section class="rounded-3xl border border-white/70 bg-white/90 px-6 py-6 shadow-panel dark:border-white/[0.08] dark:bg-[#141416]">
                                 {{ $header }}
                             </section>
                         @endif

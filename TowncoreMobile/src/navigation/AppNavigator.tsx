@@ -26,6 +26,7 @@ import BlogScreen from '../screens/BlogScreen';
 import BlogPostScreen from '../screens/BlogPostScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import LiveChatScreen from '../screens/LiveChatScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -86,6 +87,7 @@ function MoreStack() {
       <Stack.Screen name="BlogPost" component={BlogPostScreen} options={{ title: 'Article' }} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
       <Stack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
+      <Stack.Screen name="LiveChat" component={LiveChatScreen} options={{ title: 'Live Chat' }} />
     </Stack.Navigator>
   );
 }
@@ -98,6 +100,7 @@ function MoreMenuScreen({ navigation }: any) {
   const { user } = useAuth();
 
   const menuItems = [
+    { icon: 'chatbubble-ellipses-outline', label: 'Live Chat', screen: 'LiveChat', roles: ['admin', 'client', 'freelancer'] },
     { icon: 'receipt-outline', label: 'Invoices', screen: 'Invoices', roles: ['admin', 'client', 'freelancer'] },
     { icon: 'images-outline', label: 'Portfolio', screen: 'Portfolio', roles: ['admin', 'client', 'freelancer'] },
     { icon: 'newspaper-outline', label: 'Blog', screen: 'Blog', roles: ['admin', 'client', 'freelancer'] },

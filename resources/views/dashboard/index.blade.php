@@ -22,10 +22,9 @@
             </div>
         @endif
 
-        <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <section class="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
             @foreach ($dashboard['stats'] as $i => $stat)
-                <article class="card-premium relative overflow-hidden rounded-3xl border border-white/70 bg-white/90 p-5 shadow-card">
-                    {{-- Admin: first card gets accent corner --}}
+                <article class="card-premium relative overflow-hidden rounded-3xl border border-white/70 bg-white/90 p-6 shadow-card dark:border-white/[0.08] dark:bg-[#141416]">
                     @if ($role->value === 'admin' && $i === 0)
                         <div class="absolute right-0 top-0 h-16 w-16 rounded-bl-3xl bg-brand-primary/5"></div>
                     @endif
@@ -38,21 +37,21 @@
         </section>
 
         <section class="grid gap-6 xl:grid-cols-[1.35fr_0.95fr]">
-            <article class="rounded-3xl border border-white/70 bg-white/90 p-6 shadow-panel">
+            <article class="rounded-3xl border border-white/70 bg-white/90 p-7 shadow-panel dark:border-white/[0.08] dark:bg-[#141416]">
                 <div class="flex items-center justify-between gap-3">
                     <div>
                         <p class="text-sm font-semibold uppercase tracking-[0.24em] text-brand-primary">Highlights</p>
                         <h2 class="mt-2 font-display text-2xl text-brand-ink">{{ $role->label() }} dashboard overview</h2>
                     </div>
-                    <div class="hidden rounded-2xl border border-orange-100 bg-orange-50 px-4 py-3 text-right text-sm text-brand-muted sm:block">
+                    <div class="hidden rounded-2xl border border-orange-100 bg-orange-50 px-4 py-3 text-right text-sm text-brand-muted sm:block dark:border-orange-500/20 dark:bg-orange-500/10">
                         <p class="font-semibold text-brand-ink">Focused workspace</p>
                         <p>Designed for fast daily decisions.</p>
                     </div>
                 </div>
 
-                <div class="mt-6 grid gap-4 lg:grid-cols-3">
+                <div class="mt-7 grid gap-5 lg:grid-cols-3">
                     @foreach ($dashboard['highlights'] as $highlight)
-                        <div class="card-premium rounded-3xl border border-stone-200/80 bg-stone-50 p-5">
+                        <div class="card-premium rounded-3xl border border-stone-200/80 bg-stone-50 p-6 dark:border-white/[0.06] dark:bg-white/[0.03]">
                             <h3 class="font-display text-xl text-brand-ink">{{ $highlight['title'] }}</h3>
                             <p class="mt-3 text-sm leading-7 text-brand-muted">{{ $highlight['body'] }}</p>
                         </div>

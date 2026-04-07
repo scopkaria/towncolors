@@ -21,6 +21,7 @@ use App\Http\Controllers\Freelancer\ProjectController as FreelancerProjectContro
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\FreelancerPaymentController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\LiveChatController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\Admin\LeadController as AdminLeadController;
@@ -84,6 +85,13 @@ Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])
 
 // Lead capture
 Route::post('/leads', [LeadController::class, 'store'])->name('leads.store');
+
+// ── Public Live Chat API (no auth — visitor endpoints) ──────────────
+Route::prefix('live-chat')->as('live-chat.')->group(function () {
+    Route::post('/start',    [LiveChatController::class, 'startSession'])->name('start');
+    Route::post('/send',     [LiveChatController::class, 'visitorSend'])->name('send');
+    Route::get('/messages',  [LiveChatController::class, 'visitorMessages'])->name('messages');
+});
 
 // Public CMS pages
 Route::get('/page/{page:slug}', [PageController::class, 'show'])->name('pages.show');
@@ -197,6 +205,14 @@ Route::prefix('admin')
         Route::get('/leads/{lead}', [AdminLeadController::class, 'show'])->name('leads.show');
         Route::patch('/leads/{lead}/status', [AdminLeadController::class, 'updateStatus'])->name('leads.status');
         Route::post('/leads/{lead}/convert', [AdminLeadController::class, 'convert'])->name('leads.convert');
+
+        // ── Live Chat (admin / support-agent) ───────────────────────
+        Route::get('/live-chat',                          [LiveChatController::class, 'adminIndex'])->name('liveChat.index');
+        Route::get('/live-chat/{session}',                [LiveChatController::class, 'adminShow'])->name('liveChat.show');
+        Route::post('/live-chat/{session}/join',          [LiveChatController::class, 'agentJoin'])->name('liveChat.join');
+        Route::post('/live-chat/{session}/send',          [LiveChatController::class, 'agentSend'])->name('liveChat.send');
+        Route::get('/live-chat/{session}/messages',       [LiveChatController::class, 'agentMessages'])->name('liveChat.messages');
+        Route::post('/live-chat/{session}/close',         [LiveChatController::class, 'agentClose'])->name('liveChat.close');
     });
 
 // Freelancer project routes

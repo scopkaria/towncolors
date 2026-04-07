@@ -154,3 +154,15 @@ export const notificationsApi = {
   markAsRead: (id: string) => api(`/notifications/${id}/read`, { method: 'POST' }),
   markAllAsRead: () => api('/notifications/read-all', { method: 'POST' }),
 };
+
+// Live Chat API (public — no auth required)
+export const liveChatApi = {
+  startSession: (name: string, email: string, sessionKey?: string) =>
+    api('/live-chat/start', { method: 'POST', body: { name, email, session_key: sessionKey || null } }),
+
+  sendMessage: (sessionKey: string, body: string) =>
+    api('/live-chat/send', { method: 'POST', body: { session_key: sessionKey, body } }),
+
+  getMessages: (sessionKey: string, after?: number) =>
+    api(`/live-chat/messages?session_key=${encodeURIComponent(sessionKey)}${after ? `&after=${after}` : ''}`),
+};

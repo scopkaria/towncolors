@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\PortfolioController;
 use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\LiveChatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +21,13 @@ use App\Http\Controllers\Api\NotificationController;
 // Public routes
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
+
+// Public Live Chat (visitor endpoints — no auth required)
+Route::prefix('live-chat')->group(function () {
+    Route::post('/start',    [LiveChatController::class, 'startSession']);
+    Route::post('/send',     [LiveChatController::class, 'visitorSend']);
+    Route::get('/messages',  [LiveChatController::class, 'visitorMessages']);
+});
 
 // Public content
 Route::get('/blog', [BlogController::class, 'index']);

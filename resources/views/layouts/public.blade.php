@@ -57,7 +57,7 @@
             }
         }"
         class="sticky top-0 z-40 border-b border-white/70 bg-white/80 backdrop-blur-xl transition-colors duration-300
-               dark:border-[#222222]/60 dark:bg-black/85">
+               dark:border-white/[0.08] dark:bg-[#09090b]/85">
 
     <div class="flex w-full items-center justify-between gap-4 px-5 py-3.5 sm:gap-6 sm:px-10 sm:py-4">
 
@@ -80,7 +80,7 @@
                           lg:px-4 lg:text-sm
                           {{ $link['active']
                               ? 'bg-orange-50 text-brand-primary dark:bg-orange-500/15'
-                              : 'text-brand-muted hover:bg-stone-100 hover:text-brand-ink dark:hover:bg-[#111111] dark:hover:text-white' }}">
+                              : 'text-brand-muted hover:bg-stone-100 hover:text-brand-ink dark:hover:bg-white/[0.05] dark:hover:text-white' }}">
                     {{ $link['label'] }}
                     @if ($link['active'])
                         <span class="absolute bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-brand-primary"></span>
@@ -94,7 +94,7 @@
             {{-- Login --}}
             <a href="{{ route('login.client') }}"
                class="hidden items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-brand-ink shadow-sm transition duration-200 hover:border-orange-300 hover:bg-orange-50 hover:text-brand-primary sm:inline-flex
-                      dark:border-[#222222] dark:bg-[#111111] dark:text-slate-200 dark:hover:border-orange-400 dark:hover:bg-orange-500/15 dark:hover:text-brand-primary">
+                      dark:border-white/[0.08] dark:bg-[#141416] dark:text-slate-200 dark:hover:border-orange-400 dark:hover:bg-orange-500/15 dark:hover:text-brand-primary">
                 <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                 </svg>
@@ -114,7 +114,7 @@
                     @click="toggleDark()"
                     class="relative flex h-10 w-10 items-center justify-center rounded-xl border border-stone-200 bg-white text-brand-muted shadow-sm transition duration-200
                            hover:border-orange-300 hover:bg-orange-50 hover:text-brand-primary
-                           dark:border-[#222222] dark:bg-[#111111] dark:text-[#A1A1AA] dark:hover:border-orange-400 dark:hover:bg-orange-500/15 dark:hover:text-brand-primary"
+                           dark:border-white/[0.08] dark:bg-[#141416] dark:text-[#A1A1AA] dark:hover:border-orange-400 dark:hover:bg-orange-500/15 dark:hover:text-brand-primary"
                     :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
                     :title="isDark ? 'Light mode' : 'Dark mode'">
                 {{-- Sun (shown in dark mode → click to go light) --}}
@@ -134,7 +134,7 @@
             <button type="button"
                     class="rounded-xl border border-stone-200 bg-white p-2.5 text-brand-muted
                            shadow-sm transition duration-200 hover:bg-stone-50 hover:text-brand-ink
-                           dark:border-[#222222] dark:bg-[#111111] dark:text-[#A1A1AA] dark:hover:bg-[#1a1a1a] dark:hover:text-white md:hidden"
+                           dark:border-white/[0.08] dark:bg-[#141416] dark:text-[#A1A1AA] dark:hover:bg-white/[0.05] dark:hover:text-white md:hidden"
                     :aria-expanded="open.toString()"
                     aria-label="Toggle navigation"
                     @click="open = !open">
@@ -160,7 +160,7 @@
          x-transition:leave-start="opacity-100 translate-y-0"
          x-transition:leave-end="opacity-0 -translate-y-1"
          class="border-t border-white/70 bg-white/95 px-5 pb-6 pt-3 backdrop-blur-xl md:hidden
-                dark:border-[#222222]/60 dark:bg-black/97">
+                dark:border-white/[0.08] dark:bg-[#09090b]/97">
 
         <nav class="space-y-1" aria-label="Mobile navigation">
             @foreach ($navLinks as $link)
@@ -169,7 +169,7 @@
                           transition duration-200
                           {{ $link['active']
                               ? 'bg-orange-50 text-brand-primary dark:bg-orange-500/15'
-                              : 'text-brand-ink hover:bg-stone-50 hover:text-brand-primary dark:text-white dark:hover:bg-[#111111] dark:hover:text-brand-primary' }}"
+                              : 'text-brand-ink hover:bg-stone-50 hover:text-brand-primary dark:text-white dark:hover:bg-white/[0.05] dark:hover:text-brand-primary' }}"
                    @click="open = false">
                     {{ $link['label'] }}
                     @if ($link['active'])
@@ -179,9 +179,9 @@
             @endforeach
         </nav>
 
-            <div class="mt-5 border-t border-stone-100 pt-5 dark:border-[#222222]">
+            <div class="mt-5 border-t border-stone-100 pt-5 dark:border-white/[0.08]">
             <div class="flex gap-2">
-                <a href="{{ route('login.client') }}" class="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm font-semibold text-brand-ink transition hover:border-orange-300 hover:bg-orange-50 hover:text-brand-primary dark:border-[#222222] dark:bg-[#111111] dark:text-slate-200">
+                <a href="{{ route('login.client') }}" class="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm font-semibold text-brand-ink transition hover:border-orange-300 hover:bg-orange-50 hover:text-brand-primary dark:border-white/[0.08] dark:bg-[#141416] dark:text-slate-200">
                     <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                     </svg>
@@ -195,7 +195,7 @@
                 </a>
             </div>
             <button type="button" @click="toggleDark()"
-                    class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm font-semibold text-brand-muted transition hover:border-orange-300 hover:bg-orange-50 hover:text-brand-primary dark:border-[#222222] dark:bg-[#111111] dark:text-[#A1A1AA]">
+                    class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm font-semibold text-brand-muted transition hover:border-orange-300 hover:bg-orange-50 hover:text-brand-primary dark:border-white/[0.08] dark:bg-[#141416] dark:text-[#A1A1AA]">
                 <svg x-show="isDark" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364-.707-.707M6.343 6.343l-.707-.707m12.728 0-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
@@ -218,7 +218,7 @@
 {{-- ══════════════════════════════════════════════════════════
      FOOTER
 ══════════════════════════════════════════════════════════ --}}
-<footer class="bg-white border-t border-stone-100">
+<footer class="bg-white border-t border-stone-100 dark:bg-[#09090b] dark:border-white/[0.06]">
     <div class="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-20">
 
         {{-- Top grid ──────────────────────────────────── --}}
@@ -417,6 +417,268 @@
 </footer>
 
 @stack('scripts')
+
+{{-- ══════════════════════════════════════════════════════════
+     LIVE CHAT WIDGET
+══════════════════════════════════════════════════════════ --}}
+<div x-data="liveChatWidget()" x-cloak class="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-3">
+
+    {{-- ── Chat window ── --}}
+    <div x-show="open" x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 translate-y-4 scale-95"
+         x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+         x-transition:leave-end="opacity-0 translate-y-4 scale-95"
+         class="flex w-[340px] sm:w-[380px] flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-2xl
+                dark:border-white/[0.10] dark:bg-[#141416]"
+         style="max-height: calc(100vh - 120px);">
+
+        {{-- Header --}}
+        <div class="flex items-center justify-between bg-gradient-to-r from-orange-500 to-orange-600 px-5 py-4 text-white">
+            <div class="flex items-center gap-3">
+                <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/20">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+                    </svg>
+                </span>
+                <div>
+                    <p class="text-sm font-bold leading-tight">Live Chat</p>
+                    <p class="text-[11px] font-medium text-white/80" x-text="sessionStatus === 'active' ? 'Agent connected' : 'We typically reply instantly'"></p>
+                </div>
+            </div>
+            <button @click="open = false" class="rounded-lg p-1 transition hover:bg-white/20">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
+            </button>
+        </div>
+
+        {{-- Intro / Name+Email form --}}
+        <template x-if="!sessionKey">
+            <form @submit.prevent="startChat()" class="space-y-4 px-5 py-6">
+                <p class="text-sm leading-relaxed text-brand-muted dark:text-[#A1A1AA]">
+                    Hi there! Enter your details to start chatting with our team.
+                </p>
+                <input x-model="visitorName" type="text" placeholder="Your name" required
+                       class="w-full rounded-xl border border-stone-200 bg-stone-50 px-4 py-2.5 text-sm text-brand-ink outline-none transition
+                              focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20
+                              dark:border-white/[0.10] dark:bg-[#1a1a1e] dark:text-white dark:focus:border-orange-500 dark:focus:ring-orange-500/20" />
+                <input x-model="visitorEmail" type="email" placeholder="your@email.com" required
+                       class="w-full rounded-xl border border-stone-200 bg-stone-50 px-4 py-2.5 text-sm text-brand-ink outline-none transition
+                              focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20
+                              dark:border-white/[0.10] dark:bg-[#1a1a1e] dark:text-white dark:focus:border-orange-500 dark:focus:ring-orange-500/20" />
+                <button type="submit" :disabled="starting"
+                        class="w-full rounded-xl bg-orange-500 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-600 disabled:opacity-60">
+                    <span x-text="starting ? 'Connecting…' : 'Start Chat'"></span>
+                </button>
+            </form>
+        </template>
+
+        {{-- Chat messages area --}}
+        <template x-if="sessionKey">
+            <div class="flex flex-1 flex-col">
+                <div x-ref="chatMessages" class="flex-1 space-y-3 overflow-y-auto px-4 py-4" style="max-height: 320px; min-height: 200px;">
+                    {{-- Waiting indicator --}}
+                    <template x-if="messages.length === 0 && sessionStatus === 'waiting'">
+                        <div class="flex flex-col items-center justify-center py-8 text-center">
+                            <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-500/15">
+                                <svg class="h-5 w-5 animate-pulse text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <circle cx="4" cy="10" r="2"/><circle cx="10" cy="10" r="2"/><circle cx="16" cy="10" r="2"/>
+                                </svg>
+                            </div>
+                            <p class="text-sm text-brand-muted dark:text-[#A1A1AA]">Waiting for an agent…</p>
+                        </div>
+                    </template>
+
+                    {{-- Messages --}}
+                    <template x-for="msg in messages" :key="msg.id">
+                        <div :class="msg.sender_type === 'visitor' ? 'flex justify-end' : 'flex justify-start'">
+                            <div :class="msg.sender_type === 'visitor'
+                                    ? 'rounded-2xl rounded-br-md bg-orange-500 px-4 py-2.5 text-sm text-white max-w-[80%]'
+                                    : 'rounded-2xl rounded-bl-md bg-stone-100 px-4 py-2.5 text-sm text-brand-ink max-w-[80%] dark:bg-white/[0.06] dark:text-white'"
+                                 x-text="msg.body"></div>
+                        </div>
+                    </template>
+                </div>
+
+                {{-- Input --}}
+                <div class="border-t border-stone-100 px-4 py-3 dark:border-white/[0.08]"
+                     x-show="sessionStatus !== 'closed'">
+                    <form @submit.prevent="sendMessage()" class="flex items-center gap-2">
+                        <input x-model="newMessage" type="text" placeholder="Type a message…"
+                               class="flex-1 rounded-xl border border-stone-200 bg-stone-50 px-4 py-2.5 text-sm text-brand-ink outline-none transition
+                                      focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20
+                                      dark:border-white/[0.10] dark:bg-[#1a1a1e] dark:text-white dark:focus:border-orange-500 dark:focus:ring-orange-500/20"
+                               @keydown.enter="sendMessage()" />
+                        <button type="submit" :disabled="!newMessage.trim()"
+                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-500 text-white shadow-sm transition hover:bg-orange-600 disabled:opacity-40">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+
+                {{-- Closed notice --}}
+                <div x-show="sessionStatus === 'closed'" class="border-t border-stone-100 px-5 py-4 text-center dark:border-white/[0.08]">
+                    <p class="text-sm text-brand-muted dark:text-[#A1A1AA]">This chat has been closed.</p>
+                    <button @click="resetChat()" class="mt-2 text-sm font-semibold text-orange-500 transition hover:text-orange-600">Start a new chat</button>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    {{-- ── Floating trigger button ── --}}
+    <button @click="open = !open"
+            class="group flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/30 transition-all duration-200
+                   hover:scale-105 hover:shadow-xl hover:shadow-orange-500/40
+                   dark:shadow-orange-500/20 dark:hover:shadow-orange-500/30"
+            :aria-label="open ? 'Close chat' : 'Open live chat'">
+        <svg x-show="!open" class="h-6 w-6 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+        </svg>
+        <svg x-show="open" class="h-6 w-6 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+        </svg>
+    </button>
+</div>
+
+<script>
+function liveChatWidget() {
+    return {
+        open: false,
+        sessionKey: localStorage.getItem('lc_session_key') || '',
+        sessionStatus: '',
+        visitorName: '',
+        visitorEmail: '',
+        newMessage: '',
+        messages: [],
+        lastMsgId: 0,
+        pollTimer: null,
+        starting: false,
+
+        init() {
+            this.$watch('open', (val) => {
+                if (val && this.sessionKey) this.startPolling();
+                else this.stopPolling();
+            });
+            if (this.sessionKey) {
+                this.fetchMessages();
+            }
+        },
+
+        async startChat() {
+            this.starting = true;
+            try {
+                const res = await fetch('{{ route("live-chat.start") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        session_key: this.sessionKey || null,
+                        name: this.visitorName,
+                        email: this.visitorEmail,
+                    }),
+                });
+                const data = await res.json();
+                this.sessionKey = data.session_key;
+                this.sessionStatus = data.status;
+                localStorage.setItem('lc_session_key', data.session_key);
+                this.startPolling();
+            } catch (e) {
+                console.error('Live chat start error', e);
+            }
+            this.starting = false;
+        },
+
+        async sendMessage() {
+            const body = this.newMessage.trim();
+            if (!body) return;
+            this.newMessage = '';
+
+            // Optimistic add
+            const tempId = Date.now();
+            this.messages.push({ id: tempId, sender_type: 'visitor', body });
+            this.$nextTick(() => this.scrollToBottom());
+
+            try {
+                await fetch('{{ route("live-chat.send") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ session_key: this.sessionKey, body }),
+                });
+            } catch (e) {
+                console.error('Send error', e);
+            }
+        },
+
+        async fetchMessages() {
+            if (!this.sessionKey) return;
+            try {
+                const url = new URL('{{ route("live-chat.messages") }}', location.origin);
+                url.searchParams.set('session_key', this.sessionKey);
+                if (this.lastMsgId) url.searchParams.set('after', this.lastMsgId);
+                const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+                if (!res.ok) {
+                    if (res.status === 404) { this.resetChat(); return; }
+                    return;
+                }
+                const data = await res.json();
+                this.sessionStatus = data.status;
+                if (data.messages.length) {
+                    // Merge new messages, avoid dupes
+                    const existingIds = new Set(this.messages.map(m => m.id));
+                    data.messages.forEach(m => {
+                        if (!existingIds.has(m.id)) this.messages.push(m);
+                    });
+                    this.lastMsgId = data.messages[data.messages.length - 1].id;
+                    this.$nextTick(() => this.scrollToBottom());
+                }
+                if (data.status === 'closed') this.stopPolling();
+            } catch (e) {
+                console.error('Fetch error', e);
+            }
+        },
+
+        startPolling() {
+            this.stopPolling();
+            this.fetchMessages();
+            this.pollTimer = setInterval(() => this.fetchMessages(), 4000);
+        },
+
+        stopPolling() {
+            if (this.pollTimer) { clearInterval(this.pollTimer); this.pollTimer = null; }
+        },
+
+        scrollToBottom() {
+            const el = this.$refs.chatMessages;
+            if (el) el.scrollTop = el.scrollHeight;
+        },
+
+        resetChat() {
+            this.stopPolling();
+            this.sessionKey = '';
+            this.sessionStatus = '';
+            this.messages = [];
+            this.lastMsgId = 0;
+            this.newMessage = '';
+            localStorage.removeItem('lc_session_key');
+        },
+
+        destroy() { this.stopPolling(); }
+    };
+}
+</script>
 
 {{-- tsParticles CDN --}}
 <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js" defer></script>

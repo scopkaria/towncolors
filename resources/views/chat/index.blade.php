@@ -9,25 +9,24 @@
     <div x-data="globalChat()"
          x-init="init()"
          @keydown.escape.window="showNewChat = false; showEmoji = false; showAttach = false;"
-         class="flex overflow-hidden rounded-3xl border border-white/70 bg-white shadow-panel"
+         class="flex overflow-hidden rounded-3xl border border-white/70 bg-white shadow-panel dark:border-white/[0.08] dark:bg-[#141416]"
          style="height: calc(100vh - 160px); min-height: 480px;">
 
         {{-- ══════════════════════════════════════════════
              LEFT PANEL — Conversation list
         ══════════════════════════════════════════════ --}}
-        <div class="flex flex-col border-r border-stone-100 bg-white"
-             :class="activeConversation && mobileView ? 'hidden' : 'flex'"
-             style="width:300px; min-width:300px;">
+        <div class="flex flex-col border-r border-stone-100 bg-white dark:border-white/[0.08] dark:bg-[#141416] w-full sm:w-[300px] sm:min-w-[300px]"
+             :class="activeConversation && mobileView ? 'hidden' : 'flex'">
 
             {{-- Header — Chats / Contacts tab switcher --}}
-            <div class="flex items-center justify-between border-b border-stone-100 px-3 py-3">
-                <div class="flex gap-1 rounded-2xl bg-stone-100 p-1">
+            <div class="flex items-center justify-between border-b border-stone-100 px-3 py-3 dark:border-white/[0.06]">
+                <div class="flex gap-1 rounded-2xl bg-stone-100 p-1 dark:bg-white/[0.06]">
                     <button @click="activeTab = 'chats'"
                             class="rounded-xl px-3 py-1.5 text-xs font-semibold transition"
-                            :class="activeTab === 'chats' ? 'bg-white text-brand-primary shadow-sm' : 'text-brand-muted hover:text-brand-ink'">Chats</button>
+                            :class="activeTab === 'chats' ? 'bg-white text-brand-primary shadow-sm dark:bg-white/[0.10] dark:text-orange-400' : 'text-brand-muted hover:text-brand-ink dark:hover:text-white'">Chats</button>
                     <button @click="activeTab = 'contacts'"
                             class="rounded-xl px-3 py-1.5 text-xs font-semibold transition"
-                            :class="activeTab === 'contacts' ? 'bg-white text-brand-primary shadow-sm' : 'text-brand-muted hover:text-brand-ink'">Contacts</button>
+                            :class="activeTab === 'contacts' ? 'bg-white text-brand-primary shadow-sm dark:bg-white/[0.10] dark:text-orange-400' : 'text-brand-muted hover:text-brand-ink dark:hover:text-white'">Contacts</button>
                 </div>
                 <button @click="showNewChat = true" title="New direct message"
                         class="flex h-8 w-8 items-center justify-center rounded-xl bg-orange-50 text-brand-primary transition hover:bg-orange-100">
@@ -47,7 +46,7 @@
                            :placeholder="activeTab === 'chats' ? 'Search chats…' : 'Search contacts…'"
                            :value="activeTab === 'chats' ? search : contactSearch"
                            @input="activeTab === 'chats' ? search = $event.target.value : contactSearch = $event.target.value"
-                           class="w-full rounded-2xl border-0 bg-stone-100 py-2 pl-9 pr-4 text-sm text-brand-ink placeholder-brand-muted/50 focus:bg-white focus:ring-2 focus:ring-orange-200">
+                           class="w-full rounded-2xl border-0 bg-stone-100 py-2 pl-9 pr-4 text-sm text-brand-ink placeholder-brand-muted/50 focus:bg-white focus:ring-2 focus:ring-orange-200 dark:bg-white/[0.06] dark:text-white dark:placeholder-[#71717A] dark:focus:bg-white/[0.08] dark:focus:ring-orange-500/30">
                 </div>
             </div>
 
@@ -80,7 +79,7 @@
 
                 <template x-for="conv in filteredConversations" :key="conv.id">
                     <button @click="selectConversation(conv)"
-                            class="flex w-full items-center gap-3 px-3 py-3 text-left transition hover:bg-stone-50"
+                            class="flex w-full items-center gap-3 px-3 py-3 text-left transition hover:bg-stone-50 dark:hover:bg-white/[0.04]"
                             :class="activeConversation?.id === conv.id ? 'bg-orange-50 border-r-2 border-brand-primary' : ''">
                         <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl font-display text-sm font-bold"
                              :class="conv.avatar_color === 'orange' ? 'bg-orange-100 text-brand-primary' : 'bg-blue-100 text-blue-600'">
@@ -117,7 +116,7 @@
                     <template x-for="group in contactGroups" :key="group.name">
                         <div>
                             {{-- Category label --}}
-                            <div class="sticky top-0 z-10 flex items-center gap-2 bg-stone-50/95 px-3 py-1.5 backdrop-blur-sm">
+                            <div class="sticky top-0 z-10 flex items-center gap-2 bg-stone-50/95 px-3 py-1.5 backdrop-blur-sm dark:bg-[#141416]/95">
                                 <span class="text-[10px] font-bold uppercase tracking-wider text-brand-muted" x-text="group.name"></span>
                                 <span class="rounded-full bg-stone-200 px-1.5 py-0.5 text-[9px] font-bold text-brand-muted tabular-nums" x-text="group.users.length"></span>
                             </div>
@@ -177,7 +176,7 @@
             <div x-show="activeConversation" x-cloak class="flex min-h-0 flex-1 flex-col">
 
                 {{-- Chat header --}}
-                <div class="flex shrink-0 items-center gap-3 border-b border-stone-100 px-5 py-4">
+                <div class="flex shrink-0 items-center gap-3 border-b border-stone-100 px-5 py-4 dark:border-white/[0.06]">
                     <button @click="activeConversation = null; mobileView = true"
                             class="lg:hidden flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-stone-200 text-brand-muted transition hover:border-orange-200 hover:text-brand-primary">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -218,7 +217,7 @@
                 {{-- Messages area --}}
                 <div x-ref="chatBox"
                      class="flex-1 overflow-y-auto px-4 py-4 sm:px-6"
-                     style="background-image:url(&quot;data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='1' fill='%23e7e5e4' opacity='0.35'/%3E%3C/svg%3E&quot;);background-color:#fafaf9;">
+                     style="background-image:url(&quot;data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='1' fill='%23e7e5e4' opacity='0.35'/%3E%3C/svg%3E&quot;);background-color:var(--chat-bg, #fafaf9);">
 
                     <div x-show="loadingMessages" x-cloak class="flex h-full items-center justify-center">
                         <div class="flex items-center gap-2 text-brand-muted">
@@ -350,7 +349,7 @@
                 </div>
 
                 {{-- ── Input Area ── --}}
-                <div class="relative shrink-0 border-t border-stone-100 bg-white px-3 py-3 sm:px-4">
+                <div class="relative shrink-0 border-t border-stone-100 bg-white px-3 py-3 sm:px-4 dark:border-white/[0.06] dark:bg-[#141416]">
 
                     {{-- File Preview --}}
                     <div x-show="previewData" x-cloak class="mb-2.5 overflow-hidden rounded-2xl border border-stone-200 bg-stone-50">
@@ -460,7 +459,7 @@
                         <textarea x-model="newMessage" x-ref="messageInput"
                                   @keydown.enter.prevent="if(!$event.shiftKey) sendMessage()"
                                   placeholder="Type a message…" rows="1"
-                                  class="flex-1 resize-none rounded-2xl border-0 bg-stone-100 px-4 py-2.5 text-sm text-brand-ink placeholder-brand-muted/50 transition focus:bg-white focus:ring-2 focus:ring-orange-200"
+                                  class="flex-1 resize-none rounded-2xl border-0 bg-stone-100 px-4 py-2.5 text-sm text-brand-ink placeholder-brand-muted/50 transition focus:bg-white focus:ring-2 focus:ring-orange-200 dark:bg-white/[0.06] dark:text-white dark:placeholder-[#71717A] dark:focus:bg-white/[0.08] dark:focus:ring-orange-500/30"
                                   style="max-height:100px;"
                                   @input="autoResize($event)"></textarea>
 
@@ -494,8 +493,8 @@
          class="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/50 backdrop-blur-sm p-4"
          @click.self="showNewChat = false">
         <div x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
-             class="w-full max-w-sm rounded-3xl border border-white/70 bg-white shadow-panel">
-            <div class="flex items-center justify-between border-b border-stone-100 px-6 py-5">
+             class="w-full max-w-sm rounded-3xl border border-white/70 bg-white shadow-panel dark:border-white/[0.08] dark:bg-[#141416]">
+            <div class="flex items-center justify-between border-b border-stone-100 px-6 py-5 dark:border-white/[0.06]">
                 <h3 class="font-display text-lg text-brand-ink">New Direct Message</h3>
                 <button @click="showNewChat = false; userSearch = ''"
                         class="flex h-8 w-8 items-center justify-center rounded-xl border border-stone-200 text-brand-muted transition hover:border-red-200 hover:text-red-500">

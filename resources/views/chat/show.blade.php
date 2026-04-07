@@ -26,7 +26,7 @@
 
         {{-- Messages Container --}}
         <div x-ref="chatBox"
-             class="chat-messages flex-1 overflow-y-auto rounded-t-3xl border border-b-0 border-white/70 bg-gradient-to-b from-stone-50/80 to-white/90 px-4 py-4 sm:px-6"
+             class="chat-messages flex-1 overflow-y-auto rounded-t-3xl border border-b-0 border-white/70 bg-gradient-to-b from-stone-50/80 to-white/90 px-4 py-4 sm:px-6 dark:border-white/[0.08] dark:from-[#0e0e10] dark:to-[#141416]"
              style="background-image: url(&quot;data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='1' fill='%23e7e5e4' opacity='0.4'/%3E%3C/svg%3E&quot;);">
 
             {{-- Loading --}}
@@ -174,7 +174,7 @@
         </div>
 
         {{-- Input Area --}}
-        <div class="relative rounded-b-3xl border border-t-0 border-white/70 bg-white px-3 py-3 shadow-panel sm:px-4">
+        <div class="relative rounded-b-3xl border border-t-0 border-white/70 bg-white px-3 py-3 shadow-panel sm:px-4 dark:border-white/[0.08] dark:bg-[#141416]">
 
             {{-- File / Image / Audio Preview --}}
             <div x-show="previewData" x-cloak class="mb-2.5 overflow-hidden rounded-2xl border border-stone-200 bg-stone-50">
@@ -311,7 +311,7 @@
                               @keydown.enter.prevent="if(!$event.shiftKey) sendMessage()"
                               placeholder="Type a message"
                               rows="1"
-                              class="w-full resize-none rounded-2xl border-0 bg-stone-100 px-4 py-2.5 text-sm text-brand-ink placeholder-brand-muted/50 transition focus:bg-white focus:ring-2 focus:ring-orange-200"
+                              class="w-full resize-none rounded-2xl border-0 bg-stone-100 px-4 py-2.5 text-sm text-brand-ink placeholder-brand-muted/50 transition focus:bg-white focus:ring-2 focus:ring-orange-200 dark:bg-white/[0.06] dark:text-white dark:placeholder-[#71717A] dark:focus:bg-white/[0.08] dark:focus:ring-orange-500/30"
                               style="max-height: 100px;"
                               @input="autoResize($event)"></textarea>
                 </div>
