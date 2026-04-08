@@ -138,4 +138,19 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Password updated']);
     }
+
+    public function storePushToken(Request $request)
+    {
+        $request->validate([
+            'token' => ['required', 'string', 'max:255'],
+            'platform' => ['required', 'string', 'in:android,ios'],
+        ]);
+
+        $request->user()->update([
+            'push_token' => $request->token,
+            'push_platform' => $request->platform,
+        ]);
+
+        return response()->json(['message' => 'Push token saved']);
+    }
 }

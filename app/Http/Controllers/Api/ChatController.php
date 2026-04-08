@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Conversation;
 use App\Models\Message;
+use App\Models\User;
+use App\Models\Project;
 use Illuminate\Http\Request;
 
 class ChatController extends Controller
@@ -106,7 +108,7 @@ class ChatController extends Controller
 
         $request->validate([
             'user_id' => ['required', 'exists:users,id'],
-            'message' => ['required', 'string', 'max:5000'],
+            'message' => ['nullable', 'string', 'max:5000'],
         ]);
 
         // Find existing DM conversation
@@ -122,17 +124,72 @@ class ChatController extends Controller
             $conversation->users()->attach([$user->id, $request->user_id]);
         }
 
-        $message = Message::create([
-            'conversation_id' => $conversation->id,
-            'sender_id' => $user->id,
-            'message' => $request->message,
-            'message_type' => 'text',
-        ]);
+        if ($request->message) {
+            Message::create([
+                'conversation_id' => $conversation->id,
+                'sender_id' => $user->id,
+                'message' => $request->message,
+                'message_type' => 'text',
+            ]);
 
-        $conversation->touch();
+            $conversation->touch();
+        }
 
         $conversation->load(['users:id,name', 'latestMessage.sender:id,name']);
 
         return response()->json($conversation, 201);
+    }
+
+    /**
+     * Get contacts for the current user based on their role.
+     * Admin: sees all clients and freelancers.
+     * Client: sees admins + freelancers assigned to their projects.
+     * Freelancer: sees admins + clients whose projects they are assigned to.
+     */
+    public function contacts(Request $request)
+    {
+        $user = $request->user();
+        $role = $user->role->value;
+
+        if ($role === 'admin') {
+            $contacts = User::where('id', '!=', $user->id)
+                ->select('id', 'name', 'email', 'role')
+                ->orderBy('role')
+                ->orderBy('name')
+                ->get();
+        } elseif ($role === 'client') {
+            // Admins + freelancers assigned to their projects
+            $freelancerIds = Project::where('user_id', $user->id)
+                ->whereNotNull('freelancer_id')
+                ->pluck('freelancer_id')
+                ->unique();
+
+            $contacts = User::where('id', '!=', $user->id)
+                ->where(function ($q) use ($freelancerIds) {
+                    $q->where('role', 'admin')
+                      ->orWhereIn('id', $freelancerIds);
+                })
+                ->select('id', 'name', 'email', 'role')
+                ->orderBy('role')
+                ->orderBy('name')
+                ->get();
+        } else {
+            // Freelancer: admins + clients whose projects they're on
+            $clientIds = Project::where('freelancer_id', $user->id)
+                ->pluck('user_id')
+                ->unique();
+
+            $contacts = User::where('id', '!=', $user->id)
+                ->where(function ($q) use ($clientIds) {
+                    $q->where('role', 'admin')
+                      ->orWhereIn('id', $clientIds);
+                })
+                ->select('id', 'name', 'email', 'role')
+                ->orderBy('role')
+                ->orderBy('name')
+                ->get();
+        }
+
+        return response()->json(['data' => $contacts]);
     }
 }

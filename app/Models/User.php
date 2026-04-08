@@ -24,6 +24,8 @@ class User extends Authenticatable
         'email',
         'role',
         'password',
+        'push_token',
+        'push_platform',
     ];
 
     /**
