@@ -127,8 +127,9 @@ export const chatApi = {
     api(`/conversations/${conversationId}/messages`, { method: 'POST', body: formData, isFormData: true }),
   sendTextMessage: (conversationId: number, message: string) =>
     api(`/conversations/${conversationId}/messages`, { method: 'POST', body: { message, message_type: 'text' } }),
-  createConversation: (userId: number, message: string) =>
-    api('/conversations', { method: 'POST', body: { user_id: userId, message } }),
+  createConversation: (userId: number, message?: string) =>
+    api('/conversations', { method: 'POST', body: { user_id: userId, ...(message ? { message } : {}) } }),
+  contacts: () => api('/contacts'),
 };
 
 // Portfolio API
@@ -165,4 +166,22 @@ export const liveChatApi = {
 
   getMessages: (sessionKey: string, after?: number) =>
     api(`/live-chat/messages?session_key=${encodeURIComponent(sessionKey)}${after ? `&after=${after}` : ''}`),
+};
+
+// Live Chat Agent API (auth required — admin/agent)
+export const liveChatAgentApi = {
+  sessions: (status?: string) =>
+    api(`/live-chat/agent/sessions${status ? `?status=${status}` : ''}`),
+
+  joinSession: (sessionId: number) =>
+    api(`/live-chat/agent/${sessionId}/join`, { method: 'POST' }),
+
+  sendMessage: (sessionId: number, body: string) =>
+    api(`/live-chat/agent/${sessionId}/send`, { method: 'POST', body: { body } }),
+
+  getMessages: (sessionId: number, after?: number) =>
+    api(`/live-chat/agent/${sessionId}/messages${after ? `?after=${after}` : ''}`),
+
+  closeSession: (sessionId: number) =>
+    api(`/live-chat/agent/${sessionId}/close`, { method: 'POST' }),
 };

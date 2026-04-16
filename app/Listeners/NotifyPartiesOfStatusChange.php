@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Enums\UserRole;
 use App\Events\ProjectStatusChanged;
+use App\Models\Project;
 use App\Models\User;
 use App\Notifications\UserAlertNotification;
 

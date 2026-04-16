@@ -8,7 +8,7 @@
     <link href="https://fonts.bunny.net/css?family=manrope:400,500,600,700,800|sora:400,500,600,700&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans antialiased bg-slate-950 min-h-screen flex items-center justify-center p-4 lg:p-0">
+<body class="font-sans antialiased bg-navy-800 min-h-screen flex items-center justify-center p-4 lg:p-0">
 
     <div class="w-full h-full lg:min-h-screen flex flex-col lg:flex-row max-w-[1200px] mx-auto lg:max-w-none lg:fixed lg:inset-0">
 
@@ -82,7 +82,7 @@
         </aside>
 
         {{-- ── Right panel / Form ──────────────────────────────── --}}
-        <main class="flex flex-1 flex-col items-center justify-center overflow-y-auto bg-slate-950 px-5 py-12 sm:px-8 lg:px-14 xl:px-20">
+        <main class="flex flex-1 flex-col items-center justify-center overflow-y-auto bg-navy-800 px-5 py-12 sm:px-8 lg:px-14 xl:px-20">
 
             {{-- Mobile logo --}}
             <div class="mb-8 flex items-center gap-3 lg:hidden">
@@ -146,6 +146,33 @@
                         @enderror
                     </div>
 
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div>
+                            <label for="username" class="block text-xs font-semibold uppercase tracking-[0.15em] text-slate-400 mb-2">Username</label>
+                            <input id="username" name="username" type="text"
+                                   value="{{ old('username') }}"
+                                   required autocomplete="nickname"
+                                   placeholder="jane_smith"
+                                   class="block w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-white placeholder-slate-600
+                                          focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition" />
+                            @error('username')
+                                <p class="mt-1.5 text-xs text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div>
+                            <label for="phone" class="block text-xs font-semibold uppercase tracking-[0.15em] text-slate-400 mb-2">Phone (optional)</label>
+                            <input id="phone" name="phone" type="text"
+                                   value="{{ old('phone') }}"
+                                   autocomplete="tel"
+                                   placeholder="+255..."
+                                   class="block w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-white placeholder-slate-600
+                                          focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition" />
+                            @error('phone')
+                                <p class="mt-1.5 text-xs text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
                     {{-- Password --}}
                     <div>
                         <label for="password" class="block text-xs font-semibold uppercase tracking-[0.15em] text-slate-400 mb-2">Password</label>
@@ -175,11 +202,19 @@
                         <span class="text-blue-400">Terms of Service</span> and <span class="text-blue-400">Privacy Policy</span>.
                     </p>
 
+                    <label class="flex items-start gap-3 rounded-xl border border-slate-700/70 bg-slate-900/60 px-4 py-3">
+                        <input type="checkbox" name="start_free_trial" value="1" {{ old('start_free_trial') ? 'checked' : '' }} class="mt-0.5 rounded border-slate-600 bg-slate-900 text-blue-500 focus:ring-blue-500/30">
+                        <span>
+                            <span class="block text-sm font-semibold text-white">Start Free Trial (5 Days)</span>
+                            <span class="block text-xs text-slate-400 mt-1">Optional and manual. If not activated, your account stays in limited mode.</span>
+                        </span>
+                    </label>
+
                     {{-- Submit --}}
                     <button type="submit"
                             class="w-full rounded-xl bg-blue-600 px-5 py-3.5 text-sm font-bold text-white
                                    hover:bg-blue-500 active:scale-[0.98]
-                                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-950
+                                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-navy-800
                                    transition-all duration-200 shadow-[0_8px_24px_-8px_rgba(59,130,246,0.5)]">
                         Create Client Account
                     </button>

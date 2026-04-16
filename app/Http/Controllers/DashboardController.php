@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\UserRole;
+use App\Models\ClientFile;
 use App\Models\Conversation;
 use App\Models\ConversationParticipant;
 use App\Models\FreelancerInvoice;
@@ -307,6 +308,24 @@ class DashboardController extends Controller
             'project', fn ($q) => $q->where('client_id', $user->id)
         )->whereIn('status', ['unpaid', 'partial'])->count();
         $unread        = $this->unreadConversationCount($user);
+        $checklistItems = $user->checklistItems()->get();
+        $completedChecklistCount = $checklistItems->where('status', 'completed')->count();
+
+        // Subscription
+        $subscription  = $user->activeSubscription();
+        $isTrialActive = $user->hasActiveTrial();
+        $hasFullAccess = $user->hasFullAccess();
+        $subStatus     = $subscription ? ucfirst($subscription->status) : 'No plan';
+        $subPlan       = $subscription?->plan?->name ?? ($isTrialActive ? 'Free Trial' : '—');
+        $subExpiry     = $subscription
+            ? $subscription->expiry_date->format('M d, Y')
+            : ($isTrialActive ? optional($user->trial_end_date)->format('M d, Y') : '—');
+        $subDays       = $subscription
+            ? $subscription->daysUntilExpiry()
+            : ($isTrialActive ? max(0, now()->startOfDay()->diffInDays($user->trial_end_date, false)) : null);
+
+        // Files
+        $fileCount     = ClientFile::where('user_id', $user->id)->count();
 
         $recentProjects = Project::where('client_id', $user->id)->latest()->take(2)->get();
         $recentInvoice  = Invoice::whereHas('project', fn ($q) => $q->where('client_id', $user->id))
@@ -327,22 +346,48 @@ class DashboardController extends Controller
             ];
         }
 
+        $stats = [
+            ['label' => 'My projects', 'value' => $myProjects, 'delta' => "{$activeCount} currently active"],
+            ['label' => 'Pending invoices', 'value' => $invoiceCount, 'delta' => 'TZS ' . number_format($pendingAmount, 0) . ' outstanding'],
+        ];
+
+        if ($hasFullAccess) {
+            $stats[] = ['label' => 'My files', 'value' => $fileCount, 'delta' => 'Private file storage'];
+            $stats[] = ['label' => 'Unread messages', 'value' => $unread, 'delta' => $unread > 0 ? 'New replies waiting' : 'All caught up'];
+        } else {
+            $stats[] = ['label' => 'Checklist items', 'value' => $checklistItems->count(), 'delta' => "{$completedChecklistCount} completed so far"];
+            $stats[] = ['label' => 'Subscription', 'value' => 'Inactive', 'delta' => 'Activate your plan to unlock messages and files'];
+        }
+
         return [
             'eyebrow'     => 'Delivery cockpit',
             'title'       => 'Stay close to every project without chasing updates.',
             'description' => 'Monitor milestones, unblock conversations, and keep invoices tidy from one clear workspace.',
-            'stats'       => [
-                ['label' => 'My projects',      'value' => $myProjects,                                  'delta' => "{$activeCount} currently active"],
-                ['label' => 'Active projects',  'value' => $activeCount,                                 'delta' => 'Assigned or in progress'],
-                ['label' => 'Pending invoices', 'value' => $invoiceCount,                                'delta' => 'TZS ' . number_format($pendingAmount, 0) . ' outstanding'],
-                ['label' => 'Unread messages',  'value' => $unread,                                      'delta' => $unread > 0 ? 'New replies waiting' : 'All caught up'],
-            ],
+            'stats'       => $stats,
             'highlights' => [
                 ['title' => 'Projects overview', 'body' => "You have {$myProjects} project(s) in total — {$activeCount} currently active."],
                 ['title' => 'Billing status',    'body' => "{$invoiceCount} invoice(s) pending — TZS " . number_format($pendingAmount, 0) . ' outstanding.'],
                 ['title' => 'Inbox snapshot',    'body' => $unread > 0 ? "You have {$unread} unread conversation(s). Reply to keep projects moving." : 'Your inbox is up to date. No unread messages.'],
             ],
             'activity' => $activity ?: [['title' => 'No recent activity yet', 'time' => 'just now']],
+            'checklist' => [
+                'count' => $checklistItems->count(),
+                'completed' => $completedChecklistCount,
+                'items' => $checklistItems->take(3)->map(fn ($item) => [
+                    'title' => $item->title,
+                    'status' => $item->status,
+                ])->values()->all(),
+            ],
+            // Subscription info for dashboard banner
+            'subscription' => [
+                'plan'   => $subPlan,
+                'status' => $subStatus,
+                'expiry' => $subExpiry,
+                'days'   => $subDays,
+                'active' => $hasFullAccess,
+                'trial_active' => $isTrialActive,
+                'expiring_soon' => $subscription?->isExpiringSoon() ?? false,
+            ],
         ];
     }
 

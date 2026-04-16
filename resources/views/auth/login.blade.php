@@ -118,7 +118,7 @@
 </body>
 </html>
 
-<body class="font-sans antialiased bg-slate-950 min-h-screen flex flex-col items-center justify-center px-4 py-14 relative overflow-x-hidden">
+<body class="font-sans antialiased bg-navy-800 min-h-screen flex flex-col items-center justify-center px-4 py-14 relative overflow-x-hidden">
 
     {{-- Ambient background glows --}}
     <div class="pointer-events-none fixed inset-0 -z-10">
@@ -132,12 +132,12 @@
         {{-- Logo --}}
         <div class="flex flex-col items-center mb-14">
             <a href="{{ url('/') }}" class="inline-flex items-center gap-3 mb-10">
-                <div class="h-11 w-11 flex items-center justify-center rounded-xl bg-orange-500/20 border border-orange-500/25">
-                    <svg class="h-6 w-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <div class="h-11 w-11 flex items-center justify-center rounded-xl bg-accent/20 border border-accent/25">
+                    <svg class="h-6 w-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                 </div>
                 <span class="font-display text-xl font-bold text-white tracking-tight">Towncore</span>
             </a>
-            <p class="text-xs font-semibold uppercase tracking-[0.32em] text-orange-400/80 mb-3">Welcome back</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.32em] text-accent/80 mb-3">Welcome back</p>
             <h1 class="font-display text-4xl sm:text-5xl font-bold text-white text-center leading-tight mb-4">
                 Sign in to your workspace
             </h1>
@@ -213,7 +213,7 @@
         {{-- Register link --}}
         <p class="text-center text-sm text-slate-500 mt-10">
             Don't have an account?
-            <a href="{{ route('register') }}" class="font-semibold text-orange-400 hover:text-orange-300 transition-colors">Create one</a>
+            <a href="{{ route('register') }}" class="font-semibold text-accent hover:text-accent transition-colors">Create one</a>
         </p>
     </div>
 </body>

@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="space-y-3">
-            <span class="inline-flex w-fit rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary dark:border-orange-500/30 dark:bg-orange-500/10">
+            <span class="inline-flex w-fit rounded-full border border-accent/30 bg-accent-light px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary dark:border-accent/30 dark:bg-accent/10">
                 Admin · Live Chat
             </span>
             <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -17,8 +17,8 @@
                 </div>
                 <div class="flex items-center gap-3">
                     <a href="{{ route('admin.liveChat.index') }}"
-                       class="inline-flex items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-sm font-semibold text-brand-ink transition hover:border-orange-300 hover:text-orange-600
-                              dark:border-white/[0.10] dark:bg-white/[0.04] dark:text-white dark:hover:border-orange-500 dark:hover:text-orange-400">
+                       class="inline-flex items-center gap-1.5 rounded-xl border border-warm-300/50 bg-warm-100 px-4 py-2.5 text-sm font-semibold text-brand-ink transition hover:border-accent hover:text-accent-hover
+                              dark:border-white/[0.10] dark:bg-white/[0.04] dark:text-white dark:hover:border-accent dark:hover:text-accent">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
                         </svg>
@@ -46,18 +46,18 @@
                     Close Chat
                 </button>
             </template>
-            <span x-show="status === 'closed'" class="inline-flex rounded-full bg-stone-100 px-3 py-1 text-xs font-semibold text-stone-500 dark:bg-white/[0.06] dark:text-[#A1A1AA]">Closed</span>
+            <span x-show="status === 'closed'" class="inline-flex rounded-full bg-warm-200 px-3 py-1 text-xs font-semibold text-stone-500 dark:bg-white/[0.06] dark:text-[#A1A1AA]">Closed</span>
         </div>
 
         {{-- Messages --}}
-        <div class="rounded-3xl border border-white/70 bg-white/90 shadow-panel dark:border-white/[0.08] dark:bg-[#141416]">
+        <div class="rounded-3xl border border-white/70 bg-white/90 shadow-panel dark:border-white/[0.08] dark:bg-[#1B2632]">
             <div x-ref="chatBox" class="space-y-3 overflow-y-auto px-6 py-6" style="max-height: 500px; min-height: 300px;">
                 <template x-for="msg in messages" :key="msg.id">
                     <div :class="msg.sender_type === 'agent' ? 'flex justify-end' : 'flex justify-start'">
                         <div class="max-w-[75%]">
                             <div :class="msg.sender_type === 'agent'
-                                    ? 'rounded-2xl rounded-br-md bg-orange-500 px-4 py-2.5 text-sm text-white'
-                                    : 'rounded-2xl rounded-bl-md bg-stone-100 px-4 py-2.5 text-sm text-brand-ink dark:bg-white/[0.06] dark:text-white'"
+                                    ? 'rounded-2xl rounded-br-md bg-accent px-4 py-2.5 text-sm text-white'
+                                    : 'rounded-2xl rounded-bl-md bg-warm-200 px-4 py-2.5 text-sm text-brand-ink dark:bg-white/[0.06] dark:text-white'"
                                  x-text="msg.body"></div>
                             <p class="mt-1 text-[10px] text-brand-muted dark:text-[#71717A]"
                                x-text="msg.sender_type === 'agent' ? (msg.agent?.name || 'Agent') : '{{ $session->visitor_name ?? "Visitor" }}'">
@@ -72,12 +72,12 @@
             </div>
 
             {{-- Input --}}
-            <div class="border-t border-stone-100 px-6 py-4 dark:border-white/[0.06]" x-show="status !== 'closed'">
+            <div class="border-t border-warm-300/40 px-6 py-4 dark:border-white/[0.06]" x-show="status !== 'closed'">
                 <form @submit.prevent="sendMessage()" class="flex items-center gap-3">
                     <input x-model="newMessage" type="text" placeholder="Type your reply…"
-                           class="flex-1 rounded-xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-brand-ink outline-none transition
-                                  focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20
-                                  dark:border-white/[0.10] dark:bg-[#1a1a1e] dark:text-white dark:focus:border-orange-500 dark:focus:ring-orange-500/20" />
+                           class="flex-1 rounded-xl border border-warm-300/50 bg-warm-200/50 px-4 py-3 text-sm text-brand-ink outline-none transition
+                                  focus:border-accent focus:ring-2 focus:ring-accent/20
+                                  dark:border-white/[0.10] dark:bg-[#1B2632] dark:text-white dark:focus:border-accent dark:focus:ring-accent/20" />
                     <button type="submit" :disabled="!newMessage.trim()"
                             class="btn-primary disabled:opacity-40">
                         Send

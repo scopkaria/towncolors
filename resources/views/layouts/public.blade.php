@@ -25,7 +25,7 @@
     @include('partials.theme-vars')
     @stack('head')
 </head>
-<body class="font-sans antialiased transition-colors duration-300">
+<body class="public-site font-sans antialiased transition-colors duration-300">
 
 {{-- ═══════════════════════════════════════════════════════
      SYNESTHETIC PARTICLES BACKGROUND
@@ -35,19 +35,21 @@
 @php
     $settings = \App\Models\Setting::instance();
     $navLinks = [
-        ['label' => 'Home',        'url' => url('/'),                       'active' => request()->is('/')],
-        ['label' => 'Experiences', 'url' => route('experiences.index'),     'active' => request()->is('experiences*')],
-        ['label' => 'Services',    'url' => route('services.index'),        'active' => request()->is('services*')],
-        ['label' => 'Portfolio',   'url' => route('portfolio.public'),      'active' => request()->is('portfolio')],
-        ['label' => 'About',       'url' => route('about'),                 'active' => request()->is('about')],
-        ['label' => 'Contact',     'url' => route('contact.show'),          'active' => request()->is('contact')],
+        ['label' => 'Home',     'url' => url('/'),                  'active' => request()->is('/')],
+        ['label' => 'Services', 'url' => route('services.index'),   'active' => request()->is('services*')],
+        ['label' => 'Shop',     'url' => route('shop.index'),       'active' => request()->is('shop')],
+        ['label' => 'Cloud',    'url' => route('cloud.index'),      'active' => request()->is('cloud-services')],
+        ['label' => 'Blog',     'url' => route('blog.index'),       'active' => request()->is('blog*')],
+        ['label' => 'FAQ',      'url' => route('faq.index'),        'active' => request()->is('faq')],
+        ['label' => 'About',    'url' => route('about'),            'active' => request()->is('about')],
+        ['label' => 'Contact',  'url' => route('contact.show'),     'active' => request()->is('contact')],
     ];
 @endphp
 
 {{-- ══════════════════════════════════════════════════════════
      HEADER
 ══════════════════════════════════════════════════════════ --}}
-<header x-data="{
+<header data-home-header x-data="{
             open: false,
             isDark: document.documentElement.classList.contains('dark'),
             toggleDark() {
@@ -56,16 +58,17 @@
                 localStorage.setItem('darkMode', this.isDark.toString());
             }
         }"
-        class="sticky top-0 z-40 border-b border-white/70 bg-white/80 backdrop-blur-xl transition-colors duration-300
-               dark:border-white/[0.08] dark:bg-[#09090b]/85">
+        class="sticky top-0 z-40 border-b border-warm-300/40 bg-warm-100/80 backdrop-blur-xl transition-colors duration-300
+               dark:border-warm-400/[0.08] dark:bg-navy-900/85">
 
     <div class="flex w-full items-center justify-between gap-4 px-5 py-3.5 sm:gap-6 sm:px-10 sm:py-4">
 
         {{-- ── Logo ── --}}
-        <a href="{{ url('/') }}"
+          <a href="{{ url('/') }}"
+              data-home-logo
            class="flex shrink-0 items-center gap-3 opacity-100 transition duration-200 hover:opacity-80">
             <x-site-logo
-                icon-wrap-class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-950 text-white shadow-card dark:bg-white dark:text-slate-900"
+                icon-wrap-class="flex h-10 w-10 items-center justify-center rounded-xl bg-navy-800 text-white shadow-card dark:bg-warm-100 dark:text-slate-900"
                 icon-class="h-6 w-6"
                 name-class="font-display text-lg sm:text-xl text-brand-ink dark:text-slate-100"
                 logo-class="h-10 w-auto object-contain"
@@ -73,14 +76,14 @@
         </a>
 
         {{-- ── Desktop nav ── --}}
-        <nav class="hidden flex-1 items-center justify-center gap-0.5 md:flex" aria-label="Main navigation">
+        <nav data-home-menu class="hidden flex-1 items-center justify-center gap-0.5 md:flex" aria-label="Main navigation">
             @foreach ($navLinks as $link)
                 <a href="{{ $link['url'] }}"
                    class="relative rounded-xl px-3 py-2 text-[0.8125rem] font-semibold transition duration-200
                           lg:px-4 lg:text-sm
                           {{ $link['active']
-                              ? 'bg-orange-50 text-brand-primary dark:bg-orange-500/15'
-                              : 'text-brand-muted hover:bg-stone-100 hover:text-brand-ink dark:hover:bg-white/[0.05] dark:hover:text-white' }}">
+                              ? 'bg-accent-light text-brand-primary dark:bg-accent-light'
+                              : 'text-brand-muted hover:bg-warm-200/60 hover:text-brand-ink dark:hover:bg-warm-400/[0.05] dark:hover:text-warm-100' }}">
                     {{ $link['label'] }}
                     @if ($link['active'])
                         <span class="absolute bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-brand-primary"></span>
@@ -90,11 +93,11 @@
         </nav>
 
         {{-- ── CTA + dark toggle + hamburger ── --}}
-        <div class="flex items-center gap-2 sm:gap-3">
+        <div data-home-actions class="flex items-center gap-2 sm:gap-3">
             {{-- Login --}}
             <a href="{{ route('login.client') }}"
-               class="hidden items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-brand-ink shadow-sm transition duration-200 hover:border-orange-300 hover:bg-orange-50 hover:text-brand-primary sm:inline-flex
-                      dark:border-white/[0.08] dark:bg-[#141416] dark:text-slate-200 dark:hover:border-orange-400 dark:hover:bg-orange-500/15 dark:hover:text-brand-primary">
+               class="hidden items-center gap-1.5 rounded-xl border border-warm-400/40 bg-warm-100 px-4 py-2 text-sm font-semibold text-brand-ink shadow-sm transition duration-200 hover:border-accent hover:bg-accent-light hover:text-accent-hover sm:inline-flex
+                      dark:border-warm-400/[0.08] dark:bg-navy-800 dark:text-warm-100 dark:hover:border-accent dark:hover:bg-accent-light dark:hover:text-brand-primary">
                 <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                 </svg>
@@ -112,9 +115,9 @@
             {{-- ── Dark / Light mode toggle ── --}}
             <button type="button"
                     @click="toggleDark()"
-                    class="relative flex h-10 w-10 items-center justify-center rounded-xl border border-stone-200 bg-white text-brand-muted shadow-sm transition duration-200
-                           hover:border-orange-300 hover:bg-orange-50 hover:text-brand-primary
-                           dark:border-white/[0.08] dark:bg-[#141416] dark:text-[#A1A1AA] dark:hover:border-orange-400 dark:hover:bg-orange-500/15 dark:hover:text-brand-primary"
+                    class="relative flex h-10 w-10 items-center justify-center rounded-xl border border-warm-400/40 bg-warm-100 text-brand-muted shadow-sm transition duration-200
+                           hover:border-accent hover:bg-accent-light hover:text-accent-hover
+                           dark:border-warm-400/[0.08] dark:bg-navy-800 dark:text-warm-600 dark:hover:border-accent dark:hover:bg-accent-light dark:hover:text-brand-primary"
                     :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
                     :title="isDark ? 'Light mode' : 'Dark mode'">
                 {{-- Sun (shown in dark mode → click to go light) --}}
@@ -132,9 +135,9 @@
             </button>
 
             <button type="button"
-                    class="rounded-xl border border-stone-200 bg-white p-2.5 text-brand-muted
-                           shadow-sm transition duration-200 hover:bg-stone-50 hover:text-brand-ink
-                           dark:border-white/[0.08] dark:bg-[#141416] dark:text-[#A1A1AA] dark:hover:bg-white/[0.05] dark:hover:text-white md:hidden"
+                    class="rounded-xl border border-warm-400/40 bg-warm-100 p-2.5 text-brand-muted
+                           shadow-sm transition duration-200 hover:bg-warm-200/60 hover:text-brand-ink
+                           dark:border-warm-400/[0.08] dark:bg-navy-800 dark:text-warm-600 dark:hover:bg-warm-400/[0.05] dark:hover:text-warm-100 md:hidden"
                     :aria-expanded="open.toString()"
                     aria-label="Toggle navigation"
                     @click="open = !open">
@@ -159,8 +162,8 @@
          x-transition:leave="transition ease-in duration-150"
          x-transition:leave-start="opacity-100 translate-y-0"
          x-transition:leave-end="opacity-0 -translate-y-1"
-         class="border-t border-white/70 bg-white/95 px-5 pb-6 pt-3 backdrop-blur-xl md:hidden
-                dark:border-white/[0.08] dark:bg-[#09090b]/97">
+         class="border-t border-warm-300/40 bg-warm-100/95 px-5 pb-6 pt-3 backdrop-blur-xl md:hidden
+                dark:border-warm-400/[0.08] dark:bg-navy-900/97">
 
         <nav class="space-y-1" aria-label="Mobile navigation">
             @foreach ($navLinks as $link)
@@ -168,8 +171,8 @@
                    class="flex items-center rounded-xl px-4 py-3 text-sm font-semibold
                           transition duration-200
                           {{ $link['active']
-                              ? 'bg-orange-50 text-brand-primary dark:bg-orange-500/15'
-                              : 'text-brand-ink hover:bg-stone-50 hover:text-brand-primary dark:text-white dark:hover:bg-white/[0.05] dark:hover:text-brand-primary' }}"
+                              ? 'bg-accent-light text-brand-primary dark:bg-accent-light'
+                              : 'text-brand-ink hover:bg-warm-200/60 hover:text-brand-primary dark:text-warm-100 dark:hover:bg-warm-400/[0.05] dark:hover:text-brand-primary' }}"
                    @click="open = false">
                     {{ $link['label'] }}
                     @if ($link['active'])
@@ -179,9 +182,9 @@
             @endforeach
         </nav>
 
-            <div class="mt-5 border-t border-stone-100 pt-5 dark:border-white/[0.08]">
+            <div class="mt-5 border-t border-warm-300/40 pt-5 dark:border-warm-400/[0.08]">
             <div class="flex gap-2">
-                <a href="{{ route('login.client') }}" class="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm font-semibold text-brand-ink transition hover:border-orange-300 hover:bg-orange-50 hover:text-brand-primary dark:border-white/[0.08] dark:bg-[#141416] dark:text-slate-200">
+                <a href="{{ route('login.client') }}" class="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-warm-400/40 bg-warm-100 px-4 py-3 text-sm font-semibold text-brand-ink transition hover:border-accent hover:bg-accent-light hover:text-accent-hover dark:border-warm-400/[0.08] dark:bg-navy-800 dark:text-warm-100">
                     <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                     </svg>
@@ -195,7 +198,7 @@
                 </a>
             </div>
             <button type="button" @click="toggleDark()"
-                    class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm font-semibold text-brand-muted transition hover:border-orange-300 hover:bg-orange-50 hover:text-brand-primary dark:border-white/[0.08] dark:bg-[#141416] dark:text-[#A1A1AA]">
+                    class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-warm-400/40 bg-warm-200/40 px-4 py-3 text-sm font-semibold text-brand-muted transition hover:border-accent hover:bg-accent-light hover:text-accent-hover dark:border-warm-400/[0.08] dark:bg-navy-800 dark:text-warm-600">
                 <svg x-show="isDark" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364-.707-.707M6.343 6.343l-.707-.707m12.728 0-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
@@ -211,14 +214,14 @@
 {{-- ══════════════════════════════════════════════════════════
      MAIN CONTENT
 ══════════════════════════════════════════════════════════ --}}
-<main>
+<main class="relative z-10">
     {{ $slot }}
 </main>
 
 {{-- ══════════════════════════════════════════════════════════
      FOOTER
 ══════════════════════════════════════════════════════════ --}}
-<footer class="bg-white border-t border-stone-100 dark:bg-[#09090b] dark:border-white/[0.06]">
+<footer data-home-footer class="relative z-10 border-t border-warm-300/40 bg-warm-100/85 backdrop-blur-sm dark:bg-navy-900/90 dark:border-warm-400/[0.06]">
     <div class="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-20">
 
         {{-- Top grid ──────────────────────────────────── --}}
@@ -228,7 +231,7 @@
             <div class="sm:col-span-2">
                 <a href="{{ url('/') }}" class="inline-flex items-center gap-3">
                     <x-site-logo
-                        icon-wrap-class="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-50 text-brand-primary"
+                        icon-wrap-class="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-light text-brand-primary"
                         icon-class="h-6 w-6"
                         name-class="font-display text-xl text-brand-ink"
                         logo-class="h-10 w-auto object-contain brightness-0"
@@ -251,8 +254,8 @@
                     @endphp
                     @foreach ($socials as $name => $iconPath)
                         <a href="#"
-                           class="flex h-9 w-9 items-center justify-center rounded-xl border border-stone-200
-                                  bg-stone-50 text-brand-muted transition duration-200
+                           class="flex h-9 w-9 items-center justify-center rounded-xl border border-warm-300/50
+                                  bg-warm-200/50 text-brand-muted transition duration-200
                                   hover:border-brand-primary/50 hover:bg-brand-primary/10 hover:text-brand-primary"
                            aria-label="{{ ucfirst($name) }}">
                             <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"
@@ -273,7 +276,7 @@
                             <a href="{{ $link['url'] }}"
                                class="group flex items-center gap-2 text-sm text-brand-muted
                                       transition duration-200 hover:text-brand-ink">
-                                <span class="h-px w-3 bg-stone-300 transition duration-200 group-hover:w-5 group-hover:bg-brand-primary"></span>
+                                <span class="h-px w-3 bg-warm-400 transition duration-200 group-hover:w-5 group-hover:bg-brand-primary"></span>
                                 {{ $link['label'] }}
                             </a>
                         </li>
@@ -345,8 +348,8 @@
                     @if (!$settings->email && !$settings->phone && !$settings->address)
                         <li>
                             <a href="{{ url('/page/contact') }}"
-                               class="inline-flex items-center gap-2 rounded-xl border border-stone-200
-                                      bg-stone-50 px-4 py-2.5 text-sm text-brand-muted transition
+                               class="inline-flex items-center gap-2 rounded-xl border border-warm-300/50
+                                      bg-warm-200/50 px-4 py-2.5 text-sm text-brand-muted transition
                                       hover:border-brand-primary/40 hover:bg-brand-primary/10 hover:text-brand-primary">
                                 Get in touch
                                 <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
@@ -362,7 +365,7 @@
         </div>
 
         {{-- Newsletter strip ─────────────────────────── --}}
-        <div class="my-12 rounded-2xl border border-stone-200 bg-stone-50 px-6 py-8 sm:px-10">
+        <div class="my-12 rounded-2xl border border-warm-300/50 bg-warm-200/50 px-6 py-8 sm:px-10">
             <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h3 class="font-semibold text-lg text-brand-ink">Stay in the loop</h3>
@@ -384,7 +387,7 @@
                         <div class="flex-1 sm:w-72">
                             <input type="email" name="email" placeholder="your@email.com" required
                                    value="{{ old('email') }}"
-                                   class="w-full rounded-xl border border-stone-200 bg-white px-4 py-2.5
+                                   class="w-full rounded-xl border border-warm-300/50 bg-warm-100 px-4 py-2.5
                                           text-sm text-brand-ink placeholder-brand-muted/50 outline-none
                                           focus:border-brand-primary focus:ring-1 focus:ring-brand-primary
                                           @error('email') border-red-400 @enderror">
@@ -404,7 +407,7 @@
 
         {{-- Bottom bar ──────────────────────────────── --}}
         <div class="mt-16 flex flex-col items-center justify-between gap-4
-                    border-t border-stone-100 pt-8 sm:flex-row">
+                    border-t border-warm-300/40 pt-8 sm:flex-row">
             <p class="text-sm text-brand-muted">
                 &copy; {{ date('Y') }} {{ config('app.name', 'Towncore') }}. All rights reserved.
             </p>
@@ -430,12 +433,12 @@
          x-transition:leave="transition ease-in duration-150"
          x-transition:leave-start="opacity-100 translate-y-0 scale-100"
          x-transition:leave-end="opacity-0 translate-y-4 scale-95"
-         class="flex w-[340px] sm:w-[380px] flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-2xl
-                dark:border-white/[0.10] dark:bg-[#141416]"
+         class="flex w-[340px] sm:w-[380px] flex-col overflow-hidden rounded-2xl border border-warm-400/30 bg-warm-100 shadow-2xl
+                dark:border-warm-400/[0.10] dark:bg-navy-800"
          style="max-height: calc(100vh - 120px);">
 
         {{-- Header --}}
-        <div class="flex items-center justify-between bg-gradient-to-r from-orange-500 to-orange-600 px-5 py-4 text-white">
+        <div class="flex items-center justify-between bg-gradient-to-r from-accent to-accent-hover px-5 py-4 text-white">
             <div class="flex items-center gap-3">
                 <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/20">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -458,19 +461,19 @@
         {{-- Intro / Name+Email form --}}
         <template x-if="!sessionKey">
             <form @submit.prevent="startChat()" class="space-y-4 px-5 py-6">
-                <p class="text-sm leading-relaxed text-brand-muted dark:text-[#A1A1AA]">
+                <p class="text-sm leading-relaxed text-brand-muted dark:text-warm-600">
                     Hi there! Enter your details to start chatting with our team.
                 </p>
                 <input x-model="visitorName" type="text" placeholder="Your name" required
-                       class="w-full rounded-xl border border-stone-200 bg-stone-50 px-4 py-2.5 text-sm text-brand-ink outline-none transition
-                              focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20
-                              dark:border-white/[0.10] dark:bg-[#1a1a1e] dark:text-white dark:focus:border-orange-500 dark:focus:ring-orange-500/20" />
+                       class="w-full rounded-xl border border-warm-400/30 bg-warm-50 px-4 py-2.5 text-sm text-brand-ink outline-none transition
+                              focus:border-accent focus:ring-2 focus:ring-accent/20
+                              dark:border-warm-400/[0.10] dark:bg-navy-800 dark:text-warm-100 dark:focus:border-accent dark:focus:ring-accent/20" />
                 <input x-model="visitorEmail" type="email" placeholder="your@email.com" required
-                       class="w-full rounded-xl border border-stone-200 bg-stone-50 px-4 py-2.5 text-sm text-brand-ink outline-none transition
-                              focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20
-                              dark:border-white/[0.10] dark:bg-[#1a1a1e] dark:text-white dark:focus:border-orange-500 dark:focus:ring-orange-500/20" />
+                       class="w-full rounded-xl border border-warm-400/30 bg-warm-50 px-4 py-2.5 text-sm text-brand-ink outline-none transition
+                              focus:border-accent focus:ring-2 focus:ring-accent/20
+                              dark:border-warm-400/[0.10] dark:bg-navy-800 dark:text-warm-100 dark:focus:border-accent dark:focus:ring-accent/20" />
                 <button type="submit" :disabled="starting"
-                        class="w-full rounded-xl bg-orange-500 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-600 disabled:opacity-60">
+                        class="w-full rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-navy-800 shadow-sm transition hover:bg-accent-hover hover:text-warm-100 disabled:opacity-60">
                     <span x-text="starting ? 'Connecting…' : 'Start Chat'"></span>
                 </button>
             </form>
@@ -483,12 +486,12 @@
                     {{-- Waiting indicator --}}
                     <template x-if="messages.length === 0 && sessionStatus === 'waiting'">
                         <div class="flex flex-col items-center justify-center py-8 text-center">
-                            <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-500/15">
-                                <svg class="h-5 w-5 animate-pulse text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                            <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-accent-light dark:bg-accent-light">
+                                <svg class="h-5 w-5 animate-pulse text-accent" fill="currentColor" viewBox="0 0 20 20">
                                     <circle cx="4" cy="10" r="2"/><circle cx="10" cy="10" r="2"/><circle cx="16" cy="10" r="2"/>
                                 </svg>
                             </div>
-                            <p class="text-sm text-brand-muted dark:text-[#A1A1AA]">Waiting for an agent…</p>
+                            <p class="text-sm text-brand-muted dark:text-warm-600">Waiting for an agent…</p>
                         </div>
                     </template>
 
@@ -496,24 +499,24 @@
                     <template x-for="msg in messages" :key="msg.id">
                         <div :class="msg.sender_type === 'visitor' ? 'flex justify-end' : 'flex justify-start'">
                             <div :class="msg.sender_type === 'visitor'
-                                    ? 'rounded-2xl rounded-br-md bg-orange-500 px-4 py-2.5 text-sm text-white max-w-[80%]'
-                                    : 'rounded-2xl rounded-bl-md bg-stone-100 px-4 py-2.5 text-sm text-brand-ink max-w-[80%] dark:bg-white/[0.06] dark:text-white'"
+                                    ? 'rounded-2xl rounded-br-md bg-accent px-4 py-2.5 text-sm text-navy-800 max-w-[80%]'
+                                    : 'rounded-2xl rounded-bl-md bg-warm-300/40 px-4 py-2.5 text-sm text-brand-ink max-w-[80%] dark:bg-warm-400/[0.06] dark:text-warm-100'"
                                  x-text="msg.body"></div>
                         </div>
                     </template>
                 </div>
 
                 {{-- Input --}}
-                <div class="border-t border-stone-100 px-4 py-3 dark:border-white/[0.08]"
+                <div class="border-t border-warm-300/40 px-4 py-3 dark:border-warm-400/[0.08]"
                      x-show="sessionStatus !== 'closed'">
                     <form @submit.prevent="sendMessage()" class="flex items-center gap-2">
                         <input x-model="newMessage" type="text" placeholder="Type a message…"
-                               class="flex-1 rounded-xl border border-stone-200 bg-stone-50 px-4 py-2.5 text-sm text-brand-ink outline-none transition
-                                      focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20
-                                      dark:border-white/[0.10] dark:bg-[#1a1a1e] dark:text-white dark:focus:border-orange-500 dark:focus:ring-orange-500/20"
+                               class="flex-1 rounded-xl border border-warm-400/30 bg-warm-50 px-4 py-2.5 text-sm text-brand-ink outline-none transition
+                                      focus:border-accent focus:ring-2 focus:ring-accent/20
+                                      dark:border-warm-400/[0.10] dark:bg-navy-800 dark:text-warm-100 dark:focus:border-accent dark:focus:ring-accent/20"
                                @keydown.enter="sendMessage()" />
                         <button type="submit" :disabled="!newMessage.trim()"
-                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-500 text-white shadow-sm transition hover:bg-orange-600 disabled:opacity-40">
+                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent text-navy-800 shadow-sm transition hover:bg-accent-hover hover:text-warm-100 disabled:opacity-40">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
                             </svg>
@@ -522,9 +525,9 @@
                 </div>
 
                 {{-- Closed notice --}}
-                <div x-show="sessionStatus === 'closed'" class="border-t border-stone-100 px-5 py-4 text-center dark:border-white/[0.08]">
-                    <p class="text-sm text-brand-muted dark:text-[#A1A1AA]">This chat has been closed.</p>
-                    <button @click="resetChat()" class="mt-2 text-sm font-semibold text-orange-500 transition hover:text-orange-600">Start a new chat</button>
+                <div x-show="sessionStatus === 'closed'" class="border-t border-warm-300/40 px-5 py-4 text-center dark:border-warm-400/[0.08]">
+                    <p class="text-sm text-brand-muted dark:text-warm-600">This chat has been closed.</p>
+                    <button @click="resetChat()" class="mt-2 text-sm font-semibold text-accent transition hover:text-accent-hover">Start a new chat</button>
                 </div>
             </div>
         </template>
@@ -532,9 +535,9 @@
 
     {{-- ── Floating trigger button ── --}}
     <button @click="open = !open"
-            class="group flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/30 transition-all duration-200
-                   hover:scale-105 hover:shadow-xl hover:shadow-orange-500/40
-                   dark:shadow-orange-500/20 dark:hover:shadow-orange-500/30"
+            class="group flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-accent to-accent-hover text-navy-800 shadow-lg shadow-accent/30 transition-all duration-200
+                   hover:scale-105 hover:shadow-xl hover:shadow-accent/40
+                   dark:shadow-accent/20 dark:hover:shadow-accent/30"
             :aria-label="open ? 'Close chat' : 'Open live chat'">
         <svg x-show="!open" class="h-6 w-6 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
             <path stroke-linecap="round" stroke-linejoin="round"
@@ -730,21 +733,21 @@ function liveChatWidget() {
                     modes: {
                         grab: {
                             distance: 180,
-                            links: { opacity: 0.55, color: '#f97316' }
+                            links: { opacity: 0.55, color: '#FFB162' }
                         }
                     }
                 },
                 particles: {
                     color: {
                         value: isDark
-                            ? ['#f97316', '#fb923c', '#a78bfa', '#38bdf8', '#f472b6', '#e2e8f0']
-                            : ['#f97316', '#ea580c', '#a78bfa', '#0ea5e9', '#ec4899', '#475569']
+                            ? ['#FFB162', '#C9C1B1', '#38bdf8', '#EEE9DF']
+                            : ['#FFB162', '#A35139', '#2C3B4D', '#C9C1B1']
                     },
                     links: {
-                        color: '#f97316',
+                        color: '#FFB162',
                         distance: 145,
                         enable: true,
-                        opacity: isDark ? 0.22 : 0.14,
+                        opacity: isDark ? 0.12 : 0.08,
                         width: 1,
                         triangles: { enable: false }
                     },
@@ -756,9 +759,9 @@ function liveChatWidget() {
                         straight: false,
                         outModes: { default: 'bounce' }
                     },
-                    number: { value: 65, density: { enable: true, area: 900 } },
+                    number: { value: 58, density: { enable: true, area: 1000 } },
                     opacity: {
-                        value: { min: isDark ? 0.25 : 0.15, max: isDark ? 0.65 : 0.45 },
+                        value: { min: isDark ? 0.12 : 0.08, max: isDark ? 0.35 : 0.24 },
                         animation: { enable: true, speed: 0.7, minimumValue: 0.1, sync: false }
                     },
                     shape: { type: 'circle' },

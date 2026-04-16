@@ -3,10 +3,10 @@
         <div class="space-y-3">
             <div class="flex items-center gap-3">
                 <a href="{{ route('admin.invoices') }}"
-                   class="rounded-2xl border border-stone-200 bg-white p-2 text-brand-muted transition hover:border-orange-200 hover:text-brand-primary">
+                   class="rounded-2xl border border-warm-300/50 bg-warm-100 p-2 text-brand-muted transition hover:border-accent/30 hover:text-brand-primary">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>
                 </a>
-                <span class="inline-flex rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary">
+                <span class="inline-flex rounded-full border border-accent/30 bg-accent-light px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary">
                     Edit invoice
                 </span>
             </div>
@@ -46,7 +46,7 @@
         @if ($invoice->paid_amount > 0 || $invoice->status !== 'unpaid')
             <div class="rounded-2xl border border-white/70 bg-white/90 px-5 py-4 shadow-card">
                 <p class="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-muted">Current Payment Status</p>
-                <div class="grid grid-cols-3 divide-x divide-stone-100">
+                <div class="grid grid-cols-3 divide-x divide-warm-300/40">
                     <div class="pr-4">
                         <p class="text-[9px] font-bold uppercase tracking-wider text-brand-muted">Total</p>
                         <p class="mt-1 font-display text-base text-brand-ink">{{ $invoice->formattedAmount() }}</p>
@@ -61,7 +61,7 @@
                     </div>
                 </div>
                 @if ($invoice->payments->isNotEmpty())
-                    <div class="mt-4 border-t border-stone-100 pt-3">
+                    <div class="mt-4 border-t border-warm-300/40 pt-3">
                         <p class="mb-2 text-[9px] font-bold uppercase tracking-wider text-brand-muted">Payment History</p>
                         <div class="space-y-1.5">
                             @foreach ($invoice->payments as $payment)
@@ -118,8 +118,8 @@
                 {{-- Project (read-only) --}}
                 <div>
                     <label class="block text-sm font-semibold text-brand-ink">Project</label>
-                    <div class="mt-2 flex items-center gap-3 rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3">
-                        <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-stone-200">
+                    <div class="mt-2 flex items-center gap-3 rounded-2xl border border-warm-300/50 bg-warm-200/50 px-4 py-3">
+                        <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-warm-300">
                             <svg class="h-4 w-4 text-stone-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z"/></svg>
                         </div>
                         <div>
@@ -137,8 +137,8 @@
                         <label class="flex-1 cursor-pointer">
                             <input type="radio" name="currency" value="TZS" x-model="currency" class="peer sr-only">
                             <div class="flex items-center justify-center gap-2 rounded-2xl border-2 px-4 py-3 text-sm font-semibold transition duration-200
-                                peer-checked:border-brand-primary peer-checked:bg-orange-50 peer-checked:text-brand-primary
-                                border-stone-200 text-brand-muted hover:border-stone-300">
+                                peer-checked:border-brand-primary peer-checked:bg-accent-light peer-checked:text-brand-primary
+                                border-warm-300/50 text-brand-muted hover:border-warm-400/50">
                                 <span class="text-lg">🇹🇿</span>
                                 <span>TZS</span>
                                 <span class="text-xs font-normal">(Tanzanian Shilling)</span>
@@ -147,8 +147,8 @@
                         <label class="flex-1 cursor-pointer">
                             <input type="radio" name="currency" value="USD" x-model="currency" class="peer sr-only">
                             <div class="flex items-center justify-center gap-2 rounded-2xl border-2 px-4 py-3 text-sm font-semibold transition duration-200
-                                peer-checked:border-brand-primary peer-checked:bg-orange-50 peer-checked:text-brand-primary
-                                border-stone-200 text-brand-muted hover:border-stone-300">
+                                peer-checked:border-brand-primary peer-checked:bg-accent-light peer-checked:text-brand-primary
+                                border-warm-300/50 text-brand-muted hover:border-warm-400/50">
                                 <span class="text-lg">🇺🇸</span>
                                 <span>USD</span>
                                 <span class="text-xs font-normal">(US Dollar)</span>
@@ -180,7 +180,7 @@
                                :min="minAmount"
                                x-model.number="amount"
                                placeholder="0.00"
-                               class="w-full rounded-2xl border-stone-200 bg-white py-3 pr-4 text-sm text-brand-ink shadow-sm transition duration-200 focus:border-brand-primary focus:ring-brand-primary"
+                               class="w-full rounded-2xl border-warm-300/50 bg-warm-100 py-3 pr-4 text-sm text-brand-ink shadow-sm transition duration-200 focus:border-brand-primary focus:ring-brand-primary"
                                :class="[currency === 'USD' ? 'pl-9' : 'pl-14', belowPaid ? 'border-red-400 ring-1 ring-red-300' : '']">
                     </div>
                     {{-- Inline warning if below paid --}}
@@ -212,7 +212,7 @@
                     </label>
                     <input type="date" name="expires_at" id="expires_at"
                            value="{{ old('expires_at', $invoice->expires_at?->format('Y-m-d')) }}"
-                           class="mt-2 w-full rounded-2xl border-stone-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm transition duration-200 focus:border-brand-primary focus:ring-brand-primary">
+                           class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition duration-200 focus:border-brand-primary focus:ring-brand-primary">
                     @error('expires_at')
                         <p class="mt-2 text-sm text-red-500">{{ $message }}</p>
                     @enderror
@@ -225,7 +225,7 @@
                 </div>
 
                 {{-- Actions --}}
-                <div class="flex items-center gap-3 border-t border-stone-100 pt-6">
+                <div class="flex items-center gap-3 border-t border-warm-300/40 pt-6">
                     <button type="submit" class="btn-primary" :disabled="belowPaid" :class="belowPaid ? 'opacity-50 cursor-not-allowed' : ''">
                         <svg class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75h1.5m9 0h-9"/></svg>
                         Save Changes

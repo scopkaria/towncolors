@@ -30,7 +30,7 @@
         @endif
 
         {{-- Table --}}
-        <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+        <div class="overflow-hidden rounded-xl border border-gray-200 bg-warm-100 shadow-sm">
             @if($subscribers->isEmpty())
                 <div class="flex flex-col items-center justify-center py-20 text-center">
                     <svg class="h-12 w-12 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -50,7 +50,7 @@
                             <th class="px-6 py-3"></th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100 bg-white">
+                    <tbody class="divide-y divide-gray-100 bg-warm-100">
                         @foreach($subscribers as $sub)
                             <tr class="hover:bg-gray-50 transition-colors">
                                 <td class="px-6 py-4 text-gray-400">{{ $loop->iteration }}</td>

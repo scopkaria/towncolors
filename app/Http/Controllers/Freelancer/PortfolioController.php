@@ -26,6 +26,21 @@ class PortfolioController extends Controller
         $validated = $request->validate([
             'title'       => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:2000'],
+            'client_name' => ['nullable', 'string', 'max:255'],
+            'project_url' => ['nullable', 'url', 'max:255'],
+            'industry' => ['nullable', 'string', 'max:120'],
+            'country' => ['nullable', 'string', 'max:120'],
+            'completion_year' => ['nullable', 'integer', 'between:2000,2100'],
+            'duration' => ['nullable', 'string', 'max:120'],
+            'services' => ['nullable', 'string', 'max:500'],
+            'technologies' => ['nullable', 'string', 'max:500'],
+            'results' => ['nullable', 'string', 'max:2000'],
+            'featured' => ['nullable', 'boolean'],
+            'item_type' => ['nullable', 'in:project,product'],
+            'is_purchasable' => ['nullable', 'boolean'],
+            'price' => ['nullable', 'numeric', 'min:0', 'max:99999999.99'],
+            'currency' => ['nullable', 'string', 'max:10'],
+            'purchase_url' => ['nullable', 'url', 'max:255'],
             'image'       => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
         ]);
 
@@ -40,7 +55,23 @@ class PortfolioController extends Controller
         Portfolio::create([
             'user_id'     => $request->user()->id,
             'title'       => $validated['title'],
+            'slug'        => $this->makeUniqueSlug($validated['title']),
             'description' => $validated['description'] ?? null,
+            'client_name' => $validated['client_name'] ?? null,
+            'project_url' => $validated['project_url'] ?? null,
+            'industry' => $validated['industry'] ?? null,
+            'country' => $validated['country'] ?? null,
+            'completion_year' => $validated['completion_year'] ?? null,
+            'duration' => $validated['duration'] ?? null,
+            'services' => $this->parseTags($validated['services'] ?? null),
+            'technologies' => $this->parseTags($validated['technologies'] ?? null),
+            'results' => $validated['results'] ?? null,
+            'featured' => (bool) ($validated['featured'] ?? false),
+            'item_type' => $validated['item_type'] ?? 'project',
+            'is_purchasable' => (bool) ($validated['is_purchasable'] ?? false),
+            'price' => $validated['price'] ?? null,
+            'currency' => $validated['currency'] ?? 'USD',
+            'purchase_url' => $validated['purchase_url'] ?? null,
             'image_path'  => $imagePath,
             'status'      => 'pending',
         ]);
@@ -59,5 +90,33 @@ class PortfolioController extends Controller
         $portfolio->delete();
 
         return back()->with('success', 'Portfolio item deleted.');
+    }
+
+    private function parseTags(?string $input): array
+    {
+        if (! $input) {
+            return [];
+        }
+
+        return collect(explode(',', $input))
+            ->map(fn (string $item) => trim($item))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+    }
+
+    private function makeUniqueSlug(string $title): string
+    {
+        $base = Str::slug($title);
+        $slug = $base;
+        $index = 2;
+
+        while (Portfolio::where('slug', $slug)->exists()) {
+            $slug = $base . '-' . $index;
+            $index++;
+        }
+
+        return $slug;
     }
 }

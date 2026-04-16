@@ -2,10 +2,10 @@
     <x-slot name="header">
         <div class="space-y-3">
             <div class="flex items-center gap-3">
-                <a href="{{ route('client.projects.index') }}" class="rounded-2xl border border-stone-200 bg-white p-2 text-brand-muted transition hover:border-orange-200 hover:text-brand-primary">
+                <a href="{{ route('client.projects.index') }}" class="rounded-2xl border border-warm-300/50 bg-warm-100 p-2 text-brand-muted transition hover:border-accent/30 hover:text-brand-primary">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>
                 </a>
-                <span class="inline-flex rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary">
+                <span class="inline-flex rounded-full border border-accent/30 bg-accent-light px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary">
                     Project details
                 </span>
             </div>
@@ -70,7 +70,7 @@
                 <div class="mt-4 space-y-2">
                     @foreach ($project->files as $file)
                         <a href="{{ asset('storage/' . $file->file_path) }}" target="_blank"
-                            class="flex items-center gap-3 rounded-2xl border border-stone-200 bg-stone-50/50 px-4 py-3 text-sm text-brand-ink transition duration-200 hover:border-orange-200 hover:bg-orange-50/30">
+                            class="flex items-center gap-3 rounded-2xl border border-warm-300/50 bg-warm-200/50 px-4 py-3 text-sm text-brand-ink transition duration-200 hover:border-accent/30 hover:bg-accent/10">
                             <svg class="h-5 w-5 shrink-0 text-brand-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
                             <span class="truncate">{{ basename($file->file_path) }}</span>
                         </a>

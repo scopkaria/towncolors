@@ -1,6 +1,8 @@
-export const colors = {
-  primary: '#2563eb',
-  primaryDark: '#1d4ed8',
+export type ThemeColors = typeof lightColors;
+
+export const lightColors = {
+  primary: '#f97316',
+  primaryDark: '#ea580c',
   secondary: '#64748b',
   success: '#16a34a',
   warning: '#f59e0b',
@@ -15,6 +17,27 @@ export const colors = {
   inputBg: '#f1f5f9',
   shadow: '#000000',
 };
+
+export const darkColors: ThemeColors = {
+  primary: '#f97316',
+  primaryDark: '#ea580c',
+  secondary: '#94a3b8',
+  success: '#22c55e',
+  warning: '#fbbf24',
+  danger: '#ef4444',
+  background: '#09090b',
+  white: '#141416',
+  card: '#141416',
+  text: '#fafafa',
+  textSecondary: '#a1a1aa',
+  textLight: '#71717a',
+  border: 'rgba(255,255,255,0.10)',
+  inputBg: '#1a1a1e',
+  shadow: '#000000',
+};
+
+// Default export — screens that don't use useTheme() yet still work
+export const colors = lightColors;
 
 export const statusColors: Record<string, string> = {
   pending: '#f59e0b',

@@ -23,12 +23,16 @@ class Project extends Model
 
     public function client(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'client_id');
+        return $this->belongsTo(User::class, 'client_id')->withDefault([
+            'name' => 'Unknown client',
+        ]);
     }
 
     public function freelancer(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'freelancer_id');
+        return $this->belongsTo(User::class, 'freelancer_id')->withDefault([
+            'name' => 'Unassigned freelancer',
+        ]);
     }
 
     public function files(): HasMany

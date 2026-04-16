@@ -141,7 +141,7 @@
             label    = 'Could Be Better';
         } else if (s < 90) {
             barCls   = 'absolute inset-y-0 left-0 rounded-full bg-brand-primary transition-all duration-500';
-            badgeCls = 'rounded-full bg-orange-50 px-2.5 py-1 text-xs font-bold text-brand-primary';
+            badgeCls = 'rounded-full bg-accent-light px-2.5 py-1 text-xs font-bold text-brand-primary';
             label    = 'Good';
         } else {
             barCls   = 'absolute inset-y-0 left-0 rounded-full bg-emerald-500 transition-all duration-500';

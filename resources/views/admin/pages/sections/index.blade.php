@@ -3,13 +3,13 @@
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex items-center gap-3">
                 <a href="{{ route('admin.pages.index') }}"
-                   class="flex h-9 w-9 items-center justify-center rounded-xl border border-stone-200 bg-white text-brand-muted shadow-sm transition hover:border-brand-primary hover:text-brand-primary">
+                   class="flex h-9 w-9 items-center justify-center rounded-xl border border-warm-300/50 bg-warm-100 text-brand-muted shadow-sm transition hover:border-brand-primary hover:text-brand-primary">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/>
                     </svg>
                 </a>
                 <div class="space-y-1">
-                    <span class="inline-flex rounded-full border border-orange-200 bg-orange-50 px-3 py-0.5 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary">
+                    <span class="inline-flex rounded-full border border-accent/30 bg-accent-light px-3 py-0.5 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary">
                         Sections Builder
                     </span>
                     <h1 class="font-display text-2xl text-brand-ink sm:text-3xl">
@@ -35,7 +35,7 @@
 
     @if ($sections->isEmpty())
         <div class="rounded-3xl border border-white/70 bg-white/90 p-12 text-center shadow-panel">
-            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-stone-100">
+            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-warm-200">
                 <svg class="h-8 w-8 text-brand-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                     <path stroke-linecap="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/>
                 </svg>
@@ -67,13 +67,13 @@
                     </div>
 
                     {{-- Order badge --}}
-                    <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-stone-100 text-xs font-bold text-brand-muted">
+                    <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-warm-200 text-xs font-bold text-brand-muted">
                         {{ $loop->iteration }}
                     </span>
 
                     {{-- Type icon --}}
                     <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl
-                                {{ $section->is_active ? 'bg-orange-50 text-brand-primary' : 'bg-stone-100 text-brand-muted' }}">
+                                {{ $section->is_active ? 'bg-accent-light text-brand-primary' : 'bg-warm-200 text-brand-muted' }}">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="{{ \App\Models\PageSection::TYPE_ICONS[$section->type] ?? '' }}"/>
                         </svg>
@@ -91,7 +91,7 @@
                             <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>Visible
                         </span>
                     @else
-                        <span class="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-stone-100 px-2.5 py-1 text-xs font-semibold text-stone-500">
+                        <span class="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-warm-200 px-2.5 py-1 text-xs font-semibold text-stone-500">
                             <span class="h-1.5 w-1.5 rounded-full bg-stone-400"></span>Hidden
                         </span>
                     @endif
@@ -99,14 +99,14 @@
                     {{-- Actions --}}
                     <div class="flex items-center gap-2 shrink-0">
                         <a href="{{ route('admin.pages.sections.edit', [$page, $section]) }}"
-                           class="rounded-xl border border-stone-200 bg-white px-3 py-1.5 text-xs font-semibold text-brand-muted transition hover:border-brand-primary hover:text-brand-primary">
+                           class="rounded-xl border border-warm-300/50 bg-warm-100 px-3 py-1.5 text-xs font-semibold text-brand-muted transition hover:border-brand-primary hover:text-brand-primary">
                             Edit
                         </a>
 
                         <form method="POST" action="{{ route('admin.pages.sections.toggle', [$page, $section]) }}">
                             @csrf @method('PATCH')
                             <button type="submit"
-                                    class="rounded-xl border border-stone-200 bg-white px-3 py-1.5 text-xs font-semibold text-brand-muted transition hover:border-stone-400">
+                                    class="rounded-xl border border-warm-300/50 bg-warm-100 px-3 py-1.5 text-xs font-semibold text-brand-muted transition hover:border-stone-400">
                                 {{ $section->is_active ? 'Hide' : 'Show' }}
                             </button>
                         </form>
@@ -115,7 +115,7 @@
                               onsubmit="return confirm('Delete section \'{{ addslashes($section->label) }}\'?')">
                             @csrf @method('DELETE')
                             <button type="submit"
-                                    class="rounded-xl border border-stone-200 bg-white px-3 py-1.5 text-xs font-semibold text-brand-muted transition hover:border-red-200 hover:text-red-500">
+                                    class="rounded-xl border border-warm-300/50 bg-warm-100 px-3 py-1.5 text-xs font-semibold text-brand-muted transition hover:border-red-200 hover:text-red-500">
                                 Delete
                             </button>
                         </form>

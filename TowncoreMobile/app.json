@@ -21,7 +21,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#2563eb"
       },
-      "package": "com.towncore.app"
+      "package": "com.towncore.app",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -35,12 +36,20 @@
             "usesCleartextTraffic": true
           }
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#f97316"
+        }
       ]
     ],
     "extra": {
       "eas": {
         "projectId": "398ddbcd-0641-4cd3-a177-895b15190285"
       }
-    }
+    },
+    "owner": "scop_kariah"
   }
 }

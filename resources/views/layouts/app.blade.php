@@ -22,6 +22,20 @@
         @php
             $user = auth()->user();
             $role = $user?->role?->value ?? 'client';
+            $hasActiveSubscription = $role !== 'client' || $user?->hasFullAccess();
+            $guideRouteName = $role.'.guide';
+            $hasGuideRoute = in_array($role, ['admin', 'client', 'freelancer'], true) && \Illuminate\Support\Facades\Route::has($guideRouteName);
+            $guideUrl = $hasGuideRoute ? route($guideRouteName) : null;
+            $tabHelp = [
+                'Dashboard' => 'Overview of your activity and progress',
+                'Projects' => 'Create and manage your work requests',
+                'Messages' => 'Communicate with your assigned team',
+                'My Files' => 'Upload and manage project files',
+                'Invoices' => 'View your payments',
+                'My Plan' => 'Manage your subscription',
+                'Checklist' => 'Track setup and delivery progress',
+                'User Guide' => 'Open the full help guide for your role',
+            ];
             $initials = collect(explode(' ', $user?->name ?? 'TC'))
                 ->filter()
                 ->map(fn ($part) => strtoupper(substr($part, 0, 1)))
@@ -47,17 +61,25 @@
                 'settings'    => 'M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z',
                 'earnings'    => 'M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z',
                 'leads'       => 'M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM4 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 10.374 21c-2.331 0-4.512-.645-6.374-1.766Z',
+                'guide'       => 'M9 12h6m-6 4h6M7.5 4.5h9A2.25 2.25 0 0 1 18.75 6.75v10.5A2.25 2.25 0 0 1 16.5 19.5h-9a2.25 2.25 0 0 1-2.25-2.25V6.75A2.25 2.25 0 0 1 7.5 4.5ZM9 8h6',
             ];
 
             // ── Flat nav items (client / freelancer) ────────────────────
             $items = [];
             if ($role === 'client') {
                 $items = [
-                    ['label' => 'Dashboard', 'route' => route('client.dashboard'),       'match' => 'client.dashboard',                             'icon' => $ic['dashboard']],
-                    ['label' => 'Projects',  'route' => route('client.projects.index'),  'match' => 'client.projects.*',                            'icon' => $ic['projects']],
-                    ['label' => 'Messages',  'route' => route('client.messages'),        'match' => 'client.messages|chat.*',                       'icon' => $ic['messages']],
-                    ['label' => 'Invoices',  'route' => route('client.invoices'),        'match' => 'client.invoices|client.invoices.*',            'icon' => $ic['invoices']],
+                    ['label' => 'Dashboard',     'route' => route('client.dashboard'),          'match' => 'client.dashboard',                             'icon' => $ic['dashboard']],
+                    ['label' => 'Projects',      'route' => route('client.projects.index'),     'match' => 'client.projects.*',                            'icon' => $ic['projects']],
                 ];
+
+                if ($hasActiveSubscription) {
+                    $items[] = ['label' => 'Messages', 'route' => route('client.messages'), 'match' => 'client.messages|chat.*', 'icon' => $ic['messages']];
+                    $items[] = ['label' => 'My Files', 'route' => route('client.files.index'), 'match' => 'client.files.*', 'icon' => 'M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z'];
+                }
+
+                $items[] = ['label' => 'Invoices', 'route' => route('client.invoices'), 'match' => 'client.invoices|client.invoices.*', 'icon' => $ic['invoices']];
+                $items[] = ['label' => 'My Plan', 'route' => route('client.subscription.show'), 'match' => 'client.subscription.*', 'icon' => 'M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.745 3.745 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.745 3.745 0 0 1 3.296-1.043A3.745 3.745 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.745 3.745 0 0 1 3.296 1.043 3.745 3.745 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z'];
+                $items[] = ['label' => 'User Guide', 'route' => route('client.guide'), 'match' => 'client.guide', 'icon' => $ic['guide']];
             }
             if ($role === 'freelancer') {
                 $items = [
@@ -66,7 +88,9 @@
                     ['label' => 'Messages',  'route' => route('freelancer.messages'),           'match' => 'freelancer.messages|chat.*',                        'icon' => $ic['messages']],
                     ['label' => 'Invoices',  'route' => route('freelancer.invoices'),           'match' => 'freelancer.invoices|freelancer.freelancerInvoices.*','icon' => $ic['invoices']],
                     ['label' => 'Portfolio', 'route' => route('freelancer.portfolio.index'),    'match' => 'freelancer.portfolio.*',                            'icon' => $ic['portfolio']],
+                    ['label' => 'Checklist', 'route' => route('freelancer.checklist.show'),     'match' => 'freelancer.checklist.*',                            'icon' => $ic['guide']],
                     ['label' => 'Earnings',  'route' => route('freelancer.earnings'),           'match' => 'freelancer.earnings',                               'icon' => $ic['earnings']],
+                    ['label' => 'User Guide', 'route' => route('freelancer.guide'),             'match' => 'freelancer.guide',                                  'icon' => $ic['guide']],
                 ];
             }
 
@@ -90,8 +114,12 @@
                         'items' => [
                             ['label' => 'Pages',       'route' => route('admin.pages.index'),       'match' => 'admin.pages.*',       'icon' => $ic['pages']],
                             ['label' => 'Blog',        'route' => route('admin.posts.index'),       'match' => 'admin.posts.*',       'icon' => $ic['blog']],
+                            ['label' => 'Blog Comments','route' => route('admin.posts.comments.index'),'match' => 'admin.posts.comments.*','icon' => $ic['messages']],
                             ['label' => 'Portfolio',   'route' => route('admin.portfolio.index'),   'match' => 'admin.portfolio.*',   'icon' => $ic['portfolio']],
+                            ['label' => 'Shop',        'route' => route('admin.shop.index'),        'match' => 'admin.shop.*',        'icon' => $ic['bills']],
+                            ['label' => 'Shop Requests','route' => route('admin.shop.requests.index'),'match' => 'admin.shop.requests.*', 'icon' => $ic['messages']],
                             ['label' => 'Categories',  'route' => route('admin.categories.index'),  'match' => 'admin.categories.*',  'icon' => $ic['categories']],
+                            ['label' => 'FAQ',         'route' => route('admin.faq.index'),         'match' => 'admin.faq.*',         'icon' => $ic['guide']],
                             ['label' => 'Subscribers', 'route' => route('admin.subscribers.index'), 'match' => 'admin.subscribers.*', 'icon' => $ic['subscribers']],
                         ],
                     ],
@@ -100,8 +128,19 @@
                         'items' => [
                             ['label' => 'Media Library',    'route' => route('admin.media.index'),              'match' => 'admin.media.*',              'icon' => $ic['media']],
                             ['label' => 'Freelancers 🔥',   'route' => route('admin.freelancers.index'),        'match' => 'admin.freelancers.*',         'icon' => $ic['freelancers']],
+                            ['label' => 'Users',            'route' => route('admin.users.index'),              'match' => 'admin.users.*|admin.checklists.*', 'icon' => $ic['subscribers']],
+                            ['label' => 'User Guide',       'route' => route('admin.guide'),                    'match' => 'admin.guide',                'icon' => $ic['guide']],
                             ['label' => 'Freelancer Bills', 'route' => route('admin.freelancerInvoices.index'), 'match' => 'admin.freelancerInvoices.*',  'icon' => $ic['bills']],
                             ['label' => 'Settings',         'route' => route('admin.settings'),                 'match' => 'admin.settings|admin.settings.*', 'icon' => $ic['settings']],
+                        ],
+                    ],
+                    [
+                        'label' => 'Business',
+                        'items' => [
+                            ['label' => 'Subscriptions',  'route' => route('admin.subscriptions.index'),          'match' => 'admin.subscriptions.*',           'icon' => 'M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.745 3.745 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.745 3.745 0 0 1 3.296-1.043A3.745 3.745 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.745 3.745 0 0 1 3.296 1.043 3.745 3.745 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z'],
+                            ['label' => 'Sub Requests',   'route' => route('admin.subscription-requests.index'), 'match' => 'admin.subscription-requests.*',    'icon' => 'M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9 2 2 4-4'],
+                            ['label' => 'Plans',          'route' => route('admin.subscription-plans.index'),    'match' => 'admin.subscription-plans.*',      'icon' => 'M3.75 6.75h16.5M3.75 12h16.5M12 17.25h8.25'],
+                            ['label' => 'Client Files',   'route' => route('admin.client-files.index'),          'match' => 'admin.client-files.*|admin.clients.*','icon' => 'M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z'],
                         ],
                     ],
                 ];
@@ -117,13 +156,13 @@
                 localStorage.setItem('darkMode', this.isDark.toString());
             }
         }" class="flex h-screen">
-            <div x-cloak x-show="sidebarOpen" class="fixed inset-0 z-40 bg-slate-950/45 backdrop-blur-sm lg:hidden" x-transition.opacity @click="sidebarOpen = false"></div>
+            <div x-cloak x-show="sidebarOpen" class="fixed inset-0 z-40 bg-navy-900/45 backdrop-blur-sm lg:hidden" x-transition.opacity @click="sidebarOpen = false"></div>
 
-            <aside class="glass-panel fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-white/60 shadow-panel transition duration-300 dark:border-white/[0.08] lg:translate-x-0" :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
+            <aside class="glass-panel fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-warm-300/40 shadow-panel transition duration-300 dark:border-warm-400/[0.08] lg:translate-x-0" :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
                 <div class="flex items-center justify-between px-5 pb-4 pt-5">
                     <a href="{{ route($role.'.dashboard') }}" class="flex items-center gap-4 opacity-100 transition duration-200 hover:opacity-75">
                         <x-site-logo
-                            icon-wrap-class="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-950 text-white shadow-card"
+                            icon-wrap-class="flex h-12 w-12 items-center justify-center rounded-2xl bg-navy-800 text-warm-100 shadow-card"
                             icon-class="h-7 w-7"
                             name-class="block font-display text-xl text-brand-ink"
                             logo-class="h-12 w-auto object-contain"
@@ -133,7 +172,7 @@
                             </x-slot>
                         </x-site-logo>
                     </a>
-                    <button type="button" class="rounded-2xl border border-stone-200 p-2 text-brand-muted lg:hidden" @click="sidebarOpen = false">
+                    <button type="button" class="rounded-2xl border border-warm-300/50 p-2 text-brand-muted lg:hidden" @click="sidebarOpen = false">
                         <svg class="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
                             <path d="M6 6l8 8M14 6l-8 8" stroke-linecap="round" />
                         </svg>
@@ -141,10 +180,10 @@
                 </div>
 
                 <div class="px-3">
-                    <div class="rounded-2xl bg-slate-950 px-4 py-3 text-white shadow-card">
-                        <p class="text-xs uppercase tracking-[0.3em] text-orange-200/80">Signed in as</p>
+                    <div class="rounded-2xl bg-navy-800 px-4 py-3 text-warm-100 shadow-card">
+                        <p class="text-xs uppercase tracking-[0.3em] text-accent/70">Signed in as</p>
                         <p class="mt-2 font-display text-xl">{{ $user->role->label() }}</p>
-                        <p class="mt-1 text-sm text-white/70">{{ $user->email }}</p>
+                        <p class="mt-1 text-sm text-warm-400">{{ $user->email }}</p>
                     </div>
                 </div>
 
@@ -159,12 +198,12 @@
                                 });
                             @endphp
                             <div x-data="{ open: {{ $groupHasActive ? 'true' : 'true' }} }"
-                                 class="{{ $gi > 0 ? 'mt-3 border-t border-stone-100/80 pt-3 dark:border-white/[0.08]' : '' }}">
+                                 class="{{ $gi > 0 ? 'mt-3 border-t border-warm-300/30 pt-3 dark:border-white/[0.08]' : '' }}">
 
                                 {{-- Group header / toggle --}}
                                 <button type="button" @click="open = !open"
-                                        class="flex w-full items-center justify-between rounded-xl px-2 py-1.5 text-left transition duration-150 hover:bg-white/60 dark:hover:bg-white/[0.05]">
-                                    <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-brand-muted/60 dark:text-[#A1A1AA]">{{ $group['label'] }}</span>
+                                        class="flex w-full items-center justify-between rounded-xl px-2 py-1.5 text-left transition duration-150 hover:bg-warm-200/50 dark:hover:bg-warm-400/[0.05]">
+                                    <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-brand-muted/60 dark:text-warm-600">{{ $group['label'] }}</span>
                                     <svg class="h-3 w-3 shrink-0 text-brand-muted/50 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                                     </svg>
@@ -185,16 +224,17 @@
                                                 ->contains(fn ($p) => request()->routeIs(trim($p)));
                                         @endphp
                                         <a href="{{ $item['route'] }}"
+                                                         title="{{ $tabHelp[$item['label']] ?? ('Open ' . $item['label']) }}"
                                            class="group flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-semibold transition duration-150
                                                   {{ $isActive
-                                                      ? 'bg-slate-950 text-white shadow-card dark:bg-brand-primary/20 dark:text-brand-primary'
-                                                      : 'text-brand-muted hover:bg-white hover:text-brand-ink dark:hover:bg-white/[0.05] dark:hover:text-white' }}">
+                                                      ? 'bg-navy-800 text-warm-100 shadow-card dark:bg-accent-light dark:text-brand-primary'
+                                                      : 'text-brand-muted hover:bg-warm-200/50 hover:text-brand-ink dark:hover:bg-warm-400/[0.05] dark:hover:text-warm-100' }}">
                                             <svg class="h-4 w-4 shrink-0 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}" />
                                             </svg>
                                             <span class="min-w-0 truncate">{{ $item['label'] }}</span>
                                             @if ($isActive)
-                                                <span class="ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-orange-400 dark:bg-brand-primary"></span>
+                                                <span class="ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-accent dark:bg-brand-primary"></span>
                                             @endif
                                         </a>
                                     @endforeach
@@ -210,16 +250,17 @@
                                         ->contains(fn ($p) => request()->routeIs(trim($p)));
                                 @endphp
                                 <a href="{{ $item['route'] }}"
+                                              title="{{ $tabHelp[$item['label']] ?? ('Open ' . $item['label']) }}"
                                    class="group flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-semibold transition duration-150
                                           {{ $isActive
-                                              ? 'bg-slate-950 text-white shadow-card dark:bg-brand-primary/20 dark:text-brand-primary'
-                                              : 'text-brand-muted hover:bg-white hover:text-brand-ink dark:hover:bg-white/[0.05] dark:hover:text-white' }}">
+                                              ? 'bg-navy-800 text-warm-100 shadow-card dark:bg-accent-light dark:text-brand-primary'
+                                              : 'text-brand-muted hover:bg-warm-200/50 hover:text-brand-ink dark:hover:bg-warm-400/[0.05] dark:hover:text-warm-100' }}">
                                     <svg class="h-4 w-4 shrink-0 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}" />
                                     </svg>
                                     <span class="min-w-0 truncate">{{ $item['label'] }}</span>
                                     @if ($isActive)
-                                        <span class="ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-orange-400 dark:bg-brand-primary"></span>
+                                        <span class="ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-accent dark:bg-brand-primary"></span>
                                     @endif
                                 </a>
                             @endforeach
@@ -230,7 +271,7 @@
                 <div class="px-3 pb-5 pt-2 space-y-2">
                     <a href="{{ route('profile.edit') }}" class="btn-secondary w-full">Profile settings</a>
                     <a href="{{ url('/') }}"
-                       class="flex items-center justify-center gap-2 rounded-2xl border border-stone-200/70 bg-transparent px-4 py-2.5 text-sm font-semibold text-brand-muted transition duration-200 hover:border-orange-200 hover:bg-orange-50 hover:text-brand-primary dark:border-white/[0.10] dark:hover:border-orange-500/40 dark:hover:bg-orange-500/10 dark:hover:text-brand-primary">
+                       class="flex items-center justify-center gap-2 rounded-2xl border border-warm-400/30 bg-transparent px-4 py-2.5 text-sm font-semibold text-brand-muted transition duration-200 hover:border-accent hover:bg-accent-light hover:text-accent-hover dark:border-warm-400/[0.10] dark:hover:border-accent dark:hover:bg-accent-light dark:hover:text-brand-primary">
                         <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253M3.284 14.253A8.959 8.959 0 0 1 3 12c0-1.016.168-1.993.457-2.918" />
                         </svg>
@@ -243,7 +284,7 @@
                 <header class="shrink-0 z-30 px-4 py-2 sm:px-6 lg:px-8">
                     <div class="glass-panel flex items-center justify-between rounded-3xl px-5 py-4 shadow-card">
                         <div class="flex items-center gap-3">
-                            <button type="button" class="rounded-2xl border border-stone-200 bg-white p-3 text-brand-muted lg:hidden" @click="sidebarOpen = true">
+                            <button type="button" class="rounded-2xl border border-warm-300/50 bg-warm-100 p-3 text-brand-muted lg:hidden" @click="sidebarOpen = true">
                                 <svg class="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
                                     <path d="M3 5h14M3 10h14M3 15h14" stroke-linecap="round" />
                                 </svg>
@@ -259,9 +300,18 @@
                                 <p class="text-sm font-semibold text-brand-ink">{{ $user->email }}</p>
                                 <p class="text-xs uppercase tracking-[0.28em] text-brand-muted">{{ $user->role->label() }}</p>
                             </div>
+                            @if ($guideUrl)
+                                <a href="{{ $guideUrl }}"
+                                   class="relative inline-flex h-10 items-center gap-1.5 rounded-2xl border border-warm-400/30 bg-warm-100 px-3 text-brand-muted transition hover:border-accent hover:bg-accent-light hover:text-accent-hover dark:border-warm-400/[0.12] dark:bg-navy-800 dark:text-warm-600 dark:hover:border-accent dark:hover:bg-accent-light dark:hover:text-brand-primary"
+                                   title="Open User Guide"
+                                   aria-label="Open User Guide">
+                                    <span class="font-display text-base font-bold">?</span>
+                                    <span class="hidden text-[11px] font-semibold uppercase tracking-[0.18em] lg:inline">User Guide</span>
+                                </a>
+                            @endif
                             {{-- Dark mode toggle --}}
                             <button type="button" @click="toggleDark()"
-                                    class="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-stone-200 bg-white text-brand-muted transition hover:border-orange-300 hover:bg-orange-50 hover:text-brand-primary dark:border-white/[0.12] dark:bg-[#1a1a1e] dark:text-zinc-400 dark:hover:border-orange-400 dark:hover:bg-orange-500/15 dark:hover:text-brand-primary"
+                                    class="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-warm-400/30 bg-warm-100 text-brand-muted transition hover:border-accent hover:bg-accent-light hover:text-accent-hover dark:border-warm-400/[0.12] dark:bg-navy-800 dark:text-warm-600 dark:hover:border-accent dark:hover:bg-accent-light dark:hover:text-brand-primary"
                                     :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'">
                                 <svg x-show="isDark" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364-.707-.707M6.343 6.343l-.707-.707m12.728 0-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -271,15 +321,15 @@
                                 </svg>
                             </button>
                             <div x-data="{ open: false }" class="relative">
-                                <button type="button" class="relative rounded-2xl border border-stone-200 bg-white p-3 text-brand-muted transition hover:border-orange-200 hover:text-brand-primary" @click="open = !open" @click.outside="open = false">
+                                <button type="button" class="relative rounded-2xl border border-warm-400/30 bg-warm-100 p-3 text-brand-muted transition hover:border-accent hover:text-brand-primary" @click="open = !open" @click.outside="open = false">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 1-2.857.168 23.847 23.847 0 0 1-2.857-.168m5.714 0a8.967 8.967 0 0 0 1.455-.455A2.25 2.25 0 0 0 18 14.345V11.25a6 6 0 1 0-12 0v3.095c0 .928.568 1.76 1.688 2.182.466.175.953.328 1.455.455m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" /></svg>
                                     @if ($unreadNotificationsCount > 0)
                                         <span class="absolute -right-1 -top-1 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-brand-primary px-1 text-[10px] font-bold text-white">{{ $unreadNotificationsCount }}</span>
                                     @endif
                                 </button>
 
-                                <div x-show="open" x-cloak x-transition class="absolute right-0 z-50 mt-3 w-80 overflow-hidden rounded-3xl border border-white/70 bg-white shadow-panel dark:border-white/[0.10] dark:bg-[#141416]">
-                                    <div class="flex items-center justify-between border-b border-stone-100 px-5 py-4">
+                                <div x-show="open" x-cloak x-transition class="absolute right-0 z-50 mt-3 w-80 overflow-hidden rounded-3xl border border-warm-300/50 bg-warm-100 shadow-panel dark:border-warm-400/[0.10] dark:bg-navy-800">
+                                    <div class="flex items-center justify-between border-b border-warm-300/40 px-5 py-4">
                                         <div>
                                             <p class="text-sm font-semibold text-brand-ink">Notifications</p>
                                             <p class="text-xs text-brand-muted">Latest account activity</p>
@@ -294,14 +344,14 @@
 
                                     <div class="max-h-96 overflow-y-auto">
                                         @forelse ($recentNotifications as $notification)
-                                            <form method="POST" action="{{ route('notifications.read', $notification->id) }}" class="border-b border-stone-100 last:border-b-0">
+                                            <form method="POST" action="{{ route('notifications.read', $notification->id) }}" class="border-b border-warm-300/40 last:border-b-0">
                                                 @csrf
                                                 <input type="hidden" name="redirect" value="{{ $notification->data['action_url'] ?? route('dashboard') }}">
-                                                <button type="submit" class="block w-full px-5 py-4 text-left transition hover:bg-stone-50 {{ $notification->read_at ? 'bg-white' : 'bg-orange-50/50' }}">
+                                                <button type="submit" class="block w-full px-5 py-4 text-left transition hover:bg-warm-200/50 {{ $notification->read_at ? 'bg-warm-100' : 'bg-accent/10' }}">
                                                     <p class="text-sm font-semibold text-brand-ink">{{ $notification->data['title'] ?? 'Notification' }}</p>
                                                     <p class="mt-1 text-xs leading-5 text-brand-muted">{{ $notification->data['message'] ?? 'New activity is available.' }}</p>
                                                     @if (!empty($notification->data['note']))
-                                                        <p class="mt-2 rounded-2xl border border-stone-200 bg-stone-50 px-3 py-2 text-xs leading-5 text-brand-muted">{{ $notification->data['note'] }}</p>
+                                                        <p class="mt-2 rounded-2xl border border-warm-300/50 bg-warm-200/50 px-3 py-2 text-xs leading-5 text-brand-muted">{{ $notification->data['note'] }}</p>
                                                     @endif
                                                     <p class="mt-2 text-[11px] uppercase tracking-[0.2em] text-brand-muted">{{ $notification->created_at->diffForHumans() }}</p>
                                                 </button>
@@ -315,9 +365,13 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-100 font-display text-sm font-semibold text-brand-primary">
-                                {{ $initials }}
-                            </div>
+                            @if ($user->profileImageUrl())
+                                <img src="{{ $user->profileImageUrl() }}" alt="{{ $user->name }}" class="h-12 w-12 rounded-2xl object-cover shadow-sm">
+                            @else
+                                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-light font-display text-sm font-semibold text-brand-primary">
+                                    {{ $initials }}
+                                </div>
+                            @endif
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit" class="btn-primary">Logout</button>
@@ -329,7 +383,7 @@
                 <main class="flex-1 overflow-y-auto px-4 pb-8 pt-4 sm:px-6 lg:px-8">
                     <div class="page-fade space-y-6">
                         @if (isset($header))
-                            <section class="rounded-3xl border border-white/70 bg-white/90 px-6 py-6 shadow-panel dark:border-white/[0.08] dark:bg-[#141416]">
+                            <section class="rounded-3xl border border-warm-300/50 bg-warm-100/90 px-6 py-6 shadow-panel dark:border-warm-400/[0.08] dark:bg-navy-800">
                                 {{ $header }}
                             </section>
                         @endif
@@ -339,6 +393,35 @@
                 </main>
             </div>
         </div>
+        @if (auth()->check() && !auth()->user()->must_change_password && (!auth()->user()->onboarding_completed || session('show_onboarding')))
+            <div x-data="{ open: true }" x-cloak x-show="open" class="fixed inset-0 z-[70] flex items-center justify-center bg-navy-900/70 p-4 backdrop-blur-sm">
+                <div class="w-full max-w-2xl rounded-3xl border border-white/70 bg-warm-100 p-8 shadow-panel">
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-[0.28em] text-brand-primary">Quick Guide</p>
+                            <h2 class="mt-2 font-display text-2xl text-brand-ink">Welcome to TownCore</h2>
+                            <p class="mt-2 text-sm leading-7 text-brand-muted">Here is a quick overview of the workspace so you can get moving immediately.</p>
+                        </div>
+                    </div>
+                    <div class="mt-6 grid gap-4 sm:grid-cols-2">
+                        <div class="rounded-2xl border border-warm-300/50 bg-warm-200/50 p-4"><p class="font-semibold text-brand-ink">Dashboard</p><p class="mt-1 text-sm text-brand-muted">See your activity, billing, subscription state, and current workspace summary.</p></div>
+                        <div class="rounded-2xl border border-warm-300/50 bg-warm-200/50 p-4"><p class="font-semibold text-brand-ink">Projects</p><p class="mt-1 text-sm text-brand-muted">Track delivery progress, milestones, and the latest project updates.</p></div>
+                        <div class="rounded-2xl border border-warm-300/50 bg-warm-200/50 p-4"><p class="font-semibold text-brand-ink">Messages</p><p class="mt-1 text-sm text-brand-muted">Collaborate with your team and keep conversations attached to the work.</p></div>
+                        <div class="rounded-2xl border border-warm-300/50 bg-warm-200/50 p-4"><p class="font-semibold text-brand-ink">Files</p><p class="mt-1 text-sm text-brand-muted">Review and manage private files shared for your projects.</p></div>
+                    </div>
+                    <div class="mt-6 flex flex-wrap gap-3">
+                        <form method="POST" action="{{ route('onboarding.complete') }}">
+                            @csrf
+                            <button type="submit" class="btn-primary">Finish Tour</button>
+                        </form>
+                        <form method="POST" action="{{ route('onboarding.complete') }}">
+                            @csrf
+                            <button type="submit" class="btn-secondary">Skip for now</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        @endif
         @stack('scripts')
     </body>
 </html>

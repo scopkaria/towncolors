@@ -12,12 +12,12 @@
             </svg>
             <h2 class="font-display text-base text-brand-ink">SEO Assistant</h2>
         </div>
-        <span id="sea-badge" class="rounded-full bg-stone-100 px-2.5 py-1 text-xs font-bold text-stone-400">—</span>
+        <span id="sea-badge" class="rounded-full bg-warm-200 px-2.5 py-1 text-xs font-bold text-stone-400">—</span>
     </div>
 
     {{-- Score bar --}}
     <div>
-        <div class="relative h-2.5 w-full overflow-hidden rounded-full bg-stone-100">
+        <div class="relative h-2.5 w-full overflow-hidden rounded-full bg-warm-200">
             <div id="sea-bar"
                  class="absolute inset-y-0 left-0 w-0 rounded-full bg-stone-300 transition-all duration-500">
             </div>
@@ -38,8 +38,8 @@
                id="sea-keyword"
                placeholder="e.g. freelance design"
                autocomplete="off"
-               class="mt-1.5 w-full rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-xs text-brand-ink placeholder-stone-400 transition
-                      focus:border-brand-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-primary/30">
+               class="mt-1.5 w-full rounded-xl border border-warm-300/50 bg-warm-200/50 px-3 py-2 text-xs text-brand-ink placeholder-stone-400 transition
+                      focus:border-brand-primary focus:bg-warm-100 focus:outline-none focus:ring-1 focus:ring-brand-primary/30">
     </div>
 
     {{-- Suggestions list --}}

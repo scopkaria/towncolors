@@ -33,7 +33,7 @@ $mediaJson = $media->isEmpty() ? [] : $media->map(fn ($item) => [
 
     {{-- ── UPLOAD PANEL ──────────────────────────────────────────── --}}
     <div x-show="showUpload" x-cloak>
-        <div class="rounded-2xl border border-dashed border-gray-300 bg-white p-6 shadow-sm">
+        <div class="rounded-2xl border border-dashed border-gray-300 bg-warm-100 p-6 shadow-sm">
             <form action="{{ route('admin.media.store') }}" method="POST" enctype="multipart/form-data"
                   @submit="submitting = true">
                 @csrf
@@ -41,8 +41,8 @@ $mediaJson = $media->isEmpty() ? [] : $media->map(fn ($item) => [
                 {{-- Drop zone --}}
                 <div class="group flex cursor-pointer flex-col items-center justify-center rounded-xl
                             border-2 border-dashed border-gray-200 bg-gray-50 px-8 py-12 text-center
-                            transition hover:border-brand-primary/50 hover:bg-orange-50/40"
-                     :class="dragging ? 'border-brand-primary bg-orange-50/40' : ''"
+                            transition hover:border-brand-primary/50 hover:bg-accent/10"
+                     :class="dragging ? 'border-brand-primary bg-accent/10' : ''"
                      @click="$refs.fileInput.click()"
                      @dragover.prevent="dragging = true"
                      @dragleave.prevent="dragging = false"
@@ -166,7 +166,7 @@ $mediaJson = $media->isEmpty() ? [] : $media->map(fn ($item) => [
         <div class="flex-1"></div>
         <button @click="copySelectedUrls()"
                 class="inline-flex items-center gap-1.5 rounded-lg border border-brand-primary/30
-                       bg-white px-3 py-1.5 text-xs font-semibold text-brand-primary
+                       bg-warm-100 px-3 py-1.5 text-xs font-semibold text-brand-primary
                        transition hover:bg-brand-primary hover:text-white">
             <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
                  stroke="currentColor" stroke-width="2">
@@ -178,7 +178,7 @@ $mediaJson = $media->isEmpty() ? [] : $media->map(fn ($item) => [
         </button>
         <button @click="clearSelection()"
                 class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200
-                       bg-white px-3 py-1.5 text-xs font-semibold text-gray-500
+                       bg-warm-100 px-3 py-1.5 text-xs font-semibold text-gray-500
                        transition hover:border-gray-300 hover:text-gray-800">
             <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
                  stroke="currentColor" stroke-width="2">
@@ -204,7 +204,7 @@ $mediaJson = $media->isEmpty() ? [] : $media->map(fn ($item) => [
                           font-medium transition
                           {{ request('type', '') === $val
                               ? 'border-brand-primary bg-brand-primary text-white'
-                              : 'border-gray-200 bg-white text-gray-600 hover:border-brand-primary/40 hover:text-brand-primary' }}">
+                              : 'border-gray-200 bg-warm-100 text-gray-600 hover:border-brand-primary/40 hover:text-brand-primary' }}">
                     {{ $meta['label'] }}
                     <span class="rounded-full px-1.5 py-0.5 text-xs
                                  {{ request('type', '') === $val
@@ -231,7 +231,7 @@ $mediaJson = $media->isEmpty() ? [] : $media->map(fn ($item) => [
                 </svg>
                 <input type="text" name="search" placeholder="Search files&hellip;"
                        value="{{ request('search') }}"
-                       class="w-56 rounded-xl border border-gray-200 bg-white pl-9 pr-4 py-2
+                       class="w-56 rounded-xl border border-gray-200 bg-warm-100 pl-9 pr-4 py-2
                               text-sm text-gray-800 outline-none transition
                               focus:border-brand-primary focus:ring-1 focus:ring-brand-primary
                               placeholder:text-gray-400">
@@ -247,7 +247,7 @@ $mediaJson = $media->isEmpty() ? [] : $media->map(fn ($item) => [
         </form>
 
         {{-- Grid / List toggle --}}
-        <div class="flex overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+        <div class="flex overflow-hidden rounded-lg border border-gray-200 bg-warm-100 shadow-sm">
             <button @click="viewMode = 'grid'"
                     :class="viewMode === 'grid' ? 'bg-brand-primary text-white' : 'text-gray-500 hover:text-gray-800'"
                     class="flex items-center px-3 py-2 transition">
@@ -281,7 +281,7 @@ $mediaJson = $media->isEmpty() ? [] : $media->map(fn ($item) => [
     {{-- ── EMPTY STATE ──────────────────────────────────────────── --}}
     @if($media->isEmpty())
         <div class="flex flex-col items-center justify-center rounded-2xl border border-dashed
-                    border-gray-200 bg-white py-28 text-center">
+                    border-gray-200 bg-warm-100 py-28 text-center">
             <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100">
                 <svg class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
@@ -306,7 +306,7 @@ $mediaJson = $media->isEmpty() ? [] : $media->map(fn ($item) => [
         <div x-show="viewMode === 'grid'"
              class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
             @foreach($media as $item)
-                <div class="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white
+                <div class="group relative overflow-hidden rounded-2xl border border-gray-200 bg-warm-100
                             shadow-sm transition hover:border-brand-primary/30 hover:shadow-lg"
                      x-data="{ open: false }"
                      :class="$parent.isSelected({{ $item->id }})
@@ -387,7 +387,7 @@ $mediaJson = $media->isEmpty() ? [] : $media->map(fn ($item) => [
                                 rounded-2xl bg-slate-900/65 opacity-0 backdrop-blur-[2px]
                                 transition-opacity duration-200 group-hover:opacity-100">
                         <button @click.stop="$parent.openLightbox({{ $loop->index }})"
-                                class="flex w-32 items-center justify-center gap-1.5 rounded-lg bg-white
+                                class="flex w-32 items-center justify-center gap-1.5 rounded-lg bg-warm-100
                                        px-3 py-1.5 text-xs font-semibold text-gray-800 shadow
                                        transition hover:bg-gray-50">
                             <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
@@ -431,7 +431,7 @@ $mediaJson = $media->isEmpty() ? [] : $media->map(fn ($item) => [
                         <div x-show="open" x-cloak
                              class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4"
                              @click.self="open = false">
-                            <div class="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
+                            <div class="w-full max-w-sm rounded-2xl bg-warm-100 p-6 shadow-2xl">
                                 <div class="flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
                                     <svg class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24"
                                          stroke="currentColor" stroke-width="2">
@@ -469,7 +469,7 @@ $mediaJson = $media->isEmpty() ? [] : $media->map(fn ($item) => [
 
         {{-- ── LIST VIEW ──────────────────────────────────────────── --}}
         <div x-show="viewMode === 'list'" x-cloak>
-            <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+            <div class="overflow-hidden rounded-2xl border border-gray-200 bg-warm-100 shadow-sm">
                 <table class="min-w-full divide-y divide-gray-100 text-sm">
                     <thead class="bg-gray-50">
                         <tr>
@@ -637,7 +637,7 @@ $mediaJson = $media->isEmpty() ? [] : $media->map(fn ($item) => [
                                              class="fixed inset-0 z-50 flex items-center justify-center
                                                     bg-slate-900/60 p-4"
                                              @click.self="open = false">
-                                            <div class="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
+                                            <div class="w-full max-w-sm rounded-2xl bg-warm-100 p-6 shadow-2xl">
                                                 <h3 class="text-base font-semibold text-gray-900">Delete file?</h3>
                                                 <p class="mt-2 break-all text-sm text-gray-500">{{ $item->file_name }}</p>
                                                 <p class="mt-1 text-xs text-gray-400">This permanently removes the file. Cannot be undone.</p>
@@ -695,7 +695,7 @@ $mediaJson = $media->isEmpty() ? [] : $media->map(fn ($item) => [
                     <span class="shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ring-1"
                           :class="{
                               'bg-blue-900/60 text-blue-300 ring-blue-700/50':   currentLbItem?.file_type === 'image',
-                              'bg-purple-900/60 text-purpleple-300 ring-purple-700/50': currentLbItem?.file_type === 'video',
+                              'bg-purple-900/60 text-purple-300 ring-purple-700/50': currentLbItem?.file_type === 'video',
                               'bg-amber-900/60 text-amber-300 ring-amber-700/50': currentLbItem?.file_type === 'document',
                           }"
                           x-text="currentLbItem?.file_type
@@ -747,7 +747,9 @@ $mediaJson = $media->isEmpty() ? [] : $media->map(fn ($item) => [
             </div>
 
             {{-- ── Preview area ── --}}
-            <div class="relative flex min-h-0 flex-1 items-center justify-center px-14 md:px-20">
+            <div class="relative flex min-h-0 flex-1 items-center justify-center px-6 py-4 md:px-12">
+
+                <div class="flex h-full w-full max-w-[1200px] items-center justify-center">
 
                 {{-- Prev --}}
                 <button x-show="mediaItems.length > 1" @click="prevLb()"
@@ -761,35 +763,32 @@ $mediaJson = $media->isEmpty() ? [] : $media->map(fn ($item) => [
                 </button>
 
                 {{-- Image --}}
-                <template x-if="currentLbItem?.file_type === 'image'">
-                    <img :src="currentLbItem.url"
-                         :alt="currentLbItem.file_name"
-                         class="max-w-full rounded-lg object-contain shadow-2xl"
-                         style="max-height: calc(100vh - 140px)">
-                </template>
+                    <template x-if="currentLbItem?.file_type === 'image'">
+                        <img :src="currentLbItem.url"
+                             :alt="currentLbItem.file_name"
+                             class="max-h-[78vh] max-w-full rounded-lg object-contain shadow-2xl">
+                    </template>
 
                 {{-- Video --}}
-                <template x-if="currentLbItem?.file_type === 'video'">
-                    <video id="lb-video-el" controls
-                           class="max-w-full rounded-lg shadow-2xl"
-                           style="max-height: calc(100vh - 140px)"
-                           :src="currentLbItem.url">
-                    </video>
-                </template>
+                    <template x-if="currentLbItem?.file_type === 'video'">
+                        <video id="lb-video-el" controls
+                               class="max-h-[78vh] max-w-full rounded-lg shadow-2xl"
+                               :src="currentLbItem.url">
+                        </video>
+                    </template>
 
                 {{-- PDF / TXT — embeddable in browser --}}
-                <template x-if="currentLbItem?.file_type === 'document'
-                                 && (currentLbItem.ext === 'PDF' || currentLbItem.ext === 'TXT')">
+                    <template x-if="currentLbItem?.file_type === 'document'
+                             && (currentLbItem.ext === 'PDF' || currentLbItem.ext === 'TXT')">
                     <iframe :src="currentLbItem.url"
-                            class="w-full rounded-lg border-0 bg-white shadow-2xl"
-                            style="height: calc(100vh - 140px)">
+                        class="h-[78vh] w-full rounded-lg border-0 bg-warm-100 shadow-2xl">
                     </iframe>
-                </template>
+                    </template>
 
                 {{-- Other document (Word, Excel, etc.) — download-only --}}
-                <template x-if="currentLbItem?.file_type === 'document'
-                                 && currentLbItem.ext !== 'PDF'
-                                 && currentLbItem.ext !== 'TXT'">
+                    <template x-if="currentLbItem?.file_type === 'document'
+                             && currentLbItem.ext !== 'PDF'
+                             && currentLbItem.ext !== 'TXT'">
                     <div class="flex flex-col items-center gap-6 text-center">
                         <div class="flex h-24 w-24 items-center justify-center rounded-3xl bg-white/10">
                             <svg class="h-12 w-12 text-white/70" fill="none" viewBox="0 0 24 24"
@@ -814,8 +813,10 @@ $mediaJson = $media->isEmpty() ? [] : $media->map(fn ($item) => [
                             </svg>
                             Download File
                         </a>
-                    </div>
-                </template>
+                        </div>
+                    </template>
+
+                </div>
 
                 {{-- Next --}}
                 <button x-show="mediaItems.length > 1" @click="nextLb()"

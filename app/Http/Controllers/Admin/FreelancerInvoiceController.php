@@ -64,15 +64,17 @@ class FreelancerInvoiceController extends Controller
             'rejection_note' => $validated['rejection_note'],
         ]);
 
-        $freelancerInvoice->freelancer->notify(new UserAlertNotification(
-            'Freelancer invoice rejected',
-            'Your invoice for project "' . $freelancerInvoice->project->title . '" was rejected.',
-            'Freelancer invoice rejected',
-            route('projects.redirect', $freelancerInvoice->project),
-            'Open Project',
-            projectId: $freelancerInvoice->project_id,
-            note: $validated['rejection_note'],
-        ));
+        if ($freelancerInvoice->freelancer && $freelancerInvoice->freelancer->exists) {
+            $freelancerInvoice->freelancer->notify(new UserAlertNotification(
+                'Freelancer invoice rejected',
+                'Your invoice for project "' . $freelancerInvoice->project->title . '" was rejected.',
+                'Freelancer invoice rejected',
+                route('projects.redirect', $freelancerInvoice->project),
+                'Open Project',
+                projectId: $freelancerInvoice->project_id,
+                note: $validated['rejection_note'],
+            ));
+        }
 
         return back()->with('success', 'Invoice rejected.');
     }

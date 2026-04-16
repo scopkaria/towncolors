@@ -2,9 +2,9 @@
 
 @php
     $map = [
-        'pending'     => 'bg-stone-100 text-stone-600 border-stone-200',
+        'pending'     => 'bg-warm-200 text-warm-700 border-warm-300/50',
         'assigned'    => 'bg-blue-50 text-blue-600 border-blue-200',
-        'in_progress' => 'bg-orange-50 text-brand-primary border-orange-200',
+        'in_progress' => 'bg-accent-light text-brand-primary border-accent/30',
         'completed'   => 'bg-emerald-50 text-emerald-600 border-emerald-200',
     ];
     $labels = [

@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex items-center gap-4">
             <a href="{{ route(auth()->user()->role->value . '.messages') }}"
-               class="rounded-2xl border border-stone-200 bg-white p-2 text-brand-muted transition hover:border-orange-200 hover:text-brand-primary">
+               class="rounded-2xl border border-warm-300/50 bg-warm-100 p-2 text-brand-muted transition hover:border-accent/30 hover:text-brand-primary">
                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>
             </a>
             <div class="flex items-center gap-3 flex-1 min-w-0">
@@ -26,7 +26,7 @@
 
         {{-- Messages Container --}}
         <div x-ref="chatBox"
-             class="chat-messages flex-1 overflow-y-auto rounded-t-3xl border border-b-0 border-white/70 bg-gradient-to-b from-stone-50/80 to-white/90 px-4 py-4 sm:px-6 dark:border-white/[0.08] dark:from-[#0e0e10] dark:to-[#141416]"
+             class="chat-messages flex-1 overflow-y-auto rounded-t-3xl border border-b-0 border-white/70 bg-gradient-to-b from-warm-200/40 to-white/90 px-4 py-4 sm:px-6 dark:border-white/[0.08] dark:from-[#0e0e10] dark:to-navy-800"
              style="background-image: url(&quot;data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='1' fill='%23e7e5e4' opacity='0.4'/%3E%3C/svg%3E&quot;);">
 
             {{-- Loading --}}
@@ -39,7 +39,7 @@
 
             {{-- Empty --}}
             <div x-show="!loading && messages.length === 0" x-cloak class="flex h-full flex-col items-center justify-center text-center">
-                <div class="rounded-full bg-orange-50 p-5">
+                <div class="rounded-full bg-accent-light p-5">
                     <svg class="h-10 w-10 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
                         <path stroke-linecap="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z"/>
                     </svg>
@@ -56,7 +56,7 @@
                             {{-- Sender name --}}
                             <template x-if="idx === 0 || messages[idx-1].sender_id !== msg.sender_id">
                                 <p class="mb-0.5 px-2 text-[10px] font-bold uppercase tracking-wider"
-                                   :class="msg.sender_id == currentUserId ? 'text-right text-orange-400' : 'text-brand-muted'"
+                                   :class="msg.sender_id == currentUserId ? 'text-right text-accent' : 'text-brand-muted'"
                                    x-text="msg.sender_name"></p>
                             </template>
 
@@ -64,7 +64,7 @@
                             <div class="relative overflow-hidden shadow-sm"
                                  :class="msg.sender_id == currentUserId
                                      ? 'bg-brand-primary text-white rounded-2xl rounded-tr-md'
-                                     : 'bg-white text-brand-ink rounded-2xl rounded-tl-md border border-stone-100'">
+                                     : 'bg-warm-100 text-brand-ink rounded-2xl rounded-tl-md border border-warm-300/40'">
 
                                 {{-- IMAGE --}}
                                 <template x-if="msg.message_type === 'image' && msg.file_path">
@@ -86,7 +86,7 @@
                                     <div>
                                         <div class="flex items-center gap-3 px-3 py-2.5">
                                             <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
-                                                 :class="msg.sender_id == currentUserId ? 'bg-white/20' : 'bg-orange-50'">
+                                                 :class="msg.sender_id == currentUserId ? 'bg-white/20' : 'bg-accent-light'">
                                                 <svg class="h-4 w-4" :class="msg.sender_id == currentUserId ? 'text-white' : 'text-brand-primary'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z"/></svg>
                                             </div>
                                             <audio :src="msg.file_path" controls preload="metadata" class="h-8 flex-1" style="max-width: 220px;"></audio>
@@ -101,7 +101,7 @@
                                 <template x-if="msg.message_type === 'location' && msg.latitude">
                                     <div>
                                         <a :href="'https://www.google.com/maps?q=' + msg.latitude + ',' + msg.longitude" target="_blank" rel="noopener" class="block">
-                                            <div class="flex h-28 items-center justify-center bg-stone-100">
+                                            <div class="flex h-28 items-center justify-center bg-warm-200">
                                                 <div class="text-center">
                                                     <svg class="mx-auto h-8 w-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>
                                                     <p class="mt-1 text-[10px] text-brand-muted">View on Google Maps</p>
@@ -129,7 +129,7 @@
                                 <template x-if="msg.message_type === 'document' && msg.file_path">
                                     <div class="px-3 py-2.5">
                                         <a :href="msg.file_path" target="_blank" rel="noopener" class="flex items-center gap-3 rounded-xl border px-3 py-2.5 transition"
-                                           :class="msg.sender_id == currentUserId ? 'border-white/20 hover:bg-white/10' : 'border-stone-200 hover:bg-stone-50'">
+                                           :class="msg.sender_id == currentUserId ? 'border-white/20 hover:bg-white/10' : 'border-warm-300/50 hover:bg-warm-200/50'">
                                             <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
                                                  :class="msg.sender_id == currentUserId ? 'bg-white/20' : 'bg-blue-50'">
                                                 <svg class="h-5 w-5" :class="msg.sender_id == currentUserId ? 'text-white' : 'text-blue-500'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
@@ -156,7 +156,7 @@
                                         <template x-if="msg.file_path">
                                             <a :href="msg.file_path" target="_blank" rel="noopener"
                                                class="mt-1.5 flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition"
-                                               :class="msg.sender_id == currentUserId ? 'border-white/20 hover:bg-white/10' : 'border-stone-200 hover:bg-stone-50'">
+                                               :class="msg.sender_id == currentUserId ? 'border-white/20 hover:bg-white/10' : 'border-warm-300/50 hover:bg-warm-200/50'">
                                                 <svg class="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13"/></svg>
                                                 <span x-text="msg.file_name" class="truncate"></span>
                                             </a>
@@ -174,10 +174,10 @@
         </div>
 
         {{-- Input Area --}}
-        <div class="relative rounded-b-3xl border border-t-0 border-white/70 bg-white px-3 py-3 shadow-panel sm:px-4 dark:border-white/[0.08] dark:bg-[#141416]">
+        <div class="relative rounded-b-3xl border border-t-0 border-white/70 bg-warm-100 px-3 py-3 shadow-panel sm:px-4 dark:border-white/[0.08] dark:bg-navy-800">
 
             {{-- File / Image / Audio Preview --}}
-            <div x-show="previewData" x-cloak class="mb-2.5 overflow-hidden rounded-2xl border border-stone-200 bg-stone-50">
+            <div x-show="previewData" x-cloak class="mb-2.5 overflow-hidden rounded-2xl border border-warm-300/50 bg-warm-200/50">
                 <template x-if="previewType === 'image' && previewUrl">
                     <img :src="previewUrl" class="max-h-36 w-full object-cover">
                 </template>
@@ -215,19 +215,19 @@
                 {{-- Emoji Button --}}
                 <div class="relative">
                     <button type="button" @click="showEmoji = !showEmoji; showAttach = false"
-                            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-brand-muted transition hover:bg-orange-50 hover:text-brand-primary"
-                            :class="showEmoji ? 'bg-orange-50 text-brand-primary' : ''">
+                            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-brand-muted transition hover:bg-accent-light hover:text-brand-primary"
+                            :class="showEmoji ? 'bg-accent-light text-brand-primary' : ''">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z"/></svg>
                     </button>
                     {{-- Emoji Picker --}}
                     <div x-show="showEmoji" x-cloak @click.outside="showEmoji = false"
                          x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
-                         class="absolute bottom-12 left-0 z-50 w-72 max-h-72 overflow-y-auto rounded-2xl border border-stone-200 bg-white p-3 shadow-panel">
+                         class="absolute bottom-12 left-0 z-50 w-72 max-h-72 overflow-y-auto rounded-2xl border border-warm-300/50 bg-warm-100 p-3 shadow-panel">
                         <div class="mb-2 text-[10px] font-bold uppercase tracking-wider text-brand-muted">Smileys</div>
                         <div class="grid grid-cols-8 gap-0.5">
                             <template x-for="emoji in emojis" :key="emoji">
                                 <button type="button" @click="insertEmoji(emoji)"
-                                        class="flex h-8 w-8 items-center justify-center rounded-lg text-lg transition hover:bg-orange-50 hover:scale-110"
+                                        class="flex h-8 w-8 items-center justify-center rounded-lg text-lg transition hover:bg-accent-light hover:scale-110"
                                         x-text="emoji"></button>
                             </template>
                         </div>
@@ -235,7 +235,7 @@
                         <div class="grid grid-cols-8 gap-0.5">
                             <template x-for="emoji in gestureEmojis" :key="emoji">
                                 <button type="button" @click="insertEmoji(emoji)"
-                                        class="flex h-8 w-8 items-center justify-center rounded-lg text-lg transition hover:bg-orange-50 hover:scale-110"
+                                        class="flex h-8 w-8 items-center justify-center rounded-lg text-lg transition hover:bg-accent-light hover:scale-110"
                                         x-text="emoji"></button>
                             </template>
                         </div>
@@ -243,7 +243,7 @@
                         <div class="grid grid-cols-8 gap-0.5">
                             <template x-for="emoji in objectEmojis" :key="emoji">
                                 <button type="button" @click="insertEmoji(emoji)"
-                                        class="flex h-8 w-8 items-center justify-center rounded-lg text-lg transition hover:bg-orange-50 hover:scale-110"
+                                        class="flex h-8 w-8 items-center justify-center rounded-lg text-lg transition hover:bg-accent-light hover:scale-110"
                                         x-text="emoji"></button>
                             </template>
                         </div>
@@ -253,51 +253,51 @@
                 {{-- Attach Button --}}
                 <div class="relative">
                     <button type="button" @click="showAttach = !showAttach; showEmoji = false"
-                            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-brand-muted transition hover:bg-orange-50 hover:text-brand-primary"
-                            :class="showAttach ? 'bg-orange-50 text-brand-primary' : ''">
+                            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-brand-muted transition hover:bg-accent-light hover:text-brand-primary"
+                            :class="showAttach ? 'bg-accent-light text-brand-primary' : ''">
                         <svg class="h-5 w-5 transition-transform duration-200" :class="showAttach ? 'rotate-45' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                     </button>
                     {{-- Attachment Menu --}}
                     <div x-show="showAttach" x-cloak @click.outside="showAttach = false"
                          x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
-                         class="absolute bottom-12 left-0 z-50 w-52 rounded-2xl border border-stone-200 bg-white p-2 shadow-panel">
+                         class="absolute bottom-12 left-0 z-50 w-52 rounded-2xl border border-warm-300/50 bg-warm-100 p-2 shadow-panel">
                         {{-- Hidden file inputs --}}
                         <input type="file" x-ref="photoInput" accept="image/*" class="hidden" @change="handleFileSelect($event, 'image')">
                         <input type="file" x-ref="docInput" class="hidden" @change="handleFileSelect($event, 'document')">
                         <input type="file" x-ref="cameraInput" accept="image/*" capture="environment" class="hidden" @change="handleFileSelect($event, 'image')">
 
                         <button type="button" @click="$refs.cameraInput.click(); showAttach = false"
-                                class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition hover:bg-stone-50">
+                                class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition hover:bg-warm-200/50">
                             <div class="flex h-9 w-9 items-center justify-center rounded-full bg-violet-100">
                                 <svg class="h-4 w-4 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"/><path stroke-linecap="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Z"/></svg>
                             </div>
                             <span class="font-medium text-brand-ink">Camera</span>
                         </button>
                         <button type="button" @click="$refs.photoInput.click(); showAttach = false"
-                                class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition hover:bg-stone-50">
+                                class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition hover:bg-warm-200/50">
                             <div class="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100">
                                 <svg class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z"/></svg>
                             </div>
                             <span class="font-medium text-brand-ink">Photo</span>
                         </button>
                         <button type="button" @click="$refs.docInput.click(); showAttach = false"
-                                class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition hover:bg-stone-50">
+                                class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition hover:bg-warm-200/50">
                             <div class="flex h-9 w-9 items-center justify-center rounded-full bg-green-100">
                                 <svg class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
                             </div>
                             <span class="font-medium text-brand-ink">Document</span>
                         </button>
                         <button type="button" @click="sendLocation(); showAttach = false"
-                                class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition hover:bg-stone-50">
+                                class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition hover:bg-warm-200/50">
                             <div class="flex h-9 w-9 items-center justify-center rounded-full bg-red-100">
                                 <svg class="h-4 w-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>
                             </div>
                             <span class="font-medium text-brand-ink">Location</span>
                         </button>
                         <button type="button" @click="startRecording(); showAttach = false"
-                                class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition hover:bg-stone-50"
+                                class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition hover:bg-warm-200/50"
                                 :disabled="isRecording">
-                            <div class="flex h-9 w-9 items-center justify-center rounded-full bg-orange-100">
+                            <div class="flex h-9 w-9 items-center justify-center rounded-full bg-accent-light">
                                 <svg class="h-4 w-4 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z"/></svg>
                             </div>
                             <span class="font-medium text-brand-ink">Audio</span>
@@ -311,7 +311,7 @@
                               @keydown.enter.prevent="if(!$event.shiftKey) sendMessage()"
                               placeholder="Type a message"
                               rows="1"
-                              class="w-full resize-none rounded-2xl border-0 bg-stone-100 px-4 py-2.5 text-sm text-brand-ink placeholder-brand-muted/50 transition focus:bg-white focus:ring-2 focus:ring-orange-200 dark:bg-white/[0.06] dark:text-white dark:placeholder-[#71717A] dark:focus:bg-white/[0.08] dark:focus:ring-orange-500/30"
+                              class="w-full resize-none rounded-2xl border-0 bg-warm-200 px-4 py-2.5 text-sm text-brand-ink placeholder-brand-muted/50 transition focus:bg-warm-100 focus:ring-2 focus:ring-accent/30 dark:bg-white/[0.06] dark:text-white dark:placeholder-[#71717A] dark:focus:bg-white/[0.08] dark:focus:ring-accent/30"
                               style="max-height: 100px;"
                               @input="autoResize($event)"></textarea>
                 </div>
@@ -319,7 +319,7 @@
                 {{-- Mic / Send Toggle --}}
                 <template x-if="!newMessage.trim() && !previewData && !isRecording">
                     <button type="button" @click="startRecording()"
-                            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-brand-muted transition hover:bg-orange-50 hover:text-brand-primary">
+                            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-brand-muted transition hover:bg-accent-light hover:text-brand-primary">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z"/></svg>
                     </button>
                 </template>

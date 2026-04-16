@@ -105,17 +105,32 @@ class MediaController extends Controller
     }
 
     /**
-     * Return image-type media as JSON for the settings logo picker.
+     * Return media items as JSON for reusable media pickers.
      */
-    public function api(): \Illuminate\Http\JsonResponse
+    public function api(Request $request): \Illuminate\Http\JsonResponse
     {
-        $media = Media::where('file_type', 'image')
+        $query = Media::query()
+            ->when($request->filled('type'), function ($builder) use ($request) {
+                $type = (string) $request->query('type');
+                if (in_array($type, ['image', 'video', 'document'], true)) {
+                    $builder->where('file_type', $type);
+                }
+            })
+            ->when($request->filled('search'), function ($builder) use ($request) {
+                $search = trim((string) $request->query('search'));
+                $builder->where('file_name', 'like', '%' . $search . '%');
+            })
             ->latest()
-            ->get(['id', 'file_name', 'file_path'])
+            ->limit(300);
+
+        $media = $query
+            ->get(['id', 'file_name', 'file_path', 'file_type', 'size'])
             ->map(fn ($m) => [
                 'id'       => $m->id,
                 'name'     => $m->file_name,
+                'type'     => $m->file_type,
                 'url'      => $m->url(),
+                'size'     => $m->humanSize(),
             ]);
 
         return response()->json($media);

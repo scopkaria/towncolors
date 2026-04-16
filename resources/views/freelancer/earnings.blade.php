@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="space-y-3">
-            <span class="inline-flex w-fit rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary">
+            <span class="inline-flex w-fit rounded-full border border-accent/30 bg-accent-light px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary">
                 My earnings
             </span>
             <div class="space-y-2">
@@ -27,7 +27,7 @@
             <p class="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-600">Total Received</p>
             <p class="mt-3 font-display text-2xl text-emerald-700">TZS {{ number_format($totalPaid, 2) }}</p>
         </div>
-        <div class="card-premium rounded-3xl border border-orange-100 bg-orange-50 p-6 shadow-card">
+        <div class="card-premium rounded-3xl border border-accent/20 bg-accent-light p-6 shadow-card">
             <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-primary">Outstanding</p>
             <p class="mt-3 font-display text-2xl text-brand-primary">TZS {{ number_format($totalRemaining, 2) }}</p>
         </div>
@@ -36,7 +36,7 @@
     {{-- Per-Project Breakdown --}}
     @if ($payments->isEmpty())
         <div class="rounded-3xl border border-white/70 bg-white/90 p-12 text-center shadow-panel">
-            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-stone-100">
+            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-warm-200">
                 <svg class="h-8 w-8 text-brand-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                     <path stroke-linecap="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
                 </svg>
@@ -51,7 +51,7 @@
                     $statusClass = match($payment->status) {
                         'paid'    => 'border-emerald-200 bg-emerald-50 text-emerald-700',
                         'partial' => 'border-amber-200 bg-amber-50 text-amber-700',
-                        default   => 'border-stone-200 bg-stone-50 text-stone-600',
+                        default   => 'border-warm-300/50 bg-warm-200/50 text-warm-700',
                     };
                 @endphp
                 <div x-data="{ open: false }" class="rounded-3xl border border-white/70 bg-white/90 shadow-panel">
@@ -79,10 +79,10 @@
                          x-transition:leave="transition duration-150 ease-in"
                          x-transition:leave-start="opacity-100 translate-y-0"
                          x-transition:leave-end="opacity-0 -translate-y-1"
-                         class="border-t border-stone-100 px-6 pb-6 pt-5">
+                         class="border-t border-warm-300/40 px-6 pb-6 pt-5">
                         {{-- Amounts --}}
                         <div class="grid gap-3 sm:grid-cols-3">
-                            <div class="rounded-2xl border border-stone-100 bg-stone-50 px-4 py-4 text-center">
+                            <div class="rounded-2xl border border-warm-300/40 bg-warm-200/50 px-4 py-4 text-center">
                                 <p class="text-xs font-semibold uppercase tracking-[0.2em] text-brand-muted">Agreed</p>
                                 <p class="mt-2 font-display text-xl text-brand-ink">{{ $payment->formattedAgreed() }}</p>
                             </div>
@@ -90,7 +90,7 @@
                                 <p class="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600">Received</p>
                                 <p class="mt-2 font-display text-xl text-emerald-700">{{ $payment->formattedPaid() }}</p>
                             </div>
-                            <div class="rounded-2xl border border-orange-100 bg-orange-50 px-4 py-4 text-center">
+                            <div class="rounded-2xl border border-accent/20 bg-accent-light px-4 py-4 text-center">
                                 <p class="text-xs font-semibold uppercase tracking-[0.2em] text-brand-primary">Remaining</p>
                                 <p class="mt-2 font-display text-xl text-brand-primary">{{ $payment->formattedRemaining() }}</p>
                             </div>
@@ -104,7 +104,7 @@
                                     <span>Payment progress</span>
                                     <span>{{ $pct }}%</span>
                                 </div>
-                                <div class="h-2 w-full overflow-hidden rounded-full bg-stone-100">
+                                <div class="h-2 w-full overflow-hidden rounded-full bg-warm-200">
                                     <div class="h-full rounded-full bg-brand-primary transition-all duration-500"
                                          style="width: {{ $pct }}%"></div>
                                 </div>
@@ -117,7 +117,7 @@
                                 <p class="text-xs font-semibold uppercase tracking-[0.2em] text-brand-muted">Payment History</p>
                                 <div class="mt-3 space-y-2">
                                     @foreach ($payment->logs->sortByDesc('created_at') as $log)
-                                        <div class="flex items-center justify-between rounded-2xl border border-stone-100 bg-stone-50/60 px-4 py-3 text-sm">
+                                        <div class="flex items-center justify-between rounded-2xl border border-warm-300/40 bg-warm-200/60 px-4 py-3 text-sm">
                                             <span class="font-semibold text-brand-ink">TZS {{ number_format($log->amount, 2) }}</span>
                                             <span class="text-xs text-brand-muted">{{ $log->created_at->format('M d, Y  H:i') }}</span>
                                         </div>

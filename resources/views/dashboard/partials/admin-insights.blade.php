@@ -22,7 +22,7 @@
 
         {{-- KPI strip --}}
         <div class="mt-6 grid grid-cols-2 gap-3">
-            <div class="rounded-2xl border border-stone-100 bg-stone-50 p-4">
+            <div class="rounded-2xl border border-warm-300/40 bg-warm-200/50 p-4">
                 <p class="text-[10px] font-semibold uppercase tracking-[0.24em] text-brand-muted">This month</p>
                 <p class="mt-2 font-display text-2xl text-brand-ink">
                     TZS {{ number_format($d['revenue_this_month'], 0) }}
@@ -41,7 +41,7 @@
                     {{ abs($trend) }}% vs last month
                 </span>
             </div>
-            <div class="rounded-2xl border border-stone-100 bg-stone-50 p-4">
+            <div class="rounded-2xl border border-warm-300/40 bg-warm-200/50 p-4">
                 <p class="text-[10px] font-semibold uppercase tracking-[0.24em] text-brand-muted">Outstanding</p>
                 <p class="mt-2 font-display text-2xl text-brand-ink">
                     TZS {{ number_format($d['outstanding_amount'], 0) }}
@@ -53,13 +53,13 @@
         {{-- Sparkline chart --}}
         <div class="mt-6 flex-1">
             <p class="text-[10px] font-semibold uppercase tracking-[0.24em] text-brand-muted">6-month revenue trend</p>
-            <div class="relative mt-3 overflow-hidden rounded-2xl border border-stone-100 bg-gradient-to-br from-stone-50 to-orange-50/30 p-3">
+            <div class="relative mt-3 overflow-hidden rounded-2xl border border-warm-300/40 bg-gradient-to-br from-warm-200/50 to-accent-light/30 p-3">
                 <svg viewBox="0 0 200 44" class="h-14 w-full overflow-visible" preserveAspectRatio="none" aria-hidden="true">
                     {{-- Gradient fill under line --}}
                     <defs>
                         <linearGradient id="rev-grad" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stop-color="#f97316" stop-opacity="0.25"/>
-                            <stop offset="100%" stop-color="#f97316" stop-opacity="0"/>
+                            <stop offset="0%" stop-color="#FFB162" stop-opacity="0.25"/>
+                            <stop offset="100%" stop-color="#FFB162" stop-opacity="0"/>
                         </linearGradient>
                     </defs>
                     <polygon
@@ -69,7 +69,7 @@
                     <polyline
                         points="{{ $d['sparkline_points'] }}"
                         fill="none"
-                        stroke="#f97316"
+                        stroke="#FFB162"
                         stroke-width="2"
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -99,7 +99,7 @@
                 <h2 class="mt-2 font-display text-2xl text-brand-ink">Live pipeline</h2>
             </div>
             <a href="{{ route('admin.projects.index') }}"
-               class="shrink-0 rounded-2xl border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-semibold text-brand-muted transition hover:text-brand-primary">
+               class="shrink-0 rounded-2xl border border-warm-300/50 bg-warm-200/50 px-3 py-1.5 text-xs font-semibold text-brand-muted transition hover:text-brand-primary">
                 View all →
             </a>
         </div>
@@ -107,9 +107,9 @@
         @if (count($d['active_projects_list']) > 0)
             <div class="mt-5 space-y-2">
                 @foreach ($d['active_projects_list'] as $proj)
-                    @php $st = $statuses[$proj['status']] ?? ['label' => ucfirst($proj['status']), 'class' => 'bg-stone-100 text-stone-700 border-stone-200']; @endphp
+                    @php $st = $statuses[$proj['status']] ?? ['label' => ucfirst($proj['status']), 'class' => 'bg-warm-200 text-stone-700 border-warm-300/50']; @endphp
                     <a href="{{ route('admin.projects.show', $proj['id']) }}"
-                       class="flex items-center gap-3 rounded-2xl border border-stone-100 bg-stone-50/60 px-4 py-3 transition hover:border-orange-200 hover:bg-orange-50/40">
+                       class="flex items-center gap-3 rounded-2xl border border-warm-300/40 bg-warm-200/60 px-4 py-3 transition hover:border-accent/30 hover:bg-accent/10">
                         {{-- Status dot --}}
                         <span class="h-2 w-2 shrink-0 rounded-full
                             {{ str_contains($proj['status'], 'progress') ? 'bg-violet-500' :
@@ -137,7 +137,7 @@
                 @endforeach
             </div>
         @else
-            <div class="mt-6 flex flex-col items-center rounded-2xl border border-dashed border-stone-200 py-10 text-center">
+            <div class="mt-6 flex flex-col items-center rounded-2xl border border-dashed border-warm-300/50 py-10 text-center">
                 <svg class="h-8 w-8 text-stone-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75"/>
                 </svg>
@@ -183,7 +183,7 @@
                                 </span>
                             </div>
                             {{-- Progress bar --}}
-                            <div class="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-stone-100">
+                            <div class="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-warm-200">
                                 <div class="h-full rounded-full bg-brand-primary transition-all duration-700"
                                      style="width: {{ $barPct }}%"></div>
                             </div>
@@ -198,12 +198,12 @@
                         </div>
                     </div>
                     @if (!$loop->last)
-                        <div class="h-px bg-stone-100"></div>
+                        <div class="h-px bg-warm-200"></div>
                     @endif
                 @endforeach
             </div>
         @else
-            <div class="mt-6 flex flex-col items-center rounded-2xl border border-dashed border-stone-200 py-10 text-center">
+            <div class="mt-6 flex flex-col items-center rounded-2xl border border-dashed border-warm-300/50 py-10 text-center">
                 <svg class="h-8 w-8 text-stone-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/>
                 </svg>
@@ -213,10 +213,10 @@
     </article>
 
     {{-- Rich Recent Activity --}}
-    <article class="rounded-3xl border border-white/70 bg-slate-950 p-6 text-white shadow-panel">
+    <article class="rounded-3xl border border-white/70 bg-navy-800 p-6 text-white shadow-panel">
         <div class="flex items-center justify-between gap-3">
             <div>
-                <p class="text-[11px] font-semibold uppercase tracking-[0.32em] text-orange-300">Live feed</p>
+                <p class="text-[11px] font-semibold uppercase tracking-[0.32em] text-accent">Live feed</p>
                 <h2 class="mt-2 font-display text-2xl">Recent activity</h2>
             </div>
             <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-[0.28em] text-white/60">
@@ -235,7 +235,7 @@
                     'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75"/>',
                 ],
                 'lead' => [
-                    'dot'  => 'bg-orange-400',
+                    'dot'  => 'bg-accent',
                     'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM4 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 10.374 21c-2.331 0-4.512-.645-6.374-1.766Z"/>',
                 ],
             ];
@@ -274,7 +274,7 @@
      ROW 3: Leads snapshot strip
      ══════════════════════════════════════════════════════════════════════ --}}
 <section>
-    <article class="flex flex-wrap items-center justify-between gap-6 rounded-3xl border border-orange-100 bg-gradient-to-r from-orange-50 to-amber-50 px-6 py-5 shadow-panel">
+    <article class="flex flex-wrap items-center justify-between gap-6 rounded-3xl border border-accent/20 bg-gradient-to-r from-accent-light to-amber-50 px-6 py-5 shadow-panel">
         <div>
             <p class="text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary">Lead Capture Snapshot</p>
             <h2 class="mt-1 font-display text-xl text-brand-ink">
@@ -284,7 +284,7 @@
             </h2>
         </div>
         <a href="{{ route('admin.leads.index') }}"
-           class="inline-flex items-center gap-2 rounded-2xl border border-orange-200 bg-white px-4 py-2.5 text-sm font-semibold text-brand-primary shadow-sm transition hover:border-brand-primary">
+           class="inline-flex items-center gap-2 rounded-2xl border border-accent/30 bg-warm-100 px-4 py-2.5 text-sm font-semibold text-brand-primary shadow-sm transition hover:border-brand-primary">
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM4 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 10.374 21c-2.331 0-4.512-.645-6.374-1.766Z"/>
             </svg>

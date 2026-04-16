@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="space-y-3">
-            <span class="inline-flex w-fit rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary">
+            <span class="inline-flex w-fit rounded-full border border-accent/30 bg-accent-light px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary">
                 My Portfolio
             </span>
             <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -48,7 +48,7 @@
                     <label for="title" class="block text-sm font-semibold text-brand-ink">Title <span class="text-red-400">*</span></label>
                     <input type="text" id="title" name="title" value="{{ old('title') }}"
                            placeholder="e.g. E-commerce Website Redesign"
-                           class="mt-2 w-full rounded-2xl border-stone-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                           class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
                     @error('title')
                         <p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>
                     @enderror
@@ -59,10 +59,136 @@
                     <label for="description" class="block text-sm font-semibold text-brand-ink">Description</label>
                     <textarea id="description" name="description" rows="4"
                               placeholder="Describe the project, your role, technologies used…"
-                              class="mt-2 w-full rounded-2xl border-stone-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">{{ old('description') }}</textarea>
+                              class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">{{ old('description') }}</textarea>
                     @error('description')
                         <p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>
                     @enderror
+                </div>
+
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label for="client_name" class="block text-sm font-semibold text-brand-ink">Client Name</label>
+                        <input type="text" id="client_name" name="client_name" value="{{ old('client_name') }}"
+                               placeholder="e.g. Lomo Tanzania Safari"
+                               class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                        @error('client_name')
+                            <p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div>
+                        <label for="project_url" class="block text-sm font-semibold text-brand-ink">Live Website URL</label>
+                        <input type="url" id="project_url" name="project_url" value="{{ old('project_url') }}"
+                               placeholder="https://example.com"
+                               class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                        @error('project_url')
+                            <p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div>
+                        <label for="industry" class="block text-sm font-semibold text-brand-ink">Industry</label>
+                        <input type="text" id="industry" name="industry" value="{{ old('industry') }}"
+                               placeholder="e.g. Tourism"
+                               class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                        @error('industry')
+                            <p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div>
+                        <label for="country" class="block text-sm font-semibold text-brand-ink">Country</label>
+                        <input type="text" id="country" name="country" value="{{ old('country') }}"
+                               placeholder="e.g. Tanzania"
+                               class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                        @error('country')
+                            <p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div>
+                        <label for="completion_year" class="block text-sm font-semibold text-brand-ink">Completion Year</label>
+                        <input type="number" id="completion_year" name="completion_year" value="{{ old('completion_year') }}"
+                               min="2000" max="2100"
+                               class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                        @error('completion_year')
+                            <p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div>
+                        <label for="duration" class="block text-sm font-semibold text-brand-ink">Project Duration</label>
+                        <input type="text" id="duration" name="duration" value="{{ old('duration') }}"
+                               placeholder="e.g. 6 weeks"
+                               class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                        @error('duration')
+                            <p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                <div>
+                    <label for="services" class="block text-sm font-semibold text-brand-ink">Services (comma separated)</label>
+                    <input type="text" id="services" name="services" value="{{ old('services') }}"
+                           placeholder="Website Design, SEO, Booking Engine"
+                           class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                    @error('services')
+                        <p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label for="technologies" class="block text-sm font-semibold text-brand-ink">Technologies (comma separated)</label>
+                    <input type="text" id="technologies" name="technologies" value="{{ old('technologies') }}"
+                           placeholder="Laravel, Vue, Tailwind"
+                           class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                    @error('technologies')
+                        <p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label for="results" class="block text-sm font-semibold text-brand-ink">Results / Impact</label>
+                    <textarea id="results" name="results" rows="3"
+                              placeholder="e.g. Increased direct bookings by 42% in 3 months"
+                              class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">{{ old('results') }}</textarea>
+                    @error('results')
+                        <p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <label class="flex items-center gap-3 rounded-2xl border border-warm-300/50 bg-warm-200/60 px-4 py-3 text-sm text-brand-ink">
+                    <input type="checkbox" name="featured" value="1" class="rounded border-warm-400/50 text-brand-primary focus:ring-brand-primary" {{ old('featured') ? 'checked' : '' }}>
+                    Mark as featured project
+                </label>
+
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label for="item_type" class="block text-sm font-semibold text-brand-ink">Listing Type</label>
+                        <select id="item_type" name="item_type" class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                            <option value="project" {{ old('item_type', 'project') === 'project' ? 'selected' : '' }}>Project</option>
+                            <option value="product" {{ old('item_type') === 'product' ? 'selected' : '' }}>Product (Sellable App)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-brand-ink">Allow Purchase</label>
+                        <label class="mt-2 inline-flex items-center gap-2 rounded-xl border border-warm-300/50 bg-warm-200/60 px-3 py-2 text-sm text-brand-ink">
+                            <input type="checkbox" name="is_purchasable" value="1" class="rounded border-warm-400/50 text-brand-primary focus:ring-brand-primary" {{ old('is_purchasable') ? 'checked' : '' }}>
+                            Purchasable
+                        </label>
+                    </div>
+                    <div>
+                        <label for="price" class="block text-sm font-semibold text-brand-ink">Price</label>
+                        <input type="number" id="price" name="price" min="0" step="0.01" value="{{ old('price') }}"
+                               placeholder="e.g. 1499"
+                               class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                    </div>
+                    <div>
+                        <label for="currency" class="block text-sm font-semibold text-brand-ink">Currency</label>
+                        <input type="text" id="currency" name="currency" value="{{ old('currency', 'USD') }}"
+                               class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label for="purchase_url" class="block text-sm font-semibold text-brand-ink">Purchase Link</label>
+                        <input type="url" id="purchase_url" name="purchase_url" value="{{ old('purchase_url') }}"
+                               placeholder="https://checkout.example.com/app"
+                               class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                    </div>
                 </div>
 
                 {{-- Image upload with preview --}}
@@ -70,7 +196,7 @@
                     <label class="block text-sm font-semibold text-brand-ink">Cover Image</label>
 
                     <label for="image"
-                           class="mt-2 flex cursor-pointer flex-col items-center justify-center rounded-3xl border border-dashed border-orange-200 bg-orange-50/40 px-6 py-8 text-center transition hover:border-brand-primary hover:bg-orange-50"
+                           class="mt-2 flex cursor-pointer flex-col items-center justify-center rounded-3xl border border-dashed border-accent/30 bg-accent-light/40 px-6 py-8 text-center transition hover:border-brand-primary hover:bg-accent-light"
                            x-show="!preview">
                         <svg class="h-9 w-9 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z"/>
@@ -80,7 +206,7 @@
                     </label>
 
                     {{-- Preview --}}
-                    <div x-show="preview" x-cloak class="relative mt-2 overflow-hidden rounded-2xl border border-orange-200">
+                    <div x-show="preview" x-cloak class="relative mt-2 overflow-hidden rounded-2xl border border-accent/30">
                         <img :src="preview" alt="Preview" class="h-48 w-full object-cover">
                         <button type="button"
                                 @click="preview = null; $refs.imageInput.value = ''"
@@ -90,7 +216,7 @@
                             </svg>
                         </button>
                         <label for="image" class="absolute bottom-2 right-2">
-                            <span class="cursor-pointer rounded-xl bg-white/90 px-3 py-1.5 text-xs font-semibold text-brand-ink shadow transition hover:bg-white">Change</span>
+                            <span class="cursor-pointer rounded-xl bg-white/90 px-3 py-1.5 text-xs font-semibold text-brand-ink shadow transition hover:bg-warm-100">Change</span>
                         </label>
                     </div>
 
@@ -115,8 +241,8 @@
             </div>
 
             @if ($items->isEmpty())
-                <div class="mt-6 flex flex-col items-center justify-center rounded-3xl border border-dashed border-stone-200 bg-white/60 p-16 text-center">
-                    <div class="rounded-2xl bg-orange-50 p-5">
+                <div class="mt-6 flex flex-col items-center justify-center rounded-3xl border border-dashed border-warm-300/50 bg-white/60 p-16 text-center">
+                    <div class="rounded-2xl bg-accent-light p-5">
                         <svg class="h-8 w-8 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.3">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z"/>
                         </svg>
@@ -127,17 +253,17 @@
             @else
                 <div class="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     @foreach ($items as $item)
-                        <div class="group relative flex flex-col overflow-hidden rounded-3xl border border-stone-100 bg-white shadow-card transition duration-300 hover:shadow-panel">
+                        <div class="group relative flex flex-col overflow-hidden rounded-3xl border border-warm-300/40 bg-warm-100 shadow-card transition duration-300 hover:shadow-panel">
 
                             {{-- Image --}}
-                            <div class="relative h-48 overflow-hidden bg-gradient-to-br from-orange-50 to-amber-50">
+                            <div class="relative h-48 overflow-hidden bg-gradient-to-br from-accent-light to-amber-50">
                                 @if ($item->image_path)
                                     <img src="{{ asset('storage/' . $item->image_path) }}"
                                          alt="{{ $item->title }}"
                                          class="h-full w-full object-cover transition duration-500 group-hover:scale-105">
                                 @else
                                     <div class="flex h-full items-center justify-center">
-                                        <svg class="h-12 w-12 text-orange-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+                                        <svg class="h-12 w-12 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z"/>
                                         </svg>
                                     </div>
@@ -155,8 +281,23 @@
                             {{-- Content --}}
                             <div class="flex flex-1 flex-col p-4">
                                 <h3 class="font-display text-base font-semibold text-brand-ink line-clamp-2">{{ $item->title }}</h3>
+                                @if ($item->client_name || $item->completion_year)
+                                    <p class="mt-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-primary">
+                                        {{ $item->client_name ?? 'Confidential Client' }}
+                                        @if ($item->completion_year)
+                                            · {{ $item->completion_year }}
+                                        @endif
+                                    </p>
+                                @endif
                                 @if ($item->description)
                                     <p class="mt-1.5 flex-1 text-xs leading-relaxed text-brand-muted line-clamp-3">{{ $item->description }}</p>
+                                @endif
+                                @if ($item->project_url)
+                                    <a href="{{ $item->project_url }}" target="_blank" rel="noopener"
+                                       class="mt-2 inline-flex w-fit items-center gap-1 text-xs font-semibold text-brand-primary transition hover:underline">
+                                        Visit Website
+                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>
+                                    </a>
                                 @endif
                                 <div class="mt-4 flex items-center justify-between gap-3">
                                     <span class="text-[10px] text-brand-muted">{{ $item->created_at->format('M d, Y') }}</span>
@@ -165,7 +306,7 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
-                                                class="rounded-xl border border-stone-200 px-3 py-1.5 text-xs font-medium text-brand-muted transition hover:border-red-200 hover:bg-red-50 hover:text-red-600">
+                                                class="rounded-xl border border-warm-300/50 px-3 py-1.5 text-xs font-medium text-brand-muted transition hover:border-red-200 hover:bg-red-50 hover:text-red-600">
                                             Delete
                                         </button>
                                     </form>

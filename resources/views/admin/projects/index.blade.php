@@ -2,20 +2,20 @@
     <x-slot name="header">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div class="space-y-1">
-                <span class="inline-flex w-fit rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary">Admin · Project Management</span>
+                <span class="inline-flex w-fit rounded-full border border-accent/30 bg-accent-light px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary">Admin · Project Management</span>
                 <h1 class="font-display text-3xl text-brand-ink sm:text-4xl">Projects</h1>
                 <p class="text-sm text-brand-muted">Manage, assign, and track every project on the platform.</p>
             </div>
             <div class="flex shrink-0 items-center gap-2">
                 <a href="{{ route('admin.projects.index') }}"
-                   class="inline-flex items-center gap-2 rounded-2xl border border-stone-200 bg-white px-4 py-2.5 text-sm font-semibold text-brand-muted transition hover:border-stone-300 hover:text-brand-ink">
+                   class="inline-flex items-center gap-2 rounded-2xl border border-warm-300/50 bg-warm-100 px-4 py-2.5 text-sm font-semibold text-brand-muted transition hover:border-warm-400/50 hover:text-brand-ink">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
                     </svg>
                     Export
                 </a>
                 <a href="{{ route('client.projects.create') }}"
-                   class="inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white shadow-card transition hover:bg-slate-800">
+                   class="inline-flex items-center gap-2 rounded-2xl bg-navy-800 px-4 py-2.5 text-sm font-semibold text-white shadow-card transition hover:bg-slate-800">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
@@ -53,7 +53,7 @@
         @foreach ($tabs as $tab)
             <a href="{{ $tab['route'] }}"
                class="rounded-2xl border p-4 text-center shadow-sm transition hover:shadow-md
-                      {{ $tab['active'] ? 'border-brand-primary/30 bg-white ring-1 ring-brand-primary/20' : 'border-white/70 bg-white/90 hover:border-brand-primary/20' }}">
+                      {{ $tab['active'] ? 'border-brand-primary/30 bg-warm-100 ring-1 ring-brand-primary/20' : 'border-white/70 bg-white/90 hover:border-brand-primary/20' }}">
                 <p class="text-[10px] font-semibold uppercase tracking-[0.28em] text-brand-muted">{{ $tab['label'] }}</p>
                 <p class="mt-2 font-display text-2xl {{ $tab['active'] ? 'text-brand-primary' : $tab['colour'] }}">{{ $counts[$tab['key']] }}</p>
             </a>
@@ -77,13 +77,13 @@
                 <input type="text"
                        x-model="search"
                        placeholder="Search by title, client, or freelancer…"
-                       class="w-full rounded-xl border border-stone-200 bg-white py-2.5 pl-10 pr-4 text-sm text-brand-ink placeholder:text-brand-muted focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary" />
+                       class="w-full rounded-xl border border-warm-300/50 bg-warm-100 py-2.5 pl-10 pr-4 text-sm text-brand-ink placeholder:text-brand-muted focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary" />
             </div>
             <div class="flex items-center gap-2">
                 <span class="text-xs text-brand-muted">{{ $projects->count() }} projects</span>
                 <button @click="search = ''"
                         x-show="search.length > 0"
-                        class="rounded-xl border border-stone-200 px-3 py-2 text-xs font-semibold text-brand-muted transition hover:border-stone-300 hover:text-brand-ink">
+                        class="rounded-xl border border-warm-300/50 px-3 py-2 text-xs font-semibold text-brand-muted transition hover:border-warm-400/50 hover:text-brand-ink">
                     Clear
                 </button>
             </div>
@@ -91,7 +91,7 @@
 
         @if ($projects->isEmpty())
             <div class="rounded-3xl border border-white/70 bg-white/90 p-16 text-center shadow-panel">
-                <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-stone-50">
+                <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-warm-200/50">
                     <svg class="h-7 w-7 text-brand-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
                     </svg>
@@ -111,7 +111,7 @@
                      x-transition:enter="transition ease-out duration-150"
                      x-transition:enter-start="opacity-0 -translate-y-2"
                      x-transition:enter-end="opacity-100 translate-y-0"
-                     class="flex items-center gap-3 border-b border-orange-100 bg-orange-50/60 px-6 py-3">
+                     class="flex items-center gap-3 border-b border-accent/20 bg-accent/10 px-6 py-3">
                     <span class="text-xs font-semibold text-brand-primary" x-text="selectedIds.length + ' selected'"></span>
                     <div class="ml-2 flex items-center gap-2">
                         <form method="POST" action="{{ route('admin.projects.index') }}" class="inline">
@@ -135,10 +135,10 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm">
                         <thead>
-                            <tr class="border-b border-stone-100 bg-stone-50/40">
+                            <tr class="border-b border-warm-300/40 bg-warm-200/40">
                                 <th class="w-10 px-5 py-3.5">
                                     <input type="checkbox"
-                                           class="h-4 w-4 rounded border-stone-300 text-brand-primary focus:ring-brand-primary"
+                                           class="h-4 w-4 rounded border-warm-400/50 text-brand-primary focus:ring-brand-primary"
                                            :checked="allSelected"
                                            @change="toggleAll({{ json_encode($allProjectIds) }})">
                                 </th>
@@ -151,7 +151,7 @@
                                 <th class="px-4 py-3.5 text-right text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-muted">Actions</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-stone-100/80">
+                        <tbody class="divide-y divide-warm-300/80">
                             @forelse ($projects as $project)
                                 @php
                                     $progress = match($project->status) {
@@ -162,7 +162,7 @@
                                     };
                                     $progressColor = match($project->status) {
                                         'assigned'    => 'bg-blue-400',
-                                        'in_progress' => 'bg-orange-400',
+                                        'in_progress' => 'bg-accent',
                                         'completed'   => 'bg-emerald-500',
                                         default       => 'bg-stone-300',
                                     };
@@ -187,7 +187,7 @@
                                         'invoice_url'   => route('admin.invoices.create', ['project_id' => $project->id]),
                                     ];
                                 @endphp
-                                <tr class="group cursor-default transition-colors hover:bg-stone-50/70"
+                                <tr class="group cursor-default transition-colors hover:bg-warm-200/70"
                                     data-search-title="{{ Str::lower($project->title) }}"
                                     data-search-client="{{ Str::lower($project->client?->name ?? '') }}"
                                     data-search-freelancer="{{ Str::lower($project->freelancer?->name ?? '') }}"
@@ -195,7 +195,7 @@
                                     {{-- Checkbox --}}
                                     <td class="px-5 py-4">
                                         <input type="checkbox"
-                                               class="h-4 w-4 rounded border-stone-300 text-brand-primary focus:ring-brand-primary"
+                                               class="h-4 w-4 rounded border-warm-400/50 text-brand-primary focus:ring-brand-primary"
                                                :checked="selectedIds.includes({{ $project->id }})"
                                                @change="toggleId({{ $project->id }})">
                                     </td>
@@ -221,7 +221,7 @@
                                     {{-- Client --}}
                                     <td class="hidden px-4 py-4 md:table-cell">
                                         <div class="flex items-center gap-2">
-                                            <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-stone-100 text-[10px] font-bold text-stone-500">
+                                            <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-warm-200 text-[10px] font-bold text-stone-500">
                                                 {{ strtoupper(substr($project->client?->name ?? '?', 0, 1)) }}
                                             </div>
                                             <div class="min-w-0">
@@ -240,7 +240,7 @@
                                                 <p class="truncate text-sm font-medium text-brand-ink">{{ $project->freelancer->name }}</p>
                                             </div>
                                         @else
-                                            <span class="inline-flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-[11px] font-semibold text-stone-500">
+                                            <span class="inline-flex items-center gap-1 rounded-full border border-warm-300/50 bg-warm-200/50 px-2.5 py-1 text-[11px] font-semibold text-stone-500">
                                                 <span class="h-1.5 w-1.5 rounded-full bg-stone-300"></span>
                                                 Unassigned
                                             </span>
@@ -258,7 +258,7 @@
                                             <div class="flex items-center justify-between">
                                                 <span class="text-xs font-semibold text-brand-ink">{{ $progress }}%</span>
                                             </div>
-                                            <div class="h-1.5 w-full overflow-hidden rounded-full bg-stone-100">
+                                            <div class="h-1.5 w-full overflow-hidden rounded-full bg-warm-200">
                                                 <div class="h-full rounded-full transition-all duration-500 {{ $progressColor }}"
                                                      style="width: {{ $progress }}%"></div>
                                             </div>
@@ -277,7 +277,7 @@
                                             {{-- View (opens slide panel) --}}
                                             <button type="button"
                                                     @click="openPanel({{ json_encode($panelData) }})"
-                                                    class="inline-flex items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs font-semibold text-brand-ink transition hover:border-brand-primary/30 hover:bg-orange-50 hover:text-brand-primary">
+                                                    class="inline-flex items-center gap-1.5 rounded-xl border border-warm-300/50 bg-warm-100 px-3 py-2 text-xs font-semibold text-brand-ink transition hover:border-brand-primary/30 hover:bg-accent-light hover:text-brand-primary">
                                                 <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
@@ -287,7 +287,7 @@
 
                                             {{-- Chat --}}
                                             <a href="{{ route('chat.show', $project) }}"
-                                               class="inline-flex items-center justify-center rounded-xl border border-stone-200 bg-white p-2 text-brand-muted transition hover:border-orange-200 hover:bg-orange-50 hover:text-brand-primary"
+                                               class="inline-flex items-center justify-center rounded-xl border border-warm-300/50 bg-warm-100 p-2 text-brand-muted transition hover:border-accent/30 hover:bg-accent-light hover:text-brand-primary"
                                                title="Open Chat">
                                                 <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
@@ -307,7 +307,7 @@
 
                 {{-- No search results row --}}
                 <div x-show="noResults && search.length > 0"
-                     class="border-t border-stone-100 px-6 py-10 text-center">
+                     class="border-t border-warm-300/40 px-6 py-10 text-center">
                     <p class="text-sm font-medium text-brand-ink">No results for "<span x-text="search"></span>"</p>
                     <p class="mt-1 text-xs text-brand-muted">Try a different title, client, or freelancer name.</p>
                 </div>
@@ -322,7 +322,7 @@
              @keydown.escape.window="closePanel()">
 
             {{-- Backdrop --}}
-            <div class="absolute inset-0 bg-slate-950/40 backdrop-blur-sm"
+            <div class="absolute inset-0 bg-navy-900/40 backdrop-blur-sm"
                  x-transition:enter="transition ease-out duration-200"
                  x-transition:enter-start="opacity-0"
                  x-transition:enter-end="opacity-100"
@@ -332,7 +332,7 @@
                  @click="closePanel()"></div>
 
             {{-- Panel --}}
-            <div class="absolute inset-y-0 right-0 flex w-full max-w-lg flex-col overflow-hidden border-l border-stone-200 bg-white shadow-2xl"
+            <div class="absolute inset-y-0 right-0 flex w-full max-w-lg flex-col overflow-hidden border-l border-warm-300/50 bg-warm-100 shadow-2xl"
                  x-transition:enter="transition ease-out duration-300"
                  x-transition:enter-start="translate-x-full opacity-0"
                  x-transition:enter-end="translate-x-0 opacity-100"
@@ -341,7 +341,7 @@
                  x-transition:leave-end="translate-x-full opacity-0">
 
                 {{-- Panel header --}}
-                <div class="flex shrink-0 items-start justify-between border-b border-stone-100 bg-stone-50/60 px-6 py-5">
+                <div class="flex shrink-0 items-start justify-between border-b border-warm-300/40 bg-warm-200/60 px-6 py-5">
                     <div class="min-w-0 flex-1 space-y-2">
                         {{-- Category pills --}}
                         <div class="flex flex-wrap gap-1.5" x-show="activeProject?.categories?.length">
@@ -363,7 +363,7 @@
                     </div>
                     <button type="button"
                             @click="closePanel()"
-                            class="ml-4 shrink-0 rounded-xl border border-stone-200 p-2 text-brand-muted transition hover:border-stone-300 hover:text-brand-ink">
+                            class="ml-4 shrink-0 rounded-xl border border-warm-300/50 p-2 text-brand-muted transition hover:border-warm-400/50 hover:text-brand-ink">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
@@ -374,12 +374,12 @@
                 <div class="flex-1 overflow-y-auto px-6 py-5 space-y-6">
 
                     {{-- Progress --}}
-                    <div class="rounded-2xl border border-stone-100 bg-stone-50/60 px-5 py-4">
+                    <div class="rounded-2xl border border-warm-300/40 bg-warm-200/60 px-5 py-4">
                         <div class="flex items-center justify-between">
                             <p class="text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-muted">Progress</p>
                             <span class="font-display text-xl text-brand-ink" x-text="(activeProject?.progress ?? 0) + '%'"></span>
                         </div>
-                        <div class="mt-3 h-2 w-full overflow-hidden rounded-full bg-stone-200">
+                        <div class="mt-3 h-2 w-full overflow-hidden rounded-full bg-warm-300">
                             <div class="h-full rounded-full transition-all duration-700"
                                  :class="progressBarColor(activeProject?.status)"
                                  :style="'width:' + (activeProject?.progress ?? 0) + '%'"></div>
@@ -388,10 +388,10 @@
 
                     {{-- People --}}
                     <div class="grid grid-cols-2 gap-3">
-                        <div class="rounded-2xl border border-stone-100 bg-white p-4">
+                        <div class="rounded-2xl border border-warm-300/40 bg-warm-100 p-4">
                             <p class="text-[10px] font-semibold uppercase tracking-[0.24em] text-brand-muted">Client</p>
                             <div class="mt-2 flex items-center gap-2">
-                                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-stone-100 text-[11px] font-bold text-stone-600"
+                                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-warm-200 text-[11px] font-bold text-warm-700"
                                      x-text="(activeProject?.client_name ?? '?').charAt(0).toUpperCase()"></div>
                                 <div class="min-w-0">
                                     <p class="truncate text-sm font-semibold text-brand-ink" x-text="activeProject?.client_name ?? '—'"></p>
@@ -399,7 +399,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="rounded-2xl border border-stone-100 bg-white p-4">
+                        <div class="rounded-2xl border border-warm-300/40 bg-warm-100 p-4">
                             <p class="text-[10px] font-semibold uppercase tracking-[0.24em] text-brand-muted">Freelancer</p>
                             <div class="mt-2 flex items-center gap-2" x-show="activeProject?.freelancer_name">
                                 <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-[11px] font-bold text-blue-600"
@@ -423,11 +423,11 @@
                     <div>
                         <div class="flex items-center justify-between">
                             <p class="text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-muted">Files</p>
-                            <span class="rounded-full border border-stone-200 bg-stone-50 px-2.5 py-0.5 text-xs font-semibold text-brand-muted"
+                            <span class="rounded-full border border-warm-300/50 bg-warm-200/50 px-2.5 py-0.5 text-xs font-semibold text-brand-muted"
                                   x-text="(activeProject?.files_count ?? 0) + ' file' + ((activeProject?.files_count ?? 0) === 1 ? '' : 's')"></span>
                         </div>
                         <a :href="activeProject?.show_url + '#files'"
-                           class="mt-2 flex items-center gap-2 rounded-xl border border-stone-200 px-4 py-2.5 text-xs font-semibold text-brand-muted transition hover:border-stone-300 hover:text-brand-ink">
+                           class="mt-2 flex items-center gap-2 rounded-xl border border-warm-300/50 px-4 py-2.5 text-xs font-semibold text-brand-muted transition hover:border-warm-400/50 hover:text-brand-ink">
                             <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" />
                             </svg>
@@ -436,35 +436,35 @@
                     </div>
 
                     {{-- ── Assign Freelancer form ── --}}
-                    <div class="rounded-2xl border border-stone-100 bg-white p-5">
+                    <div class="rounded-2xl border border-warm-300/40 bg-warm-100 p-5">
                         <p class="text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-primary">Assign Freelancer</p>
                         <form method="POST" :action="'{{ url('admin/projects') }}/' + activeProject?.id + '/assign'" class="mt-4 space-y-3">
                             @csrf @method('PATCH')
                             <select name="freelancer_id"
-                                    class="w-full rounded-xl border-stone-200 bg-white px-3 py-2.5 text-sm text-brand-ink focus:border-brand-primary focus:ring-brand-primary">
+                                    class="w-full rounded-xl border-warm-300/50 bg-warm-100 px-3 py-2.5 text-sm text-brand-ink focus:border-brand-primary focus:ring-brand-primary">
                                 <option value="">Select a freelancer…</option>
                                 @foreach ($freelancers as $fl)
                                     <option value="{{ $fl->id }}">{{ $fl->name }} ({{ $fl->email }})</option>
                                 @endforeach
                             </select>
-                            <button type="submit" class="w-full rounded-xl bg-slate-950 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800">
+                            <button type="submit" class="w-full rounded-xl bg-navy-800 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800">
                                 Assign
                             </button>
                         </form>
                     </div>
 
                     {{-- ── Change Status form ── --}}
-                    <div class="rounded-2xl border border-stone-100 bg-white p-5">
+                    <div class="rounded-2xl border border-warm-300/40 bg-warm-100 p-5">
                         <p class="text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-primary">Change Status</p>
                         <form method="POST" :action="'{{ url('admin/projects') }}/' + activeProject?.id + '/status'" class="mt-4 space-y-3">
                             @csrf @method('PATCH')
                             <select name="status"
-                                    class="w-full rounded-xl border-stone-200 bg-white px-3 py-2.5 text-sm text-brand-ink focus:border-brand-primary focus:ring-brand-primary">
+                                    class="w-full rounded-xl border-warm-300/50 bg-warm-100 px-3 py-2.5 text-sm text-brand-ink focus:border-brand-primary focus:ring-brand-primary">
                                 @foreach ($statusList as $s)
                                     <option value="{{ $s }}">{{ str_replace('_', ' ', ucfirst($s)) }}</option>
                                 @endforeach
                             </select>
-                            <button type="submit" class="w-full rounded-xl bg-slate-950 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800">
+                            <button type="submit" class="w-full rounded-xl bg-navy-800 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800">
                                 Update Status
                             </button>
                         </form>
@@ -473,24 +473,24 @@
                 </div>
 
                 {{-- Panel footer --}}
-                <div class="shrink-0 border-t border-stone-100 bg-stone-50/60 px-6 py-4">
+                <div class="shrink-0 border-t border-warm-300/40 bg-warm-200/60 px-6 py-4">
                     <div class="flex items-center gap-3">
                         <a :href="activeProject?.show_url"
-                           class="flex flex-1 items-center justify-center gap-2 rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-sm font-semibold text-brand-ink transition hover:border-stone-300">
+                           class="flex flex-1 items-center justify-center gap-2 rounded-xl border border-warm-300/50 bg-warm-100 px-4 py-2.5 text-sm font-semibold text-brand-ink transition hover:border-warm-400/50">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
                             </svg>
                             Full Details
                         </a>
                         <a :href="activeProject?.chat_url"
-                           class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800">
+                           class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-navy-800 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
                             </svg>
                             Open Chat
                         </a>
                         <a :href="activeProject?.invoice_url"
-                           class="flex items-center justify-center rounded-xl border border-stone-200 bg-white p-2.5 text-brand-muted transition hover:border-orange-200 hover:bg-orange-50 hover:text-brand-primary"
+                           class="flex items-center justify-center rounded-xl border border-warm-300/50 bg-warm-100 p-2.5 text-brand-muted transition hover:border-accent/30 hover:bg-accent-light hover:text-brand-primary"
                            title="Create Invoice">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
@@ -561,7 +561,7 @@
                 const map = {
                     pending:     'border-amber-200 bg-amber-50 text-amber-700',
                     assigned:    'border-blue-200 bg-blue-50 text-blue-700',
-                    in_progress: 'border-orange-200 bg-orange-50 text-orange-700',
+                    in_progress: 'border-accent/30 bg-accent-light text-accent-hover',
                     completed:   'border-emerald-200 bg-emerald-50 text-emerald-700',
                 };
                 return map[status] ?? map.pending;
@@ -580,7 +580,7 @@
             progressBarColor(status) {
                 const map = {
                     assigned:    'bg-blue-400',
-                    in_progress: 'bg-orange-400',
+                    in_progress: 'bg-accent',
                     completed:   'bg-emerald-500',
                 };
                 return map[status] ?? 'bg-stone-300';

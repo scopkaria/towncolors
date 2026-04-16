@@ -2,13 +2,13 @@
     <x-slot name="header">
         <div class="flex items-center gap-3">
             <a href="{{ route('admin.pages.sections.index', $page) }}"
-               class="flex h-9 w-9 items-center justify-center rounded-xl border border-stone-200 bg-white text-brand-muted shadow-sm transition hover:border-brand-primary hover:text-brand-primary">
+               class="flex h-9 w-9 items-center justify-center rounded-xl border border-warm-300/50 bg-warm-100 text-brand-muted shadow-sm transition hover:border-brand-primary hover:text-brand-primary">
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/>
                 </svg>
             </a>
             <div class="space-y-1">
-                <span class="inline-flex rounded-full border border-orange-200 bg-orange-50 px-3 py-0.5 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary">
+                <span class="inline-flex rounded-full border border-accent/30 bg-accent-light px-3 py-0.5 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary">
                     Sections Builder
                 </span>
                 <h1 class="font-display text-2xl text-brand-ink sm:text-3xl">Add Section — {{ $page->title }}</h1>
@@ -49,8 +49,8 @@
                             <button type="button"
                                     @click="type = '{{ $key }}'"
                                     :class="type === '{{ $key }}'
-                                        ? 'border-brand-primary bg-orange-50 text-brand-primary ring-1 ring-brand-primary/30'
-                                        : 'border-stone-200 bg-white text-brand-muted hover:border-orange-200 hover:bg-orange-50/40 hover:text-brand-primary'"
+                                        ? 'border-brand-primary bg-accent-light text-brand-primary ring-1 ring-brand-primary/30'
+                                        : 'border-warm-300/50 bg-warm-100 text-brand-muted hover:border-accent/30 hover:bg-accent/10 hover:text-brand-primary'"
                                     class="flex flex-col items-center gap-2 rounded-2xl border p-4 text-center transition">
                                 <svg class="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="{{ \App\Models\PageSection::TYPE_ICONS[$key] }}"/>
@@ -70,12 +70,12 @@
                         <div>
                             <label class="block text-sm font-semibold text-brand-ink">Headline <span class="text-red-400">*</span></label>
                             <input type="text" name="title" placeholder="e.g. We Build Digital Products"
-                                   class="mt-2 w-full rounded-2xl border-stone-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                                   class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-brand-ink">Subtitle</label>
                             <textarea name="subtitle" rows="2" placeholder="Short supporting text under the headline."
-                                      class="mt-2 w-full rounded-2xl border-stone-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary"></textarea>
+                                      class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary"></textarea>
                         </div>
                         @include('admin.pages.sections.partials.media-picker', ['fieldName' => 'bg_media_id', 'label' => 'Background Image'])
                     </div>
@@ -85,7 +85,7 @@
                         <div>
                             <label class="block text-sm font-semibold text-brand-ink">Company Story</label>
                             <p class="mt-1 text-xs text-brand-muted">Rich text — bold, italic, lists, links all supported.</p>
-                            <div id="story-editor" class="mt-3 rounded-2xl border border-stone-200 bg-white text-sm text-brand-ink" style="min-height:260px;"></div>
+                            <div id="story-editor" class="mt-3 rounded-2xl border border-warm-300/50 bg-warm-100 text-sm text-brand-ink" style="min-height:260px;"></div>
                             <textarea name="content" id="story-content" class="hidden"></textarea>
                         </div>
                     </div>
@@ -104,14 +104,14 @@
                         <div>
                             <label class="block text-sm font-semibold text-brand-ink">Section Heading</label>
                             <input type="text" name="heading" value="Our Journey"
-                                   class="mt-2 w-full rounded-2xl border-stone-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                                   class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
                         </div>
 
                         <div>
                             <div class="flex items-center justify-between mb-3">
                                 <label class="block text-sm font-semibold text-brand-ink">Timeline Items</label>
                                 <button type="button" @click="add()"
-                                        class="inline-flex items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-3 py-1.5 text-xs font-semibold text-brand-muted transition hover:border-brand-primary hover:text-brand-primary">
+                                        class="inline-flex items-center gap-1.5 rounded-xl border border-warm-300/50 bg-warm-100 px-3 py-1.5 text-xs font-semibold text-brand-muted transition hover:border-brand-primary hover:text-brand-primary">
                                     <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M12 4v16m8-8H4"/></svg>
                                     Add Item
                                 </button>
@@ -119,24 +119,24 @@
 
                             <div class="space-y-3">
                                 <template x-for="(item, i) in items" :key="i">
-                                    <div class="flex items-start gap-3 rounded-2xl border border-stone-100 bg-stone-50 p-4">
+                                    <div class="flex items-start gap-3 rounded-2xl border border-warm-300/40 bg-warm-200/50 p-4">
                                         <div class="w-20 shrink-0">
                                             <label class="text-[10px] font-semibold uppercase tracking-wider text-brand-muted">Year</label>
                                             <input type="text" x-model="item.year" maxlength="6" placeholder="2024"
-                                                   class="mt-1 w-full rounded-xl border-stone-200 bg-white px-3 py-2 text-sm text-brand-ink focus:border-brand-primary focus:ring-brand-primary">
+                                                   class="mt-1 w-full rounded-xl border-warm-300/50 bg-warm-100 px-3 py-2 text-sm text-brand-ink focus:border-brand-primary focus:ring-brand-primary">
                                         </div>
                                         <div class="flex-1">
                                             <label class="text-[10px] font-semibold uppercase tracking-wider text-brand-muted">Milestone</label>
                                             <input type="text" x-model="item.label" placeholder="Milestone title"
-                                                   class="mt-1 w-full rounded-xl border-stone-200 bg-white px-3 py-2 text-sm text-brand-ink focus:border-brand-primary focus:ring-brand-primary">
+                                                   class="mt-1 w-full rounded-xl border-warm-300/50 bg-warm-100 px-3 py-2 text-sm text-brand-ink focus:border-brand-primary focus:ring-brand-primary">
                                         </div>
                                         <div class="flex-1">
                                             <label class="text-[10px] font-semibold uppercase tracking-wider text-brand-muted">Description (optional)</label>
                                             <input type="text" x-model="item.description" placeholder="Short sentence..."
-                                                   class="mt-1 w-full rounded-xl border-stone-200 bg-white px-3 py-2 text-sm text-brand-ink focus:border-brand-primary focus:ring-brand-primary">
+                                                   class="mt-1 w-full rounded-xl border-warm-300/50 bg-warm-100 px-3 py-2 text-sm text-brand-ink focus:border-brand-primary focus:ring-brand-primary">
                                         </div>
                                         <button type="button" @click="remove(i)"
-                                                class="mt-6 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-stone-200 text-brand-muted hover:border-red-200 hover:text-red-500">
+                                                class="mt-6 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-warm-300/50 text-brand-muted hover:border-red-200 hover:text-red-500">
                                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M6 18 18 6M6 6l12 12"/></svg>
                                         </button>
                                     </div>
@@ -152,14 +152,14 @@
                         <div>
                             <label class="block text-sm font-semibold text-brand-ink">Section Heading</label>
                             <input type="text" name="heading" value="Our Services"
-                                   class="mt-2 w-full rounded-2xl border-stone-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                                   class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-brand-ink">Intro Text</label>
                             <textarea name="intro" rows="3" placeholder="Brief description shown above the services grid..."
-                                      class="mt-2 w-full rounded-2xl border-stone-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary"></textarea>
+                                      class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary"></textarea>
                         </div>
-                        <p class="rounded-2xl border border-orange-100 bg-orange-50/50 px-4 py-3 text-xs text-brand-primary">
+                        <p class="rounded-2xl border border-accent/20 bg-accent/10 px-4 py-3 text-xs text-brand-primary">
                             Services are pulled automatically from your service categories. Manage them under <strong>Admin → Categories</strong>.
                         </p>
                     </div>
@@ -169,12 +169,12 @@
                         <div>
                             <label class="block text-sm font-semibold text-brand-ink">Section Heading</label>
                             <input type="text" name="heading" value="Our Vision"
-                                   class="mt-2 w-full rounded-2xl border-stone-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                                   class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-brand-ink">Content</label>
                             <textarea name="content" rows="5" placeholder="What drives the company forward..."
-                                      class="mt-2 w-full rounded-2xl border-stone-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary"></textarea>
+                                      class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary"></textarea>
                         </div>
                     </div>
 
@@ -183,23 +183,23 @@
                         <div>
                             <label class="block text-sm font-semibold text-brand-ink">Section Heading</label>
                             <input type="text" name="heading" value="Community"
-                                   class="mt-2 w-full rounded-2xl border-stone-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                                   class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-brand-ink">Content</label>
                             <textarea name="content" rows="5" placeholder="Community involvement, partnerships, social impact..."
-                                      class="mt-2 w-full rounded-2xl border-stone-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary"></textarea>
+                                      class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary"></textarea>
                         </div>
                         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <div>
                                 <label class="block text-sm font-semibold text-brand-ink">Link Label</label>
                                 <input type="text" name="link_label" placeholder="Visit community hub"
-                                       class="mt-2 w-full rounded-2xl border-stone-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                                       class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-brand-ink">Link URL</label>
                                 <input type="url" name="link_url" placeholder="https://workmywork.towncolors.com"
-                                       class="mt-2 w-full rounded-2xl border-stone-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                                       class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
                             </div>
                         </div>
                     </div>
@@ -210,14 +210,14 @@
                         <div>
                             <label class="block text-sm font-semibold text-brand-ink">Section Heading</label>
                             <input type="text" name="heading" value="Trusted By"
-                                   class="mt-2 w-full rounded-2xl border-stone-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                                   class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
                         </div>
 
                         <div>
                             <div class="flex items-center justify-between mb-3">
                                 <label class="block text-sm font-semibold text-brand-ink">Client Logos</label>
                                 <button type="button" @click="open()"
-                                        class="inline-flex items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-3 py-1.5 text-xs font-semibold text-brand-muted transition hover:border-brand-primary hover:text-brand-primary">
+                                        class="inline-flex items-center gap-1.5 rounded-xl border border-warm-300/50 bg-warm-100 px-3 py-1.5 text-xs font-semibold text-brand-muted transition hover:border-brand-primary hover:text-brand-primary">
                                     <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M12 4v16m8-8H4"/></svg>
                                     Add from Media Library
                                 </button>
@@ -225,7 +225,7 @@
                             <div class="flex flex-wrap gap-3 min-h-12">
                                 <template x-for="(img, i) in selected" :key="img.id">
                                     <div class="relative group">
-                                        <img :src="img.url" :alt="img.name" class="h-16 w-24 rounded-xl border border-stone-200 object-contain bg-stone-50 p-1">
+                                        <img :src="img.url" :alt="img.name" class="h-16 w-24 rounded-xl border border-warm-300/50 object-contain bg-warm-200/50 p-1">
                                         <button type="button" @click="remove(i)"
                                                 class="absolute -right-2 -top-2 hidden h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white group-hover:flex">
                                             <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" d="M6 18 18 6M6 6l12 12"/></svg>
@@ -245,23 +245,23 @@
                         <div>
                             <label class="block text-sm font-semibold text-brand-ink">CTA Headline <span class="text-red-400">*</span></label>
                             <input type="text" name="title" placeholder="Ready to start your project?"
-                                   class="mt-2 w-full rounded-2xl border-stone-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                                   class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-brand-ink">Subtitle</label>
                             <input type="text" name="subtitle" placeholder="Let's build something great together."
-                                   class="mt-2 w-full rounded-2xl border-stone-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                                   class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
                         </div>
                         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <div>
                                 <label class="block text-sm font-semibold text-brand-ink">Button Label</label>
                                 <input type="text" name="button_label" value="Start a Project"
-                                       class="mt-2 w-full rounded-2xl border-stone-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                                       class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-brand-ink">Button URL</label>
                                 <input type="text" name="button_url" value="/register"
-                                       class="mt-2 w-full rounded-2xl border-stone-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                                       class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
                             </div>
                         </div>
                     </div>
@@ -276,7 +276,7 @@
                     <h2 class="font-display text-base text-brand-ink">Admin Label</h2>
                     <p class="mt-1 text-xs text-brand-muted">Internal name for this section (not shown on public site).</p>
                     <input type="text" name="label" placeholder="e.g. Hero Section"
-                           class="mt-3 w-full rounded-2xl border-stone-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                           class="mt-3 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
                 </div>
 
                 {{-- Save --}}

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "717033227153",
+    "project_id": "towncore-ec291",
+    "storage_bucket": "towncore-ec291.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:717033227153:android:c9adeffdf35174f29d9030",
+        "android_client_info": {
+          "package_name": "com.towncore.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBm4iWxGZF_g6r_dXLI8AOB8Ws9TkIRZV0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

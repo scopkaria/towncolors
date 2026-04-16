@@ -11,8 +11,12 @@ class ProjectCategory extends Model
 {
     protected $fillable = [
         'name', 'slug', 'description', 'long_description',
-        'image_path', 'featured_image', 'color', 'parent_id',
+        'image_path', 'featured_image', 'gallery_images', 'color', 'parent_id',
         'price_range', 'estimated_duration',
+    ];
+
+    protected $casts = [
+        'gallery_images' => 'array',
     ];
 
     public function getRouteKeyName(): string

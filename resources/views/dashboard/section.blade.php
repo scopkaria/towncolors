@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="space-y-3">
-            <span class="inline-flex w-fit rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary">
+            <span class="inline-flex w-fit rounded-full border border-accent/30 bg-accent-light px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary">
                 {{ $content['eyebrow'] }}
             </span>
             <div class="space-y-2">
@@ -35,19 +35,19 @@
                     This view keeps the most relevant {{ $section }} information visible first, with a balance of premium polish, strong hierarchy, and quick decision support.
                 </p>
                 <div class="mt-6 grid gap-4 md:grid-cols-2">
-                    <div class="rounded-3xl border border-stone-200/80 bg-stone-50 p-5">
+                    <div class="rounded-3xl border border-warm-300/80 bg-warm-200/50 p-5">
                         <p class="text-sm font-medium text-brand-muted">Responsive layout</p>
                         <p class="mt-3 font-display text-xl text-brand-ink">Sidebar collapses cleanly on smaller screens.</p>
                     </div>
-                    <div class="rounded-3xl border border-stone-200/80 bg-stone-50 p-5">
+                    <div class="rounded-3xl border border-warm-300/80 bg-warm-200/50 p-5">
                         <p class="text-sm font-medium text-brand-muted">Motion system</p>
                         <p class="mt-3 font-display text-xl text-brand-ink">Cards and controls use subtle lift and scale states.</p>
                     </div>
                 </div>
             </article>
 
-            <article class="rounded-3xl border border-white/70 bg-slate-950 p-6 text-white shadow-panel">
-                <p class="text-sm font-semibold uppercase tracking-[0.24em] text-orange-300">Why it works</p>
+            <article class="rounded-3xl border border-white/70 bg-navy-800 p-6 text-white shadow-panel">
+                <p class="text-sm font-semibold uppercase tracking-[0.24em] text-accent">Why it works</p>
                 <div class="mt-5 space-y-3">
                     <div class="rounded-3xl border border-white/10 bg-white/5 p-4">
                         <p class="font-medium text-white/90">Clear visual hierarchy</p>

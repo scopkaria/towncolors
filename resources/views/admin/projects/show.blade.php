@@ -2,10 +2,10 @@
     <x-slot name="header">
         <div class="space-y-3">
             <div class="flex items-center gap-3">
-                <a href="{{ route('admin.projects.index') }}" class="rounded-2xl border border-stone-200 bg-white p-2 text-brand-muted transition hover:border-orange-200 hover:text-brand-primary">
+                <a href="{{ route('admin.projects.index') }}" class="rounded-2xl border border-warm-300/50 bg-warm-100 p-2 text-brand-muted transition hover:border-accent/30 hover:text-brand-primary">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>
                 </a>
-                <span class="inline-flex rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary">
+                <span class="inline-flex rounded-full border border-accent/30 bg-accent-light px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary">
                     Admin &middot; Project details
                 </span>
             </div>
@@ -55,7 +55,7 @@
 
         {{-- AI Freelancer Suggestions --}}
         @if ($aiSuggestions->isNotEmpty() && !$project->freelancer_id)
-            <div class="rounded-3xl border border-orange-100 bg-gradient-to-br from-orange-50 to-amber-50 p-6 shadow-panel">
+            <div class="rounded-3xl border border-accent/20 bg-gradient-to-br from-accent-light to-amber-50 p-6 shadow-panel">
                 <div class="flex items-center gap-3">
                     <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-primary/10">
                         <svg class="h-4 w-4 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -70,7 +70,7 @@
 
                 <div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     @foreach ($aiSuggestions as $i => $suggestion)
-                        <div class="rounded-2xl border {{ $i === 0 ? 'border-orange-200 bg-white/90 ring-1 ring-orange-200' : 'border-white/80 bg-white/70' }} p-4">
+                        <div class="rounded-2xl border {{ $i === 0 ? 'border-accent/30 bg-white/90 ring-1 ring-accent/30' : 'border-white/80 bg-white/70' }} p-4">
                             @if ($i === 0)
                                 <span class="inline-flex rounded-full bg-brand-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-brand-primary">Top pick</span>
                             @endif
@@ -78,7 +78,7 @@
                             <p class="mt-1 text-xs text-brand-muted">{{ $suggestion['freelancer']->email }}</p>
                             <div class="mt-3 flex items-center justify-between">
                                 <p class="text-xs leading-5 text-brand-muted">{{ $suggestion['reason'] }}</p>
-                                <span class="ml-2 shrink-0 rounded-full border border-stone-200 bg-stone-50 px-2 py-0.5 text-[10px] font-bold text-brand-muted">
+                                <span class="ml-2 shrink-0 rounded-full border border-warm-300/50 bg-warm-200/50 px-2 py-0.5 text-[10px] font-bold text-brand-muted">
                                     Score {{ $suggestion['score'] }}
                                 </span>
                             </div>
@@ -99,7 +99,7 @@
                     <div class="flex-1">
                         <label for="freelancer_id" class="block text-sm font-semibold text-brand-ink">Freelancer</label>
                         <select name="freelancer_id" id="freelancer_id"
-                            class="mt-2 w-full rounded-2xl border-stone-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm transition duration-200 focus:border-brand-primary focus:ring-brand-primary">
+                            class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition duration-200 focus:border-brand-primary focus:ring-brand-primary">
                             <option value="">Select a freelancer…</option>
                             @foreach ($freelancers as $fl)
                                 <option value="{{ $fl->id }}" {{ $project->freelancer_id == $fl->id ? 'selected' : '' }}>{{ $fl->name }} ({{ $fl->email }})</option>
@@ -122,7 +122,7 @@
                     <div class="flex-1">
                         <label for="status" class="block text-sm font-semibold text-brand-ink">Status</label>
                         <select name="status" id="status"
-                            class="mt-2 w-full rounded-2xl border-stone-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm transition duration-200 focus:border-brand-primary focus:ring-brand-primary">
+                            class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition duration-200 focus:border-brand-primary focus:ring-brand-primary">
                             @foreach ($statuses as $s)
                                 <option value="{{ $s }}" {{ $project->status === $s ? 'selected' : '' }}>{{ str_replace('_', ' ', ucfirst($s)) }}</option>
                             @endforeach
@@ -157,7 +157,7 @@
                         </label>
                         <input type="number" name="agreed_amount" min="0.01" step="0.01"
                                value="{{ old('agreed_amount', $project->freelancerPayment?->agreed_amount) }}"
-                               class="mt-2 w-full rounded-2xl border-stone-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm transition duration-200 focus:border-brand-primary focus:ring-brand-primary"
+                               class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition duration-200 focus:border-brand-primary focus:ring-brand-primary"
                                placeholder="e.g. 500000" />
                         @error('agreed_amount')
                             <p class="mt-2 text-sm text-red-500">{{ $message }}</p>
@@ -172,7 +172,7 @@
                 @if ($project->freelancerPayment)
                     @php $fp = $project->freelancerPayment; @endphp
                     <div class="mt-6 grid gap-4 sm:grid-cols-3">
-                        <div class="rounded-2xl border border-stone-100 bg-stone-50 px-4 py-4 text-center">
+                        <div class="rounded-2xl border border-warm-300/40 bg-warm-200/50 px-4 py-4 text-center">
                             <p class="text-xs font-semibold uppercase tracking-[0.2em] text-brand-muted">Agreed</p>
                             <p class="mt-2 font-display text-xl text-brand-ink">{{ $fp->formattedAgreed() }}</p>
                         </div>
@@ -180,7 +180,7 @@
                             <p class="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600">Paid</p>
                             <p class="mt-2 font-display text-xl text-emerald-700">{{ $fp->formattedPaid() }}</p>
                         </div>
-                        <div class="rounded-2xl border border-orange-100 bg-orange-50 px-4 py-4 text-center">
+                        <div class="rounded-2xl border border-accent/20 bg-accent-light px-4 py-4 text-center">
                             <p class="text-xs font-semibold uppercase tracking-[0.2em] text-brand-primary">Remaining</p>
                             <p class="mt-2 font-display text-xl text-brand-primary">{{ $fp->formattedRemaining() }}</p>
                         </div>
@@ -193,7 +193,7 @@
                             $fpStatusClass = match($fp->status) {
                                 'paid'    => 'border-emerald-200 bg-emerald-50 text-emerald-700',
                                 'partial' => 'border-amber-200 bg-amber-50 text-amber-700',
-                                default   => 'border-stone-200 bg-stone-50 text-stone-600',
+                                default   => 'border-warm-300/50 bg-warm-200/50 text-warm-700',
                             };
                         @endphp
                         <span class="inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] {{ $fpStatusClass }}">
@@ -207,7 +207,7 @@
                             <p class="text-xs font-semibold uppercase tracking-[0.2em] text-brand-muted">Payment History</p>
                             <div class="mt-3 space-y-2">
                                 @foreach ($fp->logs->sortByDesc('created_at') as $log)
-                                    <div class="flex items-center justify-between rounded-2xl border border-stone-100 bg-stone-50/60 px-4 py-3 text-sm">
+                                    <div class="flex items-center justify-between rounded-2xl border border-warm-300/40 bg-warm-200/60 px-4 py-3 text-sm">
                                         <span class="font-semibold text-brand-ink">TZS {{ number_format($log->amount, 2) }}</span>
                                         <span class="text-xs text-brand-muted">{{ $log->created_at->format('M d, Y  H:i') }}</span>
                                     </div>
@@ -225,8 +225,8 @@
                      x-cloak
                      class="fixed inset-0 z-50 flex items-center justify-center p-4"
                      @keydown.escape.window="addPaymentOpen = false">
-                    <div class="absolute inset-0 bg-slate-950/40 backdrop-blur-sm" @click="addPaymentOpen = false"></div>
-                    <div class="relative w-full max-w-md rounded-3xl border border-white/70 bg-white p-7 shadow-panel"
+                    <div class="absolute inset-0 bg-navy-900/40 backdrop-blur-sm" @click="addPaymentOpen = false"></div>
+                    <div class="relative w-full max-w-md rounded-3xl border border-white/70 bg-warm-100 p-7 shadow-panel"
                          x-transition:enter="transition duration-200 ease-out"
                          x-transition:enter-start="opacity-0 scale-95"
                          x-transition:enter-end="opacity-100 scale-100"
@@ -245,7 +245,7 @@
                                        step="0.01"
                                        max="{{ number_format($fp->agreed_amount - $fp->paid_amount, 2, '.', '') }}"
                                        placeholder="e.g. 100000"
-                                       class="mt-2 w-full rounded-2xl border-stone-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm transition duration-200 focus:border-brand-primary focus:ring-brand-primary" />
+                                       class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition duration-200 focus:border-brand-primary focus:ring-brand-primary" />
                                 @error('amount')
                                     <p class="mt-2 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
@@ -261,7 +261,7 @@
                 </div>
             @endif
         @else
-            <div class="rounded-3xl border border-stone-200 bg-stone-50 p-6 shadow-panel">
+            <div class="rounded-3xl border border-warm-300/50 bg-warm-200/50 p-6 shadow-panel">
                 <p class="text-sm font-semibold uppercase tracking-[0.24em] text-brand-muted">Freelancer Payment</p>
                 <p class="mt-3 text-sm text-brand-muted">Assign a freelancer to this project before setting a payment amount.</p>
             </div>
@@ -280,7 +280,7 @@
                 <div class="mt-4 space-y-2">
                     @foreach ($project->files as $file)
                         <a href="{{ asset('storage/' . $file->file_path) }}" target="_blank"
-                            class="flex items-center gap-3 rounded-2xl border border-stone-200 bg-stone-50/50 px-4 py-3 text-sm text-brand-ink transition duration-200 hover:border-orange-200 hover:bg-orange-50/30">
+                            class="flex items-center gap-3 rounded-2xl border border-warm-300/50 bg-warm-200/50 px-4 py-3 text-sm text-brand-ink transition duration-200 hover:border-accent/30 hover:bg-accent/10">
                             <svg class="h-5 w-5 shrink-0 text-brand-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
                             <span class="truncate">{{ basename($file->file_path) }}</span>
                         </a>

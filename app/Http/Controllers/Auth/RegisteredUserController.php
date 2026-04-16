@@ -34,16 +34,28 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name'     => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:100', 'alpha_dash', 'unique:users,username'],
             'email'    => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'phone'    => ['nullable', 'string', 'max:40', 'unique:users,phone'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'start_free_trial' => ['nullable', 'boolean'],
+        ], [
+            'email.unique' => 'This email is already registered',
+            'username.unique' => 'This username is already taken',
         ]);
 
         $user = User::create([
             'name'     => $request->name,
+            'username' => $request->username,
             'email'    => $request->email,
+            'phone'    => $request->phone,
             'role'     => UserRole::CLIENT,
             'password' => Hash::make($request->password),
         ]);
+
+        if ($request->boolean('start_free_trial') && $user->canStartTrial()) {
+            $user->startFreeTrial(5);
+        }
 
         event(new Registered($user));
         Auth::login($user);
@@ -62,16 +74,28 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name'     => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:100', 'alpha_dash', 'unique:users,username'],
             'email'    => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'phone'    => ['nullable', 'string', 'max:40', 'unique:users,phone'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'start_free_trial' => ['nullable', 'boolean'],
+        ], [
+            'email.unique' => 'This email is already registered',
+            'username.unique' => 'This username is already taken',
         ]);
 
         $user = User::create([
             'name'     => $request->name,
+            'username' => $request->username,
             'email'    => $request->email,
+            'phone'    => $request->phone,
             'role'     => UserRole::FREELANCER,
             'password' => Hash::make($request->password),
         ]);
+
+        if ($request->boolean('start_free_trial') && $user->canStartTrial()) {
+            $user->startFreeTrial(5);
+        }
 
         event(new Registered($user));
         Auth::login($user);
@@ -90,7 +114,9 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name'         => ['required', 'string', 'max:255'],
+            'username'     => ['required', 'string', 'max:100', 'alpha_dash', 'unique:users,username'],
             'email'        => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'phone'        => ['nullable', 'string', 'max:40', 'unique:users,phone'],
             'admin_secret' => ['required', 'string', function ($attribute, $value, $fail) {
                 $secret = config('app.admin_register_secret');
                 if (empty($secret) || ! hash_equals($secret, $value)) {
@@ -98,11 +124,16 @@ class RegisteredUserController extends Controller
                 }
             }],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ], [
+            'email.unique' => 'This email is already registered',
+            'username.unique' => 'This username is already taken',
         ]);
 
         $user = User::create([
             'name'     => $request->name,
+            'username' => $request->username,
             'email'    => $request->email,
+            'phone'    => $request->phone,
             'role'     => UserRole::ADMIN,
             'password' => Hash::make($request->password),
         ]);

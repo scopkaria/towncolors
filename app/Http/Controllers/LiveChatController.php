@@ -103,6 +103,24 @@ class LiveChatController extends Controller
     // ─── Admin / Support-Agent endpoints ─────────────────────────────
 
     /**
+     * API: List live chat sessions as JSON (for mobile app).
+     */
+    public function apiSessions(Request $request): JsonResponse
+    {
+        $query = LiveChatSession::with('agent:id,name')
+            ->withCount('messages')
+            ->orderByRaw("FIELD(status, 'waiting', 'active', 'closed')")
+            ->latest();
+
+        // Optional status filter
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        return response()->json($query->paginate(25));
+    }
+
+    /**
      * List all live chat sessions (admin dashboard view).
      */
     public function adminIndex(Request $request)

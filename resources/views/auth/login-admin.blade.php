@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
@@ -187,7 +187,7 @@
                         Access is provisioned by the platform owner.
                     </p>
                     <p class="text-center mt-3">
-                        <a href="{{ url('/') }}" class="inline-flex items-center gap-1.5 text-xs text-stone-600 hover:text-stone-400 transition-colors">
+                        <a href="{{ url('/') }}" class="inline-flex items-center gap-1.5 text-xs text-warm-700 hover:text-stone-400 transition-colors">
                             <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                             </svg>

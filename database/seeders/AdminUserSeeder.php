@@ -9,19 +9,37 @@ use Illuminate\Support\Facades\Hash;
 
 class AdminUserSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        User::updateOrCreate(
-            ['email' => 'admin@towncore.local'],
+        // Wipe all users then recreate demo accounts
+        User::query()->delete();
+
+        $users = [
             [
-                'name' => 'Towncore Admin',
-                'password' => Hash::make('password'),
-                'role' => UserRole::ADMIN,
-                'email_verified_at' => now(),
-            ]
-        );
+                'name'               => 'Demo Admin',
+                'email'              => 'admin@towncore.local',
+                'password'           => Hash::make('password'),
+                'role'               => UserRole::ADMIN,
+                'email_verified_at'  => now(),
+            ],
+            [
+                'name'               => 'Demo Client',
+                'email'              => 'client@towncore.local',
+                'password'           => Hash::make('password'),
+                'role'               => UserRole::CLIENT,
+                'email_verified_at'  => now(),
+            ],
+            [
+                'name'               => 'Demo Freelancer',
+                'email'              => 'freelancer@towncore.local',
+                'password'           => Hash::make('password'),
+                'role'               => UserRole::FREELANCER,
+                'email_verified_at'  => now(),
+            ],
+        ];
+
+        foreach ($users as $data) {
+            User::create($data);
+        }
     }
 }

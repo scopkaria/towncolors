@@ -20,6 +20,7 @@ class ConversationController extends Controller
     public function index(Request $request): View
     {
         $user = $request->user();
+        $this->ensureSubscribedIfClient($user);
 
         $conversations  = $this->getConversationsForUser($user);
         $availableUsers = $this->getAvailableDMUsers($user);
@@ -32,6 +33,8 @@ class ConversationController extends Controller
      */
     public function list(Request $request): JsonResponse
     {
+        $this->ensureSubscribedIfClient($request->user());
+
         return response()->json($this->getConversationsForUser($request->user()));
     }
 
@@ -41,6 +44,7 @@ class ConversationController extends Controller
     public function store(Request $request): JsonResponse
     {
         $user = $request->user();
+        $this->ensureSubscribedIfClient($user);
 
         $request->validate([
             'user_id' => ['required', 'integer', 'exists:users,id', 'not_in:' . $user->id],
@@ -74,6 +78,7 @@ class ConversationController extends Controller
      */
     public function fetchMessages(Request $request, Conversation $conversation): JsonResponse
     {
+        $this->ensureSubscribedIfClient($request->user());
         $this->authorizeConversationAccess($request->user(), $conversation);
 
         $after = $request->integer('after', 0);
@@ -99,6 +104,7 @@ class ConversationController extends Controller
     public function sendMessage(Request $request, Conversation $conversation): JsonResponse
     {
         $user = $request->user();
+        $this->ensureSubscribedIfClient($user);
         $this->authorizeConversationAccess($user, $conversation);
 
         $request->validate([
@@ -230,6 +236,7 @@ class ConversationController extends Controller
             'subtitle'     => $subtitle,
             'avatar_text'  => $avatarText,
             'avatar_color' => $avatarColor,
+            'avatar_url'   => $c->type === 'direct' ? $others->first()?->profileImageUrl() : null,
             'last_message' => $lastMsg ? [
                 'text'   => $lastMsg->message ?? '📎 ' . ($lastMsg->message_type ?? 'Attachment'),
                 'sender' => $lastMsg->sender?->name ?? '',
@@ -257,11 +264,13 @@ class ConversationController extends Controller
                 'id'       => $u->id,
                 'name'     => $u->name,
                 'role'     => $u->role->label(),
+                'avatar_url' => $u->profileImageUrl(),
                 'initials' => collect(explode(' ', $u->name))
                     ->filter()
                     ->map(fn ($w) => strtoupper(substr($w, 0, 1)))
                     ->take(2)
                     ->implode(''),
+                'colorClass' => 'bg-orange-100 text-brand-primary',
             ])
             ->all();
     }
@@ -274,6 +283,7 @@ class ConversationController extends Controller
             'id'           => $msg->id,
             'sender_id'    => $msg->sender_id,
             'sender_name'  => $msg->sender->name,
+            'sender_avatar_url' => $msg->sender->profileImageUrl(),
             'message'      => $msg->message,
             'message_type' => $msg->message_type ?? 'text',
             'file_path'    => $fileUrl,
@@ -319,6 +329,16 @@ class ConversationController extends Controller
                 403,
                 'Clients can only send direct messages to admins.'
             );
+        }
+    }
+
+    private function ensureSubscribedIfClient(User $user): void
+    {
+        if ($user->role === UserRole::CLIENT && ! $user->hasFullAccess()) {
+            $message = $user->hasUsedTrial()
+                ? 'Your free trial has expired. Subscribe to continue.'
+                : 'An active subscription or free trial is required to access messaging.';
+            abort(403, $message);
         }
     }
 }

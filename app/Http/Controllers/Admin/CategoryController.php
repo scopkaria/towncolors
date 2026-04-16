@@ -34,6 +34,8 @@ class CategoryController extends Controller
             'parent_id'        => ['nullable', 'integer', 'exists:project_categories,id'],
             'image'            => ['nullable', 'image', 'max:2048'],
             'featured_image'   => ['nullable', 'image', 'max:4096'],
+            'gallery_images'   => ['nullable', 'array', 'max:8'],
+            'gallery_images.*' => ['image', 'max:4096'],
             'price_range'        => ['nullable', 'string', 'max:100'],
             'estimated_duration' => ['nullable', 'string', 'max:100'],
         ]);
@@ -44,6 +46,13 @@ class CategoryController extends Controller
 
         if ($request->hasFile('featured_image')) {
             $validated['featured_image'] = $request->file('featured_image')->store('categories/featured', 'public');
+        }
+
+        if ($request->hasFile('gallery_images')) {
+            $validated['gallery_images'] = collect($request->file('gallery_images'))
+                ->map(fn ($file) => $file->store('categories/gallery', 'public'))
+                ->values()
+                ->all();
         }
 
         $validated['slug'] = $this->uniqueSlug($validated['name']);
@@ -72,6 +81,8 @@ class CategoryController extends Controller
             }],
             'image'          => ['nullable', 'image', 'max:2048'],
             'featured_image' => ['nullable', 'image', 'max:4096'],
+            'gallery_images' => ['nullable', 'array', 'max:8'],
+            'gallery_images.*' => ['image', 'max:4096'],
             'price_range'        => ['nullable', 'string', 'max:100'],
             'estimated_duration' => ['nullable', 'string', 'max:100'],
         ]);
@@ -88,6 +99,19 @@ class CategoryController extends Controller
                 Storage::disk('public')->delete($category->featured_image);
             }
             $validated['featured_image'] = $request->file('featured_image')->store('categories/featured', 'public');
+        }
+
+        if ($request->hasFile('gallery_images')) {
+            if (! empty($category->gallery_images)) {
+                foreach ($category->gallery_images as $galleryImage) {
+                    Storage::disk('public')->delete($galleryImage);
+                }
+            }
+
+            $validated['gallery_images'] = collect($request->file('gallery_images'))
+                ->map(fn ($file) => $file->store('categories/gallery', 'public'))
+                ->values()
+                ->all();
         }
 
         // Regenerate slug only if name changed
@@ -125,6 +149,12 @@ class CategoryController extends Controller
 
         if ($category->image_path) {
             Storage::disk('public')->delete($category->image_path);
+        }
+
+        if (! empty($category->gallery_images)) {
+            foreach ($category->gallery_images as $galleryImage) {
+                Storage::disk('public')->delete($galleryImage);
+            }
         }
 
         $category->delete();

@@ -159,6 +159,33 @@
                         @enderror
                     </div>
 
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div>
+                            <label for="username" class="block text-xs font-semibold uppercase tracking-[0.15em] text-slate-400 mb-2">Username</label>
+                            <input id="username" name="username" type="text"
+                                   value="{{ old('username') }}"
+                                   required autocomplete="nickname"
+                                   placeholder="admin_ops"
+                                   class="block w-full rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3 text-sm text-white placeholder-slate-600
+                                          focus:border-amber-500/70 focus:ring-2 focus:ring-amber-500/15 focus:outline-none transition" />
+                            @error('username')
+                                <p class="mt-1.5 text-xs text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div>
+                            <label for="phone" class="block text-xs font-semibold uppercase tracking-[0.15em] text-slate-400 mb-2">Phone (optional)</label>
+                            <input id="phone" name="phone" type="text"
+                                   value="{{ old('phone') }}"
+                                   autocomplete="tel"
+                                   placeholder="+255..."
+                                   class="block w-full rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3 text-sm text-white placeholder-slate-600
+                                          focus:border-amber-500/70 focus:ring-2 focus:ring-amber-500/15 focus:outline-none transition" />
+                            @error('phone')
+                                <p class="mt-1.5 text-xs text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
                     {{-- Admin Secret --}}
                     <div>
                         <label for="admin_secret" class="block text-xs font-semibold uppercase tracking-[0.15em] text-slate-400 mb-2">

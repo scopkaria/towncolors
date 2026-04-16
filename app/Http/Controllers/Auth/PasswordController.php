@@ -20,10 +20,20 @@ class PasswordController extends Controller
             'password' => ['required', Password::defaults(), 'confirmed'],
         ]);
 
+        $wasForcedChange = $request->user()->must_change_password;
+
         $request->user()->update([
             'password' => Hash::make($validated['password']),
+            'must_change_password' => false,
+            'onboarding_completed' => $wasForcedChange ? false : $request->user()->onboarding_completed,
         ]);
 
-        return back()->with('status', 'password-updated');
+        $redirect = back()->with('status', 'password-updated');
+
+        if ($wasForcedChange) {
+            $redirect->with('show_onboarding', true);
+        }
+
+        return $redirect;
     }
 }

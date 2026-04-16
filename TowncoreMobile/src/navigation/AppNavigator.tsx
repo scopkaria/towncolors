@@ -1,12 +1,12 @@
 import React from 'react';
 import { ActivityIndicator, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
 import { useAuth } from '../contexts/AuthContext';
-import { colors } from '../theme';
+import { useTheme } from '../contexts/ThemeContext';
 
 // Auth Screens
 import LoginScreen from '../screens/LoginScreen';
@@ -27,16 +27,12 @@ import BlogPostScreen from '../screens/BlogPostScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import LiveChatScreen from '../screens/LiveChatScreen';
+import NotificationSettingsScreen from '../screens/NotificationSettingsScreen';
+
+export const navigationRef = createNavigationContainerRef<any>();
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
-
-const screenOptions = {
-  headerStyle: { backgroundColor: colors.white },
-  headerTintColor: colors.text,
-  headerTitleStyle: { fontWeight: '700' as const },
-  headerShadowVisible: false,
-};
 
 // Auth Stack
 function AuthStack() {
@@ -50,9 +46,16 @@ function AuthStack() {
 
 // Projects Stack
 function ProjectsStack() {
+  const { colors } = useTheme();
+  const screenOptions = {
+    headerStyle: { backgroundColor: colors.card },
+    headerTintColor: colors.text,
+    headerTitleStyle: { fontWeight: '700' as const },
+    headerShadowVisible: false,
+  };
   return (
     <Stack.Navigator screenOptions={screenOptions}>
-      <Stack.Screen name="ProjectsList" component={ProjectsScreen} options={{ title: 'Projects' }} />
+      <Stack.Screen name="ProjectsList" component={ProjectsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="ProjectDetail" component={ProjectDetailScreen} options={{ title: 'Project Details' }} />
       <Stack.Screen name="CreateProject" component={CreateProjectScreen} options={{ title: 'New Project' }} />
     </Stack.Navigator>
@@ -61,6 +64,13 @@ function ProjectsStack() {
 
 // Messages Stack
 function MessagesStack() {
+  const { colors } = useTheme();
+  const screenOptions = {
+    headerStyle: { backgroundColor: colors.card },
+    headerTintColor: colors.text,
+    headerTitleStyle: { fontWeight: '700' as const },
+    headerShadowVisible: false,
+  };
   return (
     <Stack.Navigator screenOptions={screenOptions}>
       <Stack.Screen name="Conversations" component={ConversationsScreen} options={{ title: 'Messages' }} />
@@ -73,77 +83,9 @@ function MessagesStack() {
   );
 }
 
-// More Stack (Invoices, Portfolio, Blog, Notifications, Profile)
-function MoreStack() {
-  const { user } = useAuth();
-
-  return (
-    <Stack.Navigator screenOptions={screenOptions}>
-      <Stack.Screen name="MoreMenu" component={MoreMenuScreen} options={{ title: 'More' }} />
-      <Stack.Screen name="Invoices" component={InvoicesScreen} options={{ title: 'Invoices' }} />
-      <Stack.Screen name="InvoiceDetail" component={InvoiceDetailScreen} options={{ title: 'Invoice Details' }} />
-      <Stack.Screen name="Portfolio" component={PortfolioScreen} options={{ title: 'Portfolio' }} />
-      <Stack.Screen name="Blog" component={BlogScreen} options={{ title: 'Blog' }} />
-      <Stack.Screen name="BlogPost" component={BlogPostScreen} options={{ title: 'Article' }} />
-      <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
-      <Stack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
-      <Stack.Screen name="LiveChat" component={LiveChatScreen} options={{ title: 'Live Chat' }} />
-    </Stack.Navigator>
-  );
-}
-
-// More Menu Screen
-import { TouchableOpacity, Text, StyleSheet, ScrollView } from 'react-native';
-import { spacing, fontSize } from '../theme';
-
-function MoreMenuScreen({ navigation }: any) {
-  const { user } = useAuth();
-
-  const menuItems = [
-    { icon: 'chatbubble-ellipses-outline', label: 'Live Chat', screen: 'LiveChat', roles: ['admin', 'client', 'freelancer'] },
-    { icon: 'receipt-outline', label: 'Invoices', screen: 'Invoices', roles: ['admin', 'client', 'freelancer'] },
-    { icon: 'images-outline', label: 'Portfolio', screen: 'Portfolio', roles: ['admin', 'client', 'freelancer'] },
-    { icon: 'newspaper-outline', label: 'Blog', screen: 'Blog', roles: ['admin', 'client', 'freelancer'] },
-    { icon: 'notifications-outline', label: 'Notifications', screen: 'Notifications', roles: ['admin', 'client', 'freelancer'] },
-    { icon: 'person-outline', label: 'Profile & Settings', screen: 'Profile', roles: ['admin', 'client', 'freelancer'] },
-  ];
-
-  return (
-    <ScrollView style={menuStyles.container}>
-      {menuItems
-        .filter(item => item.roles.includes(user?.role || ''))
-        .map((item) => (
-          <TouchableOpacity
-            key={item.screen}
-            style={menuStyles.menuItem}
-            onPress={() => navigation.navigate(item.screen)}
-          >
-            <View style={menuStyles.menuIcon}>
-              <Ionicons name={item.icon as any} size={22} color={colors.primary} />
-            </View>
-            <Text style={menuStyles.menuLabel}>{item.label}</Text>
-            <Ionicons name="chevron-forward" size={18} color={colors.textLight} />
-          </TouchableOpacity>
-        ))}
-    </ScrollView>
-  );
-}
-
-const menuStyles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background, paddingTop: spacing.sm },
-  menuItem: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: colors.card,
-    padding: spacing.md, borderBottomWidth: 1, borderBottomColor: colors.border,
-  },
-  menuIcon: {
-    width: 40, height: 40, borderRadius: 12, backgroundColor: colors.primary + '12',
-    justifyContent: 'center', alignItems: 'center', marginRight: spacing.md,
-  },
-  menuLabel: { flex: 1, fontSize: fontSize.md, fontWeight: '600', color: colors.text },
-});
-
-// Main Tab Navigator
+// Main Tab Navigator (3 tabs — no More tab, drawer handles extras)
 function MainTabs() {
+  const { colors } = useTheme();
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -151,19 +93,18 @@ function MainTabs() {
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textLight,
         tabBarStyle: {
-          backgroundColor: colors.white,
+          backgroundColor: colors.card,
           borderTopColor: colors.border,
           paddingBottom: 4,
           height: 56,
         },
         tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
-        tabBarIcon: ({ focused, color, size }) => {
+        tabBarIcon: ({ focused, color }) => {
           let iconName: any;
           switch (route.name) {
             case 'Dashboard': iconName = focused ? 'grid' : 'grid-outline'; break;
             case 'Projects': iconName = focused ? 'folder' : 'folder-outline'; break;
             case 'Messages': iconName = focused ? 'chatbubbles' : 'chatbubbles-outline'; break;
-            case 'More': iconName = focused ? 'menu' : 'menu-outline'; break;
           }
           return <Ionicons name={iconName} size={22} color={color} />;
         },
@@ -172,14 +113,39 @@ function MainTabs() {
       <Tab.Screen name="Dashboard" component={DashboardScreen} />
       <Tab.Screen name="Projects" component={ProjectsStack} />
       <Tab.Screen name="Messages" component={MessagesStack} />
-      <Tab.Screen name="More" component={MoreStack} />
     </Tab.Navigator>
+  );
+}
+
+// App Main — tabs + overlay screens accessible from drawer
+function AppMain() {
+  const { colors } = useTheme();
+  const screenOptions = {
+    headerStyle: { backgroundColor: colors.card },
+    headerTintColor: colors.text,
+    headerTitleStyle: { fontWeight: '700' as const },
+    headerShadowVisible: false,
+  };
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Tabs" component={MainTabs} options={{ headerShown: false }} />
+      <Stack.Screen name="Invoices" component={InvoicesScreen} options={{ ...screenOptions, title: 'Invoices' }} />
+      <Stack.Screen name="InvoiceDetail" component={InvoiceDetailScreen} options={{ ...screenOptions, title: 'Invoice Details' }} />
+      <Stack.Screen name="Portfolio" component={PortfolioScreen} options={{ ...screenOptions, title: 'Portfolio' }} />
+      <Stack.Screen name="Blog" component={BlogScreen} options={{ ...screenOptions, title: 'Blog' }} />
+      <Stack.Screen name="BlogPost" component={BlogPostScreen} options={{ ...screenOptions, title: 'Article' }} />
+      <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ ...screenOptions, title: 'Notifications' }} />
+      <Stack.Screen name="Profile" component={ProfileScreen} options={{ ...screenOptions, title: 'Profile' }} />
+      <Stack.Screen name="LiveChat" component={LiveChatScreen} options={{ ...screenOptions, title: 'Live Chat' }} />
+      <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} options={{ ...screenOptions, title: 'Notification Settings' }} />
+    </Stack.Navigator>
   );
 }
 
 // Root Navigator
 export default function AppNavigator() {
   const { user, isLoading } = useAuth();
+  const { colors } = useTheme();
 
   if (isLoading) {
     return (
@@ -190,8 +156,8 @@ export default function AppNavigator() {
   }
 
   return (
-    <NavigationContainer>
-      {user ? <MainTabs /> : <AuthStack />}
+    <NavigationContainer ref={navigationRef}>
+      {user ? <AppMain /> : <AuthStack />}
     </NavigationContainer>
   );
 }

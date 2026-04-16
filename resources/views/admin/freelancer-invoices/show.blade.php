@@ -2,10 +2,10 @@
     <x-slot name="header">
         <div class="space-y-3">
             <div class="flex items-center gap-3">
-                <a href="{{ route('admin.freelancerInvoices.index') }}" class="rounded-2xl border border-stone-200 bg-white p-2 text-brand-muted transition hover:border-orange-200 hover:text-brand-primary">
+                <a href="{{ route('admin.freelancerInvoices.index') }}" class="rounded-2xl border border-warm-300/50 bg-warm-100 p-2 text-brand-muted transition hover:border-accent/30 hover:text-brand-primary">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>
                 </a>
-                <span class="inline-flex rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary">
+                <span class="inline-flex rounded-full border border-accent/30 bg-accent-light px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary">
                     Admin · Invoice preview
                 </span>
             </div>
@@ -30,9 +30,20 @@
                 </span>
             </div>
             <div class="mt-5 space-y-3 text-sm text-brand-muted">
+                <p>Invoice: <span class="font-semibold text-brand-ink">{{ $freelancerInvoice->invoice_number ?? ('INV-' . str_pad((string) $freelancerInvoice->id, 5, '0', STR_PAD_LEFT)) }}</span></p>
                 <p>Freelancer: <span class="font-semibold text-brand-ink">{{ $freelancerInvoice->freelancer->name }}</span></p>
                 <p>Project: <span class="font-semibold text-brand-ink">{{ $freelancerInvoice->project->title }}</span></p>
+                <p>Amount: <span class="font-semibold text-brand-ink">{{ number_format((float) ($freelancerInvoice->amount ?? 0), 2) }} TZS</span></p>
+                @if ($freelancerInvoice->due_date)
+                    <p>Due date: <span class="font-semibold text-brand-ink">{{ $freelancerInvoice->due_date->format('M d, Y') }}</span></p>
+                @endif
             </div>
+            @if ($freelancerInvoice->description)
+                <div class="mt-5 rounded-2xl border border-warm-300/50 bg-warm-100 px-4 py-4 text-sm text-brand-ink">
+                    <p class="font-semibold">Description</p>
+                    <p class="mt-2 whitespace-pre-wrap leading-6">{{ $freelancerInvoice->description }}</p>
+                </div>
+            @endif
             @if ($freelancerInvoice->rejection_note)
                 <div class="mt-5 rounded-2xl border border-red-100 bg-red-50 px-4 py-4 text-sm text-red-700">
                     <p class="font-semibold">Current rejection note</p>
@@ -53,7 +64,7 @@
                         @method('PATCH')
                         <div>
                             <label for="rejection_note" class="block text-sm font-semibold text-brand-ink">Rejection note</label>
-                            <textarea id="rejection_note" name="rejection_note" rows="4" class="mt-2 w-full rounded-2xl border-stone-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm transition duration-200 focus:border-brand-primary focus:ring-brand-primary" placeholder="Explain what needs to be corrected before resubmission...">{{ old('rejection_note') }}</textarea>
+                            <textarea id="rejection_note" name="rejection_note" rows="4" class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition duration-200 focus:border-brand-primary focus:ring-brand-primary" placeholder="Explain what needs to be corrected before resubmission...">{{ old('rejection_note') }}</textarea>
                             @error('rejection_note')
                                 <p class="mt-2 text-sm text-red-500">{{ $message }}</p>
                             @enderror

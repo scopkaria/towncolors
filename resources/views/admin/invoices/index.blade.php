@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="space-y-3">
-            <span class="inline-flex w-fit rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary">
+            <span class="inline-flex w-fit rounded-full border border-accent/30 bg-accent-light px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary">
                 Financial management
             </span>
             <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -49,7 +49,7 @@
                     <p class="font-display text-2xl text-brand-ink">{{ $totalCount }}</p>
                 </div>
             </div>
-            <div class="mt-3 flex gap-3 border-t border-stone-100 pt-3">
+            <div class="mt-3 flex gap-3 border-t border-warm-300/40 pt-3">
                 <span class="text-xs text-emerald-600"><span class="font-bold">{{ $paidCount }}</span> paid</span>
                 <span class="text-xs text-blue-600"><span class="font-bold">{{ $partialCount }}</span> partial</span>
                 <span class="text-xs text-amber-600"><span class="font-bold">{{ $unpaidCount }}</span> unpaid</span>
@@ -122,11 +122,11 @@
                     <p class="font-display text-2xl text-emerald-600">{{ $totalAmount > 0 ? round(($collectedAmount / $totalAmount) * 100) : 0 }}%</p>
                     <p class="text-[10px] font-bold uppercase tracking-wider text-brand-muted">Collected rate</p>
                 </div>
-                <div class="border-l border-stone-100 pl-6">
+                <div class="border-l border-warm-300/40 pl-6">
                     <p class="font-display text-2xl text-brand-primary">TZS {{ number_format($invoices->where('currency', 'TZS')->sum('amount'), 0) }}</p>
                     <p class="text-[10px] font-bold uppercase tracking-wider text-brand-muted">TZS invoiced</p>
                 </div>
-                <div class="border-l border-stone-100 pl-6">
+                <div class="border-l border-warm-300/40 pl-6">
                     <p class="font-display text-2xl text-brand-primary">${{ number_format($invoices->where('currency', 'USD')->sum('amount'), 2) }}</p>
                     <p class="text-[10px] font-bold uppercase tracking-wider text-brand-muted">USD invoiced</p>
                 </div>
@@ -146,7 +146,7 @@
                 <div>
                     <label class="mb-1 block text-[10px] font-bold uppercase tracking-wider text-brand-muted">Status</label>
                     <select name="status" onchange="this.form.submit()"
-                            class="rounded-xl border-stone-200 bg-white px-4 py-2.5 text-xs font-semibold text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                            class="rounded-xl border-warm-300/50 bg-warm-100 px-4 py-2.5 text-xs font-semibold text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
                         <option value="">All status</option>
                         <option value="unpaid" {{ ($filters['status'] ?? '') === 'unpaid' ? 'selected' : '' }}>Unpaid</option>
                         <option value="partial" {{ ($filters['status'] ?? '') === 'partial' ? 'selected' : '' }}>Partial</option>
@@ -158,7 +158,7 @@
                 <div>
                     <label class="mb-1 block text-[10px] font-bold uppercase tracking-wider text-brand-muted">Currency</label>
                     <select name="currency" onchange="this.form.submit()"
-                            class="rounded-xl border-stone-200 bg-white px-4 py-2.5 text-xs font-semibold text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                            class="rounded-xl border-warm-300/50 bg-warm-100 px-4 py-2.5 text-xs font-semibold text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
                         <option value="">All currencies</option>
                         <option value="TZS" {{ ($filters['currency'] ?? '') === 'TZS' ? 'selected' : '' }}>TZS</option>
                         <option value="USD" {{ ($filters['currency'] ?? '') === 'USD' ? 'selected' : '' }}>USD</option>
@@ -169,7 +169,7 @@
                 <div>
                     <label class="mb-1 block text-[10px] font-bold uppercase tracking-wider text-brand-muted">Client</label>
                     <select name="client" onchange="this.form.submit()"
-                            class="rounded-xl border-stone-200 bg-white px-4 py-2.5 text-xs font-semibold text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                            class="rounded-xl border-warm-300/50 bg-warm-100 px-4 py-2.5 text-xs font-semibold text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
                         <option value="">All clients</option>
                         @foreach ($clients as $client)
                             <option value="{{ $client->id }}" {{ ($filters['client'] ?? '') == $client->id ? 'selected' : '' }}>{{ $client->name }}</option>
@@ -181,18 +181,18 @@
                 <div>
                     <label class="mb-1 block text-[10px] font-bold uppercase tracking-wider text-brand-muted">From</label>
                     <input type="date" name="date_from" value="{{ $filters['date_from'] ?? '' }}" onchange="this.form.submit()"
-                           class="rounded-xl border-stone-200 bg-white px-4 py-2.5 text-xs font-semibold text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                           class="rounded-xl border-warm-300/50 bg-warm-100 px-4 py-2.5 text-xs font-semibold text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
                 </div>
 
                 {{-- Date To --}}
                 <div>
                     <label class="mb-1 block text-[10px] font-bold uppercase tracking-wider text-brand-muted">To</label>
                     <input type="date" name="date_to" value="{{ $filters['date_to'] ?? '' }}" onchange="this.form.submit()"
-                           class="rounded-xl border-stone-200 bg-white px-4 py-2.5 text-xs font-semibold text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                           class="rounded-xl border-warm-300/50 bg-warm-100 px-4 py-2.5 text-xs font-semibold text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
                 </div>
 
                 @if (array_filter($filters))
-                    <a href="{{ route('admin.invoices') }}" class="rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-xs font-semibold text-brand-muted transition hover:border-red-200 hover:text-red-500">
+                    <a href="{{ route('admin.invoices') }}" class="rounded-xl border border-warm-300/50 bg-warm-100 px-4 py-2.5 text-xs font-semibold text-brand-muted transition hover:border-red-200 hover:text-red-500">
                         Clear all
                     </a>
                 @endif
@@ -203,7 +203,7 @@
     {{-- Invoice Table --}}
     @if ($invoices->isEmpty())
         <div class="rounded-3xl border border-white/70 bg-white/90 p-12 text-center shadow-panel">
-            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-orange-50">
+            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-accent-light">
                 <svg class="h-8 w-8 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
                     <path stroke-linecap="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/>
                 </svg>
@@ -225,7 +225,7 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
                     <thead>
-                        <tr class="border-b border-stone-100 bg-stone-50/70">
+                        <tr class="border-b border-warm-300/40 bg-warm-200/70">
                             <th class="px-5 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-muted">#</th>
                             <th class="px-5 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-muted">Client</th>
                             <th class="px-5 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-muted">Project</th>
@@ -236,15 +236,15 @@
                             <th class="px-5 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-muted text-right">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-stone-100">
+                    <tbody class="divide-y divide-warm-300/40">
                         @foreach ($invoices as $invoice)
                             @php
                                 $isOverdue = $invoice->status === 'unpaid' && $invoice->expires_at && $invoice->expires_at->isPast();
                             @endphp
-                            <tr class="transition duration-150 hover:bg-orange-50/30 {{ $isOverdue ? 'bg-red-50/30' : '' }}">
+                            <tr class="transition duration-150 hover:bg-accent/10 {{ $isOverdue ? 'bg-red-50/30' : '' }}">
                                 {{-- Invoice # --}}
                                 <td class="whitespace-nowrap px-5 py-4">
-                                    <span class="inline-flex rounded-lg border border-stone-100 bg-stone-50 px-2 py-0.5 text-[10px] font-bold text-brand-muted">
+                                    <span class="inline-flex rounded-lg border border-warm-300/40 bg-warm-200/50 px-2 py-0.5 text-[10px] font-bold text-brand-muted">
                                         INV-{{ str_pad($invoice->id, 4, '0', STR_PAD_LEFT) }}
                                     </span>
                                 </td>
@@ -337,8 +337,8 @@
 
                                                 <template x-teleport="body">
                                                     <div x-show="open" x-transition class="fixed inset-0 z-[100] flex items-center justify-center p-4" style="display:none;">
-                                                        <div class="absolute inset-0 bg-slate-950/50 backdrop-blur-sm" @click="open = false"></div>
-                                                        <div class="relative z-10 w-full max-w-md rounded-3xl border border-white/70 bg-white p-6 shadow-2xl">
+                                                        <div class="absolute inset-0 bg-navy-900/50 backdrop-blur-sm" @click="open = false"></div>
+                                                        <div class="relative z-10 w-full max-w-md rounded-3xl border border-white/70 bg-warm-100 p-6 shadow-2xl">
                                                             {{-- Header --}}
                                                             <div class="mb-5 flex items-start justify-between gap-3">
                                                                 <div>
@@ -348,18 +348,18 @@
                                                                     </h3>
                                                                     <p class="text-xs text-brand-muted">{{ $invoice->project->title }} &mdash; {{ $invoice->project->client->name ?? '' }}</p>
                                                                 </div>
-                                                                <button @click="open = false" class="mt-1 rounded-xl p-1.5 text-brand-muted transition hover:bg-stone-100 hover:text-brand-ink">
+                                                                <button @click="open = false" class="mt-1 rounded-xl p-1.5 text-brand-muted transition hover:bg-warm-200 hover:text-brand-ink">
                                                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M6 18 18 6M6 6l12 12"/></svg>
                                                                 </button>
                                                             </div>
 
                                                             {{-- Breakdown --}}
-                                                            <div class="mb-5 grid grid-cols-3 gap-3 rounded-2xl bg-stone-50 p-4">
+                                                            <div class="mb-5 grid grid-cols-3 gap-3 rounded-2xl bg-warm-200/50 p-4">
                                                                 <div class="text-center">
                                                                     <p class="text-[9px] font-bold uppercase tracking-wider text-brand-muted">Total</p>
                                                                     <p class="mt-1 text-sm font-bold text-brand-ink">{{ $invoice->formattedAmount() }}</p>
                                                                 </div>
-                                                                <div class="border-x border-stone-200 text-center">
+                                                                <div class="border-x border-warm-300/50 text-center">
                                                                     <p class="text-[9px] font-bold uppercase tracking-wider text-brand-muted">Paid</p>
                                                                     <p class="mt-1 text-sm font-bold text-emerald-600">{{ $invoice->formattedPaidAmount() }}</p>
                                                                 </div>
@@ -380,7 +380,7 @@
                                                                         <input type="number" name="amount"
                                                                                step="0.01" min="0.01" max="{{ number_format($remaining, 2, '.', '') }}"
                                                                                placeholder="0.00"
-                                                                               class="mt-2 w-full rounded-2xl border-stone-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary"
+                                                                               class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary"
                                                                                required>
                                                                         <p class="mt-1.5 text-[10px] text-brand-muted">
                                                                             Max: {{ $invoice->formattedRemainingAmount() }}
@@ -403,11 +403,11 @@
                                             </div>
                                         @endif
                                         <a href="{{ route('admin.invoices.edit', $invoice) }}" title="Edit Invoice"
-                                           class="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-stone-200 bg-white text-brand-muted transition hover:border-blue-200 hover:text-blue-600">
+                                           class="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-warm-300/50 bg-warm-100 text-brand-muted transition hover:border-blue-200 hover:text-blue-600">
                                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/></svg>
                                         </a>
                                         <a href="{{ route('invoices.pdf', $invoice) }}" title="Download PDF"
-                                           class="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-stone-200 bg-white text-brand-muted transition hover:border-brand-primary hover:text-brand-primary">
+                                           class="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-warm-300/50 bg-warm-100 text-brand-muted transition hover:border-brand-primary hover:text-brand-primary">
                                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
                                         </a>
                                     </div>
@@ -419,7 +419,7 @@
             </div>
 
             {{-- Table Footer Summary --}}
-            <div class="flex flex-wrap items-center justify-between gap-4 border-t border-stone-100 bg-stone-50/50 px-5 py-4">
+            <div class="flex flex-wrap items-center justify-between gap-4 border-t border-warm-300/40 bg-warm-200/50 px-5 py-4">
                 <p class="text-xs text-brand-muted">
                     Showing <span class="font-bold text-brand-ink">{{ $invoices->count() }}</span> invoice{{ $invoices->count() !== 1 ? 's' : '' }}
                     @if (array_filter($filters))

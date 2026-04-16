@@ -73,7 +73,7 @@
         .invoice-title {
             font-size: 32px;
             font-weight: 800;
-            color: #f97316;
+            color: #FFB162;
             letter-spacing: -0.5px;
         }
         .invoice-number {

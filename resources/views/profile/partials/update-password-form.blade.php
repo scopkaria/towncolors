@@ -7,6 +7,11 @@
         <p class="mt-1 text-sm text-gray-600">
             {{ __('Ensure your account is using a long, random password to stay secure.') }}
         </p>
+        @if ($user->must_change_password)
+            <p class="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                {{ __('You must change your temporary password before using the platform.') }}
+            </p>
+        @endif
     </header>
 
     <form method="post" action="{{ route('password.update') }}" class="mt-6 space-y-6">

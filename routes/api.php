@@ -81,4 +81,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
+
+    // Live Chat (agent/admin endpoints — auth required)
+    Route::prefix('live-chat/agent')->group(function () {
+        Route::get('/sessions',              [LiveChatController::class, 'apiSessions']);
+        Route::post('/{session}/join',       [LiveChatController::class, 'agentJoin']);
+        Route::post('/{session}/send',       [LiveChatController::class, 'agentSend']);
+        Route::get('/{session}/messages',    [LiveChatController::class, 'agentMessages']);
+        Route::post('/{session}/close',      [LiveChatController::class, 'agentClose']);
+    });
 });

@@ -7,8 +7,6 @@ use App\Models\FreelancerInvoice;
 use App\Models\Project;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class FreelancerInvoiceController extends Controller
@@ -36,13 +34,15 @@ class FreelancerInvoiceController extends Controller
     }
 
     /**
-     * Store a newly uploaded invoice PDF.
+     * Store a newly created invoice.
      */
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'project_id' => ['required', 'exists:projects,id'],
-            'invoice'    => ['required', 'file', 'mimes:pdf', 'max:10240'], // 10 MB max
+            'amount'     => ['required', 'numeric', 'min:0.01', 'max:999999.99'],
+            'description' => ['required', 'string', 'min:10', 'max:1000'],
+            'due_date'   => ['nullable', 'date', 'after:today'],
         ]);
 
         // Confirm the project is actually assigned to this freelancer
@@ -61,21 +61,16 @@ class FreelancerInvoiceController extends Controller
                 ->withInput();
         }
 
-        $file = $request->file('invoice');
-        $filename = Str::uuid() . '.pdf';
-        $path = $file->storeAs(
-            'freelancer-invoices/' . $request->user()->id,
-            $filename,
-            'local'   // private disk — not publicly accessible
-        );
-
         FreelancerInvoice::create([
             'freelancer_id' => $request->user()->id,
             'project_id'    => $project->id,
-            'file_path'     => $path,
+            'invoice_number' => FreelancerInvoice::generateInvoiceNumber(),
+            'amount'        => $validated['amount'],
+            'description'   => $validated['description'],
+            'due_date'      => $validated['due_date'],
             'status'        => 'pending',
         ]);
 
-        return back()->with('success', 'Invoice submitted successfully.');
+        return back()->with('success', 'Invoice created successfully and sent to admin for review.');
     }
 }

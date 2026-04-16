@@ -2,10 +2,10 @@
     <x-slot name="header">
         <div class="space-y-3">
             <div class="flex items-center gap-3">
-                <a href="{{ route('admin.leads.index') }}" class="rounded-2xl border border-stone-200 bg-white p-2 text-brand-muted transition hover:border-orange-200 hover:text-brand-primary">
+                <a href="{{ route('admin.leads.index') }}" class="rounded-2xl border border-warm-300/50 bg-warm-100 p-2 text-brand-muted transition hover:border-accent/30 hover:text-brand-primary">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>
                 </a>
-                <span class="inline-flex rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary">
+                <span class="inline-flex rounded-full border border-accent/30 bg-accent-light px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary">
                     Admin · Lead detail
                 </span>
             </div>
@@ -63,7 +63,7 @@
                 {{-- Message --}}
                 <div class="rounded-3xl border border-white/70 bg-white/90 p-6 shadow-panel">
                     <p class="text-sm font-semibold uppercase tracking-[0.24em] text-brand-primary">Inquiry Message</p>
-                    <div class="mt-4 rounded-2xl border border-stone-100 bg-stone-50 px-5 py-4 text-sm leading-7 text-brand-muted whitespace-pre-line">{{ $lead->message }}</div>
+                    <div class="mt-4 rounded-2xl border border-warm-300/40 bg-warm-200/50 px-5 py-4 text-sm leading-7 text-brand-muted whitespace-pre-line">{{ $lead->message }}</div>
                 </div>
 
                 {{-- Admin Notes (if any) --}}
@@ -88,7 +88,7 @@
                         <div>
                             <label for="status" class="block text-sm font-semibold text-brand-ink">Status</label>
                             <select name="status" id="status"
-                                    class="mt-2 w-full rounded-2xl border-stone-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
+                                    class="mt-2 w-full rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-brand-primary focus:ring-brand-primary">
                                 <option value="new"       {{ $lead->status === 'new'       ? 'selected' : '' }}>New</option>
                                 <option value="contacted" {{ $lead->status === 'contacted' ? 'selected' : '' }}>Contacted</option>
                                 <option value="converted" {{ $lead->status === 'converted' ? 'selected' : '' }}>Converted</option>
@@ -99,7 +99,7 @@
                             <label for="admin_notes" class="block text-sm font-semibold text-brand-ink">Admin notes (internal)</label>
                             <textarea name="admin_notes" id="admin_notes" rows="4"
                                       placeholder="Add internal notes visible only to admins…"
-                                      class="mt-2 w-full resize-none rounded-2xl border-stone-200 bg-white px-4 py-3 text-sm leading-6 text-brand-ink shadow-sm transition placeholder:text-stone-400 focus:border-brand-primary focus:ring-brand-primary">{{ old('admin_notes', $lead->admin_notes) }}</textarea>
+                                      class="mt-2 w-full resize-none rounded-2xl border-warm-300/50 bg-warm-100 px-4 py-3 text-sm leading-6 text-brand-ink shadow-sm transition placeholder:text-stone-400 focus:border-brand-primary focus:ring-brand-primary">{{ old('admin_notes', $lead->admin_notes) }}</textarea>
                         </div>
 
                         <button type="submit" class="btn-primary w-full justify-center">Save Changes</button>
@@ -115,7 +115,7 @@
                         </p>
 
                         <button @click="open = !open" type="button"
-                                class="mt-4 w-full justify-center rounded-2xl border border-emerald-200 bg-white px-4 py-3 text-sm font-semibold text-emerald-700 shadow-sm transition hover:border-emerald-300 hover:bg-emerald-50">
+                                class="mt-4 w-full justify-center rounded-2xl border border-emerald-200 bg-warm-100 px-4 py-3 text-sm font-semibold text-emerald-700 shadow-sm transition hover:border-emerald-300 hover:bg-emerald-50">
                             <span x-show="!open">Set Password & Convert</span>
                             <span x-show="open" x-cloak>Cancel</span>
                         </button>
@@ -132,7 +132,7 @@
                                 </label>
                                 <input id="password" name="password" type="password" required minlength="8"
                                        placeholder="min. 8 characters"
-                                       class="mt-2 w-full rounded-2xl border-emerald-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-emerald-400 focus:ring-emerald-300 placeholder:text-stone-400">
+                                       class="mt-2 w-full rounded-2xl border-emerald-200 bg-warm-100 px-4 py-3 text-sm text-brand-ink shadow-sm transition focus:border-emerald-400 focus:ring-emerald-300 placeholder:text-stone-400">
                                 @error('password')
                                     <p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>
                                 @enderror
@@ -160,7 +160,7 @@
 
                 {{-- Quick reply mailto --}}
                 <a href="mailto:{{ $lead->email }}?subject=Re: Your inquiry about {{ $lead->project_type ? (\App\Models\Lead::projectTypes()[$lead->project_type] ?? $lead->project_type) : 'your project' }}"
-                   class="flex w-full items-center justify-center gap-2 rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm font-semibold text-brand-ink shadow-sm transition hover:border-orange-200 hover:text-brand-primary">
+                   class="flex w-full items-center justify-center gap-2 rounded-2xl border border-warm-300/50 bg-warm-100 px-4 py-3 text-sm font-semibold text-brand-ink shadow-sm transition hover:border-accent/30 hover:text-brand-primary">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
                     </svg>

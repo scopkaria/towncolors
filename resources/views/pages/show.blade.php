@@ -27,13 +27,13 @@
         .page-content h3 { font-size: 1.25rem; font-weight: 600; color: #1c1917; margin: 1.25rem 0 0.5rem; line-height: 1.4; }
         .page-content h4 { font-size: 1rem; font-weight: 600; color: #1c1917; margin: 1rem 0 0.5rem; }
         .page-content p  { color: #78716c; line-height: 1.8; margin: 0.875rem 0; font-size: 0.9375rem; }
-        .page-content a  { color: #f97316; text-decoration: underline; }
-        .page-content a:hover { color: #ea580c; }
+        .page-content a  { color: #FFB162; text-decoration: underline; }
+        .page-content a:hover { color: #A35139; }
         .page-content ul, .page-content ol { padding-left: 1.5rem; margin: 0.875rem 0; color: #78716c; line-height: 1.8; }
         .page-content li { margin: 0.25rem 0; }
         .page-content ul li { list-style-type: disc; }
         .page-content ol li { list-style-type: decimal; }
-        .page-content blockquote { border-left: 3px solid #f97316; padding-left: 1.25rem; margin: 1.25rem 0; color: #a8a29e; font-style: italic; }
+        .page-content blockquote { border-left: 3px solid #FFB162; padding-left: 1.25rem; margin: 1.25rem 0; color: #a8a29e; font-style: italic; }
         .page-content pre  { background: #f5f5f4; border-radius: 0.75rem; padding: 1rem 1.25rem; overflow-x: auto; font-size: 0.8125rem; margin: 1rem 0; }
         .page-content code { background: #f5f5f4; border-radius: 0.25rem; padding: 0.1em 0.35em; font-size: 0.875em; }
         .page-content strong { font-weight: 700; color: #292524; }
@@ -44,13 +44,13 @@
 </head>
 <body class="font-sans antialiased">
 
-    <div class="min-h-screen bg-gradient-to-br from-stone-50 via-white to-orange-50/20">
+    <div class="min-h-screen bg-gradient-to-br from-warm-200 via-white to-accent-light">
 
         {{-- ── Nav ── --}}
         <header class="sticky top-0 z-30 border-b border-white/70 bg-white/80 backdrop-blur-xl">
             <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 sm:px-8">
                 <a href="{{ url('/') }}" class="flex items-center gap-3">
-                    <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-950 text-white shadow-card">
+                    <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-navy-800 text-white shadow-card">
                         <x-application-logo class="h-6 w-6" />
                     </span>
                     <span class="font-display text-xl text-brand-ink">{{ config('app.name', 'Towncore') }}</span>
@@ -69,7 +69,7 @@
         </header>
 
         {{-- ── Page header ── --}}
-        <div class="border-b border-stone-100 bg-white/60">
+        <div class="border-b border-warm-300/40 bg-warm-100/60">
             <div class="mx-auto max-w-4xl px-5 py-12 sm:px-8 sm:py-16">
                 <nav class="mb-5 flex items-center gap-2 text-xs text-brand-muted">
                     <a href="{{ url('/') }}" class="transition hover:text-brand-primary">Home</a>
@@ -101,10 +101,10 @@
         </main>
 
         {{-- ── Footer ── --}}
-        <footer class="border-t border-stone-100 py-10 text-center">
+        <footer class="border-t border-warm-300/40 py-10 text-center">
             <div class="mx-auto max-w-7xl px-5 sm:px-8">
                 <a href="{{ url('/') }}" class="inline-flex items-center gap-3">
-                    <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-950 text-white">
+                    <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-navy-800 text-white">
                         <x-application-logo class="h-5 w-5" />
                     </span>
                     <span class="font-display text-base text-brand-ink">{{ config('app.name', 'Towncore') }}</span>

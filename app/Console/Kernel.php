@@ -17,6 +17,9 @@ class Kernel extends ConsoleKernel
 
         // Automation: remind clients about invoices unpaid for 2+ days (runs at 09:00)
         $schedule->command('invoices:send-reminders')->dailyAt('09:00');
+
+        // Subscriptions: notify clients expiring within 5 days, auto-expire overdue (runs at 08:00)
+        $schedule->command('subscriptions:check-expiring --days=5')->dailyAt('08:00');
     }
 
     /**

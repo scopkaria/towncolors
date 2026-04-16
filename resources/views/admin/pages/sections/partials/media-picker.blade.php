@@ -5,7 +5,7 @@
 
     {{-- Preview --}}
     <div x-show="preview" class="relative inline-block">
-        <img :src="preview" alt="Selected image" class="h-40 w-full max-w-sm rounded-2xl border border-stone-200 object-cover">
+        <img :src="preview" alt="Selected image" class="h-40 w-full max-w-sm rounded-2xl border border-warm-300/50 object-cover">
         <button type="button" @click="clear()"
                 class="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white shadow">
             <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -15,7 +15,7 @@
     </div>
 
     <button type="button" @click="open()"
-            class="inline-flex items-center gap-2 rounded-2xl border border-stone-200 bg-white px-4 py-2.5 text-sm font-semibold text-brand-muted transition hover:border-brand-primary hover:text-brand-primary">
+            class="inline-flex items-center gap-2 rounded-2xl border border-warm-300/50 bg-warm-100 px-4 py-2.5 text-sm font-semibold text-brand-muted transition hover:border-brand-primary hover:text-brand-primary">
         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
             <path stroke-linecap="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M13.5 12h.008v.008H13.5V12Zm-3 8.25h13.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v13.5c0 1.243 1.007 2.25 2.25 2.25Z"/>
         </svg>
@@ -32,10 +32,10 @@
 
             <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="close()"></div>
 
-            <div class="relative z-10 flex max-h-[85vh] w-full max-w-3xl flex-col rounded-3xl border border-white/20 bg-white shadow-2xl overflow-hidden">
-                <div class="flex items-center justify-between border-b border-stone-100 px-6 py-4">
+            <div class="relative z-10 flex max-h-[85vh] w-full max-w-3xl flex-col rounded-3xl border border-white/20 bg-warm-100 shadow-2xl overflow-hidden">
+                <div class="flex items-center justify-between border-b border-warm-300/40 px-6 py-4">
                     <h3 class="font-display text-lg text-brand-ink">Select Image</h3>
-                    <button type="button" @click="close()" class="flex h-8 w-8 items-center justify-center rounded-xl border border-stone-200 text-brand-muted hover:border-brand-primary hover:text-brand-primary">
+                    <button type="button" @click="close()" class="flex h-8 w-8 items-center justify-center rounded-xl border border-warm-300/50 text-brand-muted hover:border-brand-primary hover:text-brand-primary">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M6 18 18 6M6 6l12 12"/></svg>
                     </button>
                 </div>
@@ -48,7 +48,7 @@
                         <template x-for="img in images" :key="img.id">
                             <button type="button" @click="pick(img)"
                                     :class="mediaId == img.id ? 'ring-2 ring-brand-primary ring-offset-2' : ''"
-                                    class="group relative overflow-hidden rounded-2xl border border-stone-200 bg-stone-50 aspect-square transition hover:border-brand-primary">
+                                    class="group relative overflow-hidden rounded-2xl border border-warm-300/50 bg-warm-200/50 aspect-square transition hover:border-brand-primary">
                                 <img :src="img.url" :alt="img.name" class="h-full w-full object-cover transition group-hover:scale-105">
                             </button>
                         </template>

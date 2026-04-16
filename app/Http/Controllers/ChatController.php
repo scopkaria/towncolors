@@ -53,6 +53,10 @@ class ChatController extends Controller
     {
         $user = $request->user();
 
+        if ($user->role === UserRole::CLIENT && ! $user->hasActiveSubscription()) {
+            abort(403, 'An active subscription is required to access project chat.');
+        }
+
         if ($user->role === UserRole::ADMIN) {
             return;
         }
