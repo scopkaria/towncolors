@@ -48,6 +48,7 @@ export async function registerForPushNotifications(): Promise<string | null> {
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
         lightColor: '#f97316',
+        sound: 'default',
       });
 
       await Notifications.setNotificationChannelAsync('messages', {
@@ -55,12 +56,14 @@ export async function registerForPushNotifications(): Promise<string | null> {
         importance: Notifications.AndroidImportance.HIGH,
         vibrationPattern: [0, 250, 250, 250],
         lightColor: '#3b82f6',
+        sound: 'default',
       });
 
       await Notifications.setNotificationChannelAsync('projects', {
         name: 'Projects',
         importance: Notifications.AndroidImportance.HIGH,
         lightColor: '#8b5cf6',
+        sound: 'default',
       });
 
       await Notifications.setNotificationChannelAsync('livechat', {
@@ -68,6 +71,7 @@ export async function registerForPushNotifications(): Promise<string | null> {
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
         lightColor: '#f97316',
+        sound: 'default',
       });
     }
 

@@ -9,7 +9,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { projectsApi } from '../api';
 import { spacing, fontSize, statusColors } from '../theme';
-import { TAB_BAR_TOTAL_HEIGHT } from '../navigation/AppNavigator';
+import { TAB_BAR_TOTAL_HEIGHT } from '../constants/layout';
 
 const STATUS_FILTERS = ['all', 'pending', 'assigned', 'in_progress', 'completed'];
 

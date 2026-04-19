@@ -11,6 +11,9 @@ use App\Http\Controllers\Api\PortfolioController;
 use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\MobileBrandingController;
+use App\Http\Controllers\Api\SubscriptionApiController;
+use App\Http\Controllers\Api\ChecklistApiController;
+use App\Http\Controllers\Api\ClientFileApiController;
 use App\Http\Controllers\LiveChatController;
 
 /*
@@ -92,4 +95,22 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{session}/messages',    [LiveChatController::class, 'agentMessages']);
         Route::post('/{session}/close',      [LiveChatController::class, 'agentClose']);
     });
+
+    // Subscription & Plans
+    Route::get('/subscription/plans', [SubscriptionApiController::class, 'plans']);
+    Route::post('/subscription/request', [SubscriptionApiController::class, 'requestSubscription']);
+    Route::post('/subscription/trial', [SubscriptionApiController::class, 'startTrial']);
+    Route::get('/subscription/history', [SubscriptionApiController::class, 'requestHistory']);
+
+    // Client Checklist
+    Route::get('/checklist', [ChecklistApiController::class, 'index']);
+
+    // Client Files & Folders
+    Route::get('/files', [ClientFileApiController::class, 'index']);
+    Route::post('/files', [ClientFileApiController::class, 'upload']);
+    Route::get('/files/{file}/download', [ClientFileApiController::class, 'download']);
+    Route::delete('/files/{file}', [ClientFileApiController::class, 'destroy']);
+    Route::post('/folders', [ClientFileApiController::class, 'createFolder']);
+    Route::patch('/folders/{folder}', [ClientFileApiController::class, 'renameFolder']);
+    Route::delete('/folders/{folder}', [ClientFileApiController::class, 'destroyFolder']);
 });

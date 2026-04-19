@@ -205,3 +205,38 @@ export const liveChatAgentApi = {
   closeSession: (sessionId: number) =>
     api(`/live-chat/agent/${sessionId}/close`, { method: 'POST' }),
 };
+
+// Subscription API
+export const subscriptionApi = {
+  getPlans: () => api('/subscription/plans'),
+  requestSubscription: (data: {
+    plan_id: number;
+    billing_cycle: string;
+    payment_method: string;
+    payment_reference?: string;
+    notes?: string;
+  }) => api('/subscription/request', { method: 'POST', body: data }),
+  startTrial: () => api('/subscription/trial', { method: 'POST' }),
+  requestHistory: () => api('/subscription/history'),
+};
+
+// Checklist API
+export const checklistApi = {
+  list: () => api('/checklist'),
+};
+
+// Client Files API
+export const clientFilesApi = {
+  list: (folderId?: number | null) =>
+    api(`/files${folderId ? `?folder_id=${folderId}` : ''}`),
+  upload: (formData: FormData) =>
+    api('/files', { method: 'POST', body: formData, isFormData: true }),
+  download: (fileId: number) => api(`/files/${fileId}/download`),
+  delete: (fileId: number) => api(`/files/${fileId}`, { method: 'DELETE' }),
+  createFolder: (name: string, parentId?: number | null) =>
+    api('/folders', { method: 'POST', body: { name, parent_id: parentId || null } }),
+  renameFolder: (folderId: number, name: string) =>
+    api(`/folders/${folderId}`, { method: 'PATCH', body: { name } }),
+  deleteFolder: (folderId: number) =>
+    api(`/folders/${folderId}`, { method: 'DELETE' }),
+};

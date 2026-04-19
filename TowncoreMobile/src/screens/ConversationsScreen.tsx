@@ -9,7 +9,7 @@ import { chatApi } from '../api';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { spacing, fontSize } from '../theme';
-import { TAB_BAR_TOTAL_HEIGHT } from '../navigation/AppNavigator';
+import { TAB_BAR_TOTAL_HEIGHT } from '../constants/layout';
 
 type TabType = 'chats' | 'contacts';
 

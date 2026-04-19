@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
   KeyboardAvoidingView, Platform, ScrollView, Alert, ActivityIndicator,
+  Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useBranding } from '../contexts/BrandingContext';
-import BrandMark from '../components/BrandMark';
 import { spacing, fontSize } from '../theme';
 
 export default function LoginScreen({ navigation }: any) {
@@ -65,9 +65,13 @@ export default function LoginScreen({ navigation }: any) {
         </View>
 
         <View style={styles.heroSection}>
-          <BrandMark size={58} showName={false} />
-          <Text style={[styles.logo, { color: colors.text }]}>{branding.appName}</Text>
-          <Text style={[styles.tagline, { color: colors.textSecondary }]}>Project Management Platform</Text>
+          <Image
+            source={require('../../assets/icon.png')}
+            style={styles.heroLogo}
+            resizeMode="contain"
+          />
+          <Text style={[styles.logo, { color: colors.text }]}>TOWNCORE</Text>
+          <Text style={[styles.tagline, { color: colors.textSecondary }]}>PROJECT MANAGEMENT</Text>
           <Text style={[styles.subtitle, { color: colors.text }]}>Welcome back, sign in to continue</Text>
         </View>
 
@@ -190,9 +194,10 @@ const styles = StyleSheet.create({
     paddingTop: spacing.xl,
     paddingBottom: spacing.lg,
   },
-  logo: { fontSize: 30, fontWeight: '800', letterSpacing: 0.5, marginTop: spacing.md },
-  tagline: { fontSize: fontSize.sm, marginTop: 4 },
-  subtitle: { fontSize: fontSize.md, marginTop: spacing.md, fontWeight: '600' },
+  heroLogo: { width: 80, height: 80, borderRadius: 20 },
+  logo: { fontSize: 28, fontWeight: '900', letterSpacing: 5, marginTop: spacing.md },
+  tagline: { fontSize: 11, marginTop: 4, letterSpacing: 3, fontWeight: '600', textTransform: 'uppercase' },
+  subtitle: { fontSize: fontSize.md, marginTop: spacing.lg, fontWeight: '600' },
 
   form: {
     borderRadius: 22,

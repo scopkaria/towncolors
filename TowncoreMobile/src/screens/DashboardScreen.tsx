@@ -1,33 +1,26 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, RefreshControl,
-  TouchableOpacity, ActivityIndicator, Animated, Dimensions,
+  TouchableOpacity, ActivityIndicator, Dimensions,
   Modal, StatusBar, Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { useBranding } from '../contexts/BrandingContext';
 import { dashboardApi } from '../api';
 import { spacing, fontSize, statusColors } from '../theme';
-import { TAB_BAR_TOTAL_HEIGHT } from '../navigation/AppNavigator';
+import { TAB_BAR_TOTAL_HEIGHT } from '../constants/layout';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const DRAWER_WIDTH = SCREEN_WIDTH * 0.78;
 
 export default function DashboardScreen({ navigation }: any) {
   const { user, logout } = useAuth();
   const { colors, isDark, toggleTheme } = useTheme();
-  const branding = useBranding();
   const insets = useSafeAreaInsets();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-
-  // Drawer state
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const drawerAnim = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
 
   // Profile dropdown
   const [profileOpen, setProfileOpen] = useState(false);
@@ -47,17 +40,6 @@ export default function DashboardScreen({ navigation }: any) {
   useEffect(() => { loadDashboard(); }, [loadDashboard]);
 
   const onRefresh = () => { setRefreshing(true); loadDashboard(); };
-
-  // Drawer animations
-  function openDrawer() {
-    setDrawerOpen(true);
-    Animated.spring(drawerAnim, { toValue: 0, useNativeDriver: true, friction: 8 }).start();
-  }
-  function closeDrawer() {
-    Animated.timing(drawerAnim, { toValue: -DRAWER_WIDTH, duration: 250, useNativeDriver: true }).start(() => {
-      setDrawerOpen(false);
-    });
-  }
 
   const initials = user?.name?.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || '?';
   const stats = data?.stats || {};
@@ -80,12 +62,12 @@ export default function DashboardScreen({ navigation }: any) {
 
       {/* ── Custom Header ─────────────────────────────── */}
       <View style={[styles.headerBar, { backgroundColor: colors.primary, paddingTop: insets.top + 8 }]}>
-        <TouchableOpacity onPress={openDrawer} style={styles.headerBtn} activeOpacity={0.7}>
-          <Ionicons name="menu" size={26} color="#fff" />
-        </TouchableOpacity>
+        <View style={styles.headerBtn}>
+          <Ionicons name="home" size={22} color="#fff" />
+        </View>
 
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>{branding.appName}</Text>
+          <Text style={styles.headerTitle}>TOWNCORE</Text>
         </View>
 
         <TouchableOpacity onPress={() => setProfileOpen(true)} style={styles.avatarBtn} activeOpacity={0.7}>
@@ -165,140 +147,48 @@ export default function DashboardScreen({ navigation }: any) {
         </TouchableOpacity>
       </Modal>
 
-      {/* ── Off-Canvas Drawer ─────────────────────────── */}
-      {drawerOpen && (
-        <View style={StyleSheet.absoluteFill}>
-          <TouchableOpacity
-            style={[styles.drawerOverlay]}
-            activeOpacity={1}
-            onPress={closeDrawer}
-          />
-          <Animated.View style={[styles.drawer, { backgroundColor: colors.card, transform: [{ translateX: drawerAnim }] }]}>
-            {/* Drawer header */}
-            <View style={[styles.drawerHeader, { backgroundColor: colors.primary, paddingTop: insets.top + 20 }]}>
-              <View style={styles.drawerAvatarCircle}>
-                <Text style={styles.drawerAvatarText}>{initials}</Text>
-              </View>
-              <Text style={styles.drawerName}>{user?.name}</Text>
-              <Text style={styles.drawerEmail}>{user?.email}</Text>
-            </View>
-
-            <ScrollView style={styles.drawerMenu}>
-              <DrawerItem icon="grid-outline" label="Dashboard" onPress={() => { closeDrawer(); }} colors={colors} active />
-              <DrawerItem icon="folder-outline" label="Projects" onPress={() => { closeDrawer(); navigation.navigate('Projects'); }} colors={colors} />
-              <DrawerItem icon="chatbubbles-outline" label="Messages" onPress={() => { closeDrawer(); navigation.navigate('Messages'); }} colors={colors} />
-              {user?.role === 'admin' && (
-                <DrawerItem icon="chatbubble-ellipses-outline" label="Live Chat" onPress={() => { closeDrawer(); navigation.navigate('LiveChat'); }} colors={colors} />
-              )}
-              {(user?.role === 'admin' || user?.role === 'client') && (
-                <DrawerItem icon="receipt-outline" label="Invoices" onPress={() => { closeDrawer(); navigation.navigate('Invoices'); }} colors={colors} />
-              )}
-              {user?.role === 'admin' && (
-                <>
-                  <DrawerItem icon="images-outline" label="Portfolio" onPress={() => { closeDrawer(); navigation.navigate('Portfolio'); }} colors={colors} />
-                  <DrawerItem icon="newspaper-outline" label="Blog" onPress={() => { closeDrawer(); navigation.navigate('Blog'); }} colors={colors} />
-                </>
-              )}
-
-              <View style={[styles.drawerDivider, { backgroundColor: colors.border }]} />
-
-              <DrawerItem icon="notifications-outline" label="Notifications" onPress={() => { closeDrawer(); navigation.navigate('Notifications'); }} colors={colors} />
-              <DrawerItem icon="settings-outline" label="Notification Settings" onPress={() => { closeDrawer(); navigation.navigate('NotificationSettings'); }} colors={colors} />
-              <DrawerItem icon="person-outline" label="Profile & Settings" onPress={() => { closeDrawer(); navigation.navigate('Profile'); }} colors={colors} />
-
-              <View style={[styles.drawerDivider, { backgroundColor: colors.border }]} />
-
-              {/* Theme toggle in drawer */}
-              <TouchableOpacity style={styles.drawerItem} onPress={toggleTheme} activeOpacity={0.6}>
-                <Ionicons name={isDark ? 'moon' : 'sunny'} size={22} color={colors.primary} />
-                <Text style={[styles.drawerLabel, { color: colors.text }]}>{isDark ? 'Dark Mode' : 'Light Mode'}</Text>
-              </TouchableOpacity>
-            </ScrollView>
-          </Animated.View>
-        </View>
-      )}
-
       {/* ── Main Content ──────────────────────────────── */}
       <ScrollView
         style={{ flex: 1 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
         showsVerticalScrollIndicator={false}
       >
-        {/* Greeting Card */}
-        <View style={[styles.greetingCard, { backgroundColor: colors.primary }]}>
-          <View style={styles.greetingContent}>
-            <Text style={styles.greetingTime}>{greeting}</Text>
-            <Text style={styles.greetingName}>{user?.name?.split(' ')[0]}</Text>
-            <Text style={styles.greetingDesc}>
-              {user?.role === 'admin' ? 'Manage your platform today.' : user?.role === 'client' ? 'Check your project updates.' : 'See your assigned work.'}
-            </Text>
-          </View>
-          <View style={styles.greetingIcon}>
-            <Ionicons name={greeting.includes('Morning') ? 'sunny' : greeting.includes('Afternoon') ? 'partly-sunny' : 'moon'} size={48} color="rgba(255,255,255,0.3)" />
-          </View>
+        {/* Greeting */}
+        <View style={styles.greetingSection}>
+          <Text style={[styles.greetingTime, { color: colors.textSecondary }]}>{greeting}</Text>
+          <Text style={[styles.greetingName, { color: colors.text }]}>{user?.name?.split(' ')[0]}</Text>
         </View>
 
-        {/* Quick Actions — role-based */}
-        <View style={styles.quickActions}>
+        {/* Key Metrics — 3 cards max */}
+        <View style={styles.metricsRow}>
           {user?.role === 'admin' && (
             <>
-              <QuickAction icon="folder-open" label="Projects" color={colors.primary} bgColor={colors.primary + '15'} textColor={colors.text} onPress={() => navigation.navigate('Projects')} />
-              <QuickAction icon="chatbubbles" label="Messages" color="#3b82f6" bgColor="#3b82f615" textColor={colors.text} onPress={() => navigation.navigate('Messages')} />
-              <QuickAction icon="chatbubble-ellipses" label="Live Chat" color="#8b5cf6" bgColor="#8b5cf615" textColor={colors.text} onPress={() => navigation.navigate('LiveChat')} />
-              <QuickAction icon="receipt" label="Invoices" color="#16a34a" bgColor="#16a34a15" textColor={colors.text} onPress={() => navigation.navigate('Invoices')} />
+              <MetricCard label="Active" value={stats.active_projects ?? 0} icon="play-circle" color="#8b5cf6" cardBg={colors.card} textColor={colors.text} subColor={colors.textSecondary} />
+              <MetricCard label="Pending" value={stats.pending_projects ?? 0} icon="time" color="#f59e0b" cardBg={colors.card} textColor={colors.text} subColor={colors.textSecondary} />
+              <MetricCard label="Revenue" value={`$${((stats.total_revenue || 0) / 1000).toFixed(1)}k`} icon="trending-up" color="#16a34a" cardBg={colors.card} textColor={colors.text} subColor={colors.textSecondary} />
             </>
           )}
           {user?.role === 'client' && (
             <>
-              <QuickAction icon="add-circle" label="New Project" color={colors.primary} bgColor={colors.primary + '15'} textColor={colors.text} onPress={() => navigation.navigate('Projects', { screen: 'CreateProject' })} />
-              <QuickAction icon="chatbubbles" label="Messages" color="#3b82f6" bgColor="#3b82f615" textColor={colors.text} onPress={() => navigation.navigate('Messages')} />
-              <QuickAction icon="receipt" label="Invoices" color="#16a34a" bgColor="#16a34a15" textColor={colors.text} onPress={() => navigation.navigate('Invoices')} />
-              <QuickAction icon="notifications" label="Alerts" color="#f59e0b" bgColor="#f59e0b15" textColor={colors.text} onPress={() => navigation.navigate('Notifications')} />
+              <MetricCard label="Active" value={stats.active_projects ?? 0} icon="play-circle" color="#8b5cf6" cardBg={colors.card} textColor={colors.text} subColor={colors.textSecondary} />
+              <MetricCard label="Completed" value={stats.completed_projects ?? 0} icon="checkmark-circle" color="#16a34a" cardBg={colors.card} textColor={colors.text} subColor={colors.textSecondary} />
+              <MetricCard label="Unread" value={stats.unread_messages ?? 0} icon="chatbubble" color="#dc2626" cardBg={colors.card} textColor={colors.text} subColor={colors.textSecondary} />
             </>
           )}
           {user?.role === 'freelancer' && (
             <>
-              <QuickAction icon="folder-open" label="Projects" color={colors.primary} bgColor={colors.primary + '15'} textColor={colors.text} onPress={() => navigation.navigate('Projects')} />
-              <QuickAction icon="chatbubbles" label="Messages" color="#3b82f6" bgColor="#3b82f615" textColor={colors.text} onPress={() => navigation.navigate('Messages')} />
-              <QuickAction icon="notifications" label="Alerts" color="#f59e0b" bgColor="#f59e0b15" textColor={colors.text} onPress={() => navigation.navigate('Notifications')} />
-              <QuickAction icon="person" label="Profile" color="#8b5cf6" bgColor="#8b5cf615" textColor={colors.text} onPress={() => navigation.navigate('Profile')} />
+              <MetricCard label="Active" value={stats.active_projects ?? 0} icon="play-circle" color="#8b5cf6" cardBg={colors.card} textColor={colors.text} subColor={colors.textSecondary} />
+              <MetricCard label="Done" value={stats.completed_projects ?? 0} icon="checkmark-circle" color="#16a34a" cardBg={colors.card} textColor={colors.text} subColor={colors.textSecondary} />
+              <MetricCard label="Earnings" value={`$${((stats.total_earnings || 0) / 1000).toFixed(1)}k`} icon="wallet" color="#f59e0b" cardBg={colors.card} textColor={colors.text} subColor={colors.textSecondary} />
             </>
           )}
         </View>
 
-        {/* Stats Grid */}
-        <View style={styles.sectionPadded}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Overview</Text>
-          <View style={styles.statsGrid}>
-            {user?.role === 'admin' && (
-              <>
-                <StatCard icon="folder-open" label="Total Projects" value={stats.total_projects} color="#3b82f6" cardBg={colors.card} textColor={colors.text} subColor={colors.textSecondary} />
-                <StatCard icon="time" label="Pending" value={stats.pending_projects} color="#f59e0b" cardBg={colors.card} textColor={colors.text} subColor={colors.textSecondary} />
-                <StatCard icon="play-circle" label="Active" value={stats.active_projects} color="#8b5cf6" cardBg={colors.card} textColor={colors.text} subColor={colors.textSecondary} />
-                <StatCard icon="checkmark-circle" label="Completed" value={stats.completed_projects} color="#16a34a" cardBg={colors.card} textColor={colors.text} subColor={colors.textSecondary} />
-                <StatCard icon="cash" label="Revenue" value={`$${(stats.total_revenue || 0).toLocaleString()}`} color="#16a34a" cardBg={colors.card} textColor={colors.text} subColor={colors.textSecondary} />
-                <StatCard icon="hourglass" label="Pending Rev." value={`$${(stats.pending_revenue || 0).toLocaleString()}`} color="#f59e0b" cardBg={colors.card} textColor={colors.text} subColor={colors.textSecondary} />
-              </>
-            )}
-            {user?.role === 'client' && (
-              <>
-                <StatCard icon="folder-open" label="Projects" value={stats.total_projects} color="#3b82f6" cardBg={colors.card} textColor={colors.text} subColor={colors.textSecondary} />
-                <StatCard icon="play-circle" label="Active" value={stats.active_projects} color="#8b5cf6" cardBg={colors.card} textColor={colors.text} subColor={colors.textSecondary} />
-                <StatCard icon="checkmark-circle" label="Completed" value={stats.completed_projects} color="#16a34a" cardBg={colors.card} textColor={colors.text} subColor={colors.textSecondary} />
-                <StatCard icon="chatbubbles" label="Unread" value={stats.unread_messages} color="#dc2626" cardBg={colors.card} textColor={colors.text} subColor={colors.textSecondary} />
-                <StatCard icon="receipt" label="Invoiced" value={`$${(stats.total_invoiced || 0).toLocaleString()}`} color="#f59e0b" cardBg={colors.card} textColor={colors.text} subColor={colors.textSecondary} />
-                <StatCard icon="cash" label="Paid" value={`$${(stats.total_paid || 0).toLocaleString()}`} color="#16a34a" cardBg={colors.card} textColor={colors.text} subColor={colors.textSecondary} />
-              </>
-            )}
-            {user?.role === 'freelancer' && (
-              <>
-                <StatCard icon="play-circle" label="Active" value={stats.active_projects} color="#8b5cf6" cardBg={colors.card} textColor={colors.text} subColor={colors.textSecondary} />
-                <StatCard icon="checkmark-circle" label="Completed" value={stats.completed_projects} color="#16a34a" cardBg={colors.card} textColor={colors.text} subColor={colors.textSecondary} />
-                <StatCard icon="cash" label="Earnings" value={`$${(stats.total_earnings || 0).toLocaleString()}`} color="#16a34a" cardBg={colors.card} textColor={colors.text} subColor={colors.textSecondary} />
-                <StatCard icon="hourglass" label="Pending" value={`$${(stats.pending_payments || 0).toLocaleString()}`} color="#f59e0b" cardBg={colors.card} textColor={colors.text} subColor={colors.textSecondary} />
-              </>
-            )}
-          </View>
+        {/* Quick Actions */}
+        <View style={styles.actionsRow}>
+          <ActionPill icon="add-circle-outline" label="New Project" color={colors.primary} bg={colors.card} textColor={colors.text} onPress={() => navigation.navigate('Projects', { screen: 'CreateProject' })} />
+          <ActionPill icon="chatbubbles-outline" label="Messages" color="#3b82f6" bg={colors.card} textColor={colors.text} onPress={() => navigation.navigate('Messages')} />
+          <ActionPill icon="notifications-outline" label="Alerts" color="#f59e0b" bg={colors.card} textColor={colors.text} onPress={() => navigation.navigate('Notifications')} />
         </View>
 
         {/* Recent Projects */}
@@ -306,38 +196,37 @@ export default function DashboardScreen({ navigation }: any) {
           <View style={styles.sectionHeader}>
             <Text style={[styles.sectionTitle, { color: colors.text }]}>Recent Projects</Text>
             <TouchableOpacity onPress={() => navigation.navigate('Projects')}>
-              <Text style={[styles.seeAll, { color: colors.primary }]}>See All</Text>
+              <Text style={[styles.seeAll, { color: colors.primary }]}>View All</Text>
             </TouchableOpacity>
           </View>
-          {(data?.recent_projects || []).length === 0 && (
+          {(data?.recent_projects || []).length === 0 ? (
             <View style={[styles.emptyCard, { backgroundColor: colors.card }]}>
-              <Ionicons name="folder-open-outline" size={40} color={colors.textLight} />
+              <Ionicons name="folder-open-outline" size={36} color={colors.textLight} />
               <Text style={[styles.emptyText, { color: colors.textLight }]}>No projects yet</Text>
             </View>
+          ) : (
+            (data?.recent_projects || []).slice(0, 4).map((project: any) => (
+              <TouchableOpacity
+                key={project.id}
+                style={[styles.projectCard, { backgroundColor: colors.card }]}
+                onPress={() => navigation.navigate('Projects', { screen: 'ProjectDetail', params: { id: project.id } })}
+                activeOpacity={0.7}
+              >
+                <View style={[styles.projectDot, { backgroundColor: statusColors[project.status] || '#94a3b8' }]} />
+                <View style={styles.projectInfo}>
+                  <Text style={[styles.projectTitle, { color: colors.text }]} numberOfLines={1}>{project.title}</Text>
+                  <Text style={[styles.projectMeta, { color: colors.textSecondary }]}>
+                    {project.client?.name || project.freelancer?.name || '—'}
+                  </Text>
+                </View>
+                <View style={[styles.statusBadge, { backgroundColor: (statusColors[project.status] || '#94a3b8') + '15' }]}>
+                  <Text style={[styles.statusText, { color: statusColors[project.status] || '#94a3b8' }]}>
+                    {project.status?.replace('_', ' ')}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            ))
           )}
-          {(data?.recent_projects || []).map((project: any) => (
-            <TouchableOpacity
-              key={project.id}
-              style={[styles.projectCard, { backgroundColor: colors.card }]}
-              onPress={() => navigation.navigate('Projects', { screen: 'ProjectDetail', params: { id: project.id } })}
-              activeOpacity={0.7}
-            >
-              <View style={[styles.projectIconCircle, { backgroundColor: (statusColors[project.status] || '#94a3b8') + '18' }]}>
-                <Ionicons name="document-text" size={20} color={statusColors[project.status] || '#94a3b8'} />
-              </View>
-              <View style={styles.projectInfo}>
-                <Text style={[styles.projectTitle, { color: colors.text }]} numberOfLines={1}>{project.title}</Text>
-                <Text style={[styles.projectMeta, { color: colors.textSecondary }]}>
-                  {project.client?.name || project.freelancer?.name || '—'}
-                </Text>
-              </View>
-              <View style={[styles.statusBadge, { backgroundColor: (statusColors[project.status] || '#94a3b8') + '18' }]}>
-                <Text style={[styles.statusText, { color: statusColors[project.status] || '#94a3b8' }]}>
-                  {project.status?.replace('_', ' ')}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          ))}
         </View>
 
         <View style={{ height: TAB_BAR_TOTAL_HEIGHT + insets.bottom }} />
@@ -348,33 +237,24 @@ export default function DashboardScreen({ navigation }: any) {
 
 // ── Sub-components ───────────────────────────────────────
 
-function DrawerItem({ icon, label, onPress, colors, active }: any) {
+function MetricCard({ icon, label, value, color, cardBg, textColor, subColor }: any) {
   return (
-    <TouchableOpacity style={[styles.drawerItem, active && { backgroundColor: colors.primary + '12' }]} onPress={onPress} activeOpacity={0.6}>
-      <Ionicons name={icon} size={22} color={active ? colors.primary : colors.textSecondary} />
-      <Text style={[styles.drawerLabel, { color: active ? colors.primary : colors.text, fontWeight: active ? '700' : '500' }]}>{label}</Text>
-    </TouchableOpacity>
-  );
-}
-
-function QuickAction({ icon, label, color, bgColor, textColor, onPress }: any) {
-  return (
-    <TouchableOpacity style={[styles.quickActionBtn, { backgroundColor: bgColor }]} onPress={onPress} activeOpacity={0.7}>
-      <Ionicons name={icon} size={24} color={color} />
-      <Text style={[styles.quickActionLabel, { color: textColor }]} numberOfLines={1}>{label}</Text>
-    </TouchableOpacity>
-  );
-}
-
-function StatCard({ icon, label, value, color, cardBg, textColor, subColor }: any) {
-  return (
-    <View style={[styles.statCard, { backgroundColor: cardBg }]}>
-      <View style={[styles.statIconCircle, { backgroundColor: color + '15' }]}>
-        <Ionicons name={icon} size={20} color={color} />
+    <View style={[styles.metricCard, { backgroundColor: cardBg }]}>
+      <View style={[styles.metricIcon, { backgroundColor: color + '15' }]}>
+        <Ionicons name={icon} size={18} color={color} />
       </View>
-      <Text style={[styles.statValue, { color: textColor }]}>{value ?? 0}</Text>
-      <Text style={[styles.statLabel, { color: subColor }]}>{label}</Text>
+      <Text style={[styles.metricValue, { color: textColor }]}>{value}</Text>
+      <Text style={[styles.metricLabel, { color: subColor }]}>{label}</Text>
     </View>
+  );
+}
+
+function ActionPill({ icon, label, color, bg, textColor, onPress }: any) {
+  return (
+    <TouchableOpacity style={[styles.actionPill, { backgroundColor: bg }]} onPress={onPress} activeOpacity={0.7}>
+      <Ionicons name={icon} size={20} color={color} />
+      <Text style={[styles.actionPillLabel, { color: textColor }]}>{label}</Text>
+    </TouchableOpacity>
   );
 }
 
@@ -398,7 +278,7 @@ const styles = StyleSheet.create({
   },
   headerBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.18)', justifyContent: 'center', alignItems: 'center' },
   headerCenter: { flex: 1, alignItems: 'center' },
-  headerTitle: { fontSize: 20, fontWeight: '800', color: '#fff', letterSpacing: 0.3 },
+  headerTitle: { fontSize: 18, fontWeight: '900', color: '#fff', letterSpacing: 3 },
   avatarBtn: {},
   headerAvatar: { width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(255,255,255,0.25)', justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: 'rgba(255,255,255,0.4)' },
   headerAvatarText: { fontSize: 14, fontWeight: '800', color: '#fff' },
@@ -424,36 +304,29 @@ const styles = StyleSheet.create({
   themeToggleTrack: { width: 40, height: 22, borderRadius: 11, justifyContent: 'center', paddingHorizontal: 2 },
   themeToggleThumb: { width: 18, height: 18, borderRadius: 9, backgroundColor: '#fff', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.15, shadowRadius: 2, elevation: 2 },
 
-  // Drawer
-  drawerOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.45)', zIndex: 10 },
-  drawer: {
-    position: 'absolute', top: 0, left: 0, bottom: 0, width: DRAWER_WIDTH, zIndex: 20,
-    shadowColor: '#000', shadowOffset: { width: 4, height: 0 }, shadowOpacity: 0.2, shadowRadius: 16, elevation: 16,
-  },
-  drawerHeader: {
-    paddingBottom: spacing.lg, paddingHorizontal: spacing.lg,
-  },
-  drawerAvatarCircle: { width: 56, height: 56, borderRadius: 28, backgroundColor: 'rgba(255,255,255,0.25)', justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: 'rgba(255,255,255,0.4)', marginBottom: spacing.sm },
-  drawerAvatarText: { fontSize: 22, fontWeight: '800', color: '#fff' },
-  drawerName: { fontSize: fontSize.lg, fontWeight: '700', color: '#fff' },
-  drawerEmail: { fontSize: fontSize.xs, color: 'rgba(255,255,255,0.7)', marginTop: 2 },
-  drawerMenu: { flex: 1, paddingTop: spacing.sm },
-  drawerItem: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.lg, paddingVertical: 14, gap: spacing.md },
-  drawerLabel: { fontSize: fontSize.md },
-  drawerDivider: { height: 1, marginVertical: spacing.xs, marginHorizontal: spacing.lg },
-
   // Greeting
-  greetingCard: { marginHorizontal: spacing.md, marginTop: spacing.md, borderRadius: 20, padding: spacing.lg, flexDirection: 'row', alignItems: 'center', overflow: 'hidden' },
-  greetingContent: { flex: 1 },
-  greetingTime: { fontSize: fontSize.sm, color: 'rgba(255,255,255,0.8)', fontWeight: '500' },
-  greetingName: { fontSize: fontSize.xxl, fontWeight: '800', color: '#fff', marginTop: 2 },
-  greetingDesc: { fontSize: fontSize.sm, color: 'rgba(255,255,255,0.7)', marginTop: 4 },
-  greetingIcon: { marginLeft: spacing.md },
+  greetingSection: { paddingHorizontal: spacing.lg, paddingTop: spacing.lg },
+  greetingTime: { fontSize: 13, fontWeight: '500', textTransform: 'uppercase', letterSpacing: 1 },
+  greetingName: { fontSize: 26, fontWeight: '800', marginTop: 2 },
 
-  // Quick actions
-  quickActions: { flexDirection: 'row', paddingHorizontal: spacing.md, marginTop: spacing.md, gap: spacing.sm },
-  quickActionBtn: { flex: 1, borderRadius: 14, paddingVertical: 14, alignItems: 'center', gap: 6 },
-  quickActionLabel: { fontSize: 11, fontWeight: '600' },
+  // Metrics
+  metricsRow: { flexDirection: 'row', paddingHorizontal: spacing.md, marginTop: spacing.md, gap: spacing.sm },
+  metricCard: {
+    flex: 1, borderRadius: 16, padding: 14, alignItems: 'center',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1,
+  },
+  metricIcon: { width: 34, height: 34, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
+  metricValue: { fontSize: 20, fontWeight: '800', marginTop: 8 },
+  metricLabel: { fontSize: 11, fontWeight: '600', marginTop: 2 },
+
+  // Actions
+  actionsRow: { flexDirection: 'row', paddingHorizontal: spacing.md, marginTop: spacing.md, gap: spacing.sm },
+  actionPill: {
+    flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    borderRadius: 12, paddingVertical: 12, gap: 6,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 3, elevation: 1,
+  },
+  actionPillLabel: { fontSize: 12, fontWeight: '600' },
 
   // Sections
   sectionPadded: { paddingHorizontal: spacing.md, marginTop: spacing.lg },
@@ -461,23 +334,13 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: fontSize.lg, fontWeight: '700' },
   seeAll: { fontWeight: '600', fontSize: fontSize.sm },
 
-  // Stats
-  statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  statCard: {
-    width: '47.5%', borderRadius: 16, padding: spacing.md,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1,
-  },
-  statIconCircle: { width: 36, height: 36, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
-  statValue: { fontSize: fontSize.xl, fontWeight: '800', marginTop: spacing.sm },
-  statLabel: { fontSize: fontSize.xs, marginTop: 2 },
-
   // Projects
   projectCard: {
     flexDirection: 'row', alignItems: 'center', borderRadius: 14, padding: spacing.md,
     marginBottom: spacing.sm,
     shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 3, elevation: 1,
   },
-  projectIconCircle: { width: 40, height: 40, borderRadius: 12, justifyContent: 'center', alignItems: 'center', marginRight: spacing.sm },
+  projectDot: { width: 8, height: 8, borderRadius: 4, marginRight: spacing.sm },
   projectInfo: { flex: 1, marginRight: spacing.sm },
   projectTitle: { fontSize: fontSize.md, fontWeight: '600' },
   projectMeta: { fontSize: fontSize.xs, marginTop: 2 },
