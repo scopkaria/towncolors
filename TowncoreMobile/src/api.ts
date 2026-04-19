@@ -21,6 +21,22 @@ type RequestOptions = {
   isFormData?: boolean;
 };
 
+export type MobileBrandingResponse = {
+  app_name: string;
+  colors: {
+    primary: string;
+    secondary: string;
+    background: string;
+    primary_dark?: string;
+    text_light?: string;
+    text_dark?: string;
+  };
+  assets: {
+    logo_url: string | null;
+    app_icon_url: string | null;
+  };
+};
+
 export async function api(endpoint: string, options: RequestOptions = {}) {
   const { method = 'GET', body, isFormData = false } = options;
   const token = await getToken();
@@ -85,6 +101,10 @@ export const authApi = {
 // Dashboard API
 export const dashboardApi = {
   get: () => api('/dashboard'),
+};
+
+export const brandingApi = {
+  get: () => api('/mobile/branding') as Promise<MobileBrandingResponse>,
 };
 
 // Projects API

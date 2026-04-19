@@ -6,11 +6,14 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useBranding } from '../contexts/BrandingContext';
+import BrandMark from '../components/BrandMark';
 import { spacing, fontSize } from '../theme';
 
 export default function LoginScreen({ navigation }: any) {
   const { login } = useAuth();
   const { colors, isDark, toggleTheme } = useTheme();
+  const branding = useBranding();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -34,37 +37,46 @@ export default function LoginScreen({ navigation }: any) {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={[styles.container, { backgroundColor: colors.primary }]}
+      style={[styles.container, { backgroundColor: colors.background }]}
     >
-      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-        {/* Theme Toggle — top right */}
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.decorWrap} pointerEvents="none">
+          <View style={[styles.decorBubbleA, { backgroundColor: `${colors.primary}22` }]} />
+          <View style={[styles.decorBubbleB, { backgroundColor: `${colors.primaryDark}1A` }]} />
+        </View>
+
         <View style={styles.toggleRow}>
           <TouchableOpacity
             onPress={toggleTheme}
-            style={styles.toggleButton}
+            style={[styles.toggleButton, { borderColor: colors.border, backgroundColor: colors.card }]}
             activeOpacity={0.7}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
             <Ionicons
               name={isDark ? 'moon' : 'sunny'}
               size={22}
-              color="#fff"
+              color={colors.text}
             />
           </TouchableOpacity>
         </View>
 
-        {/* Hero Header */}
         <View style={styles.heroSection}>
-          <View style={styles.logoCircle}>
-            <Ionicons name="business" size={32} color="#fff" />
-          </View>
-          <Text style={styles.logo}>Towncore</Text>
-          <Text style={styles.tagline}>Project Management Platform</Text>
-          <Text style={styles.subtitle}>Sign in to your account</Text>
+          <BrandMark size={58} showName={false} />
+          <Text style={[styles.logo, { color: colors.text }]}>{branding.appName}</Text>
+          <Text style={[styles.tagline, { color: colors.textSecondary }]}>Project Management Platform</Text>
+          <Text style={[styles.subtitle, { color: colors.text }]}>Welcome back, sign in to continue</Text>
         </View>
 
-        {/* Login Form */}
-        <View style={[styles.form, { backgroundColor: colors.card }]}>
+        <View style={[styles.form, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <View style={styles.formHeader}>
+            <Text style={[styles.formTitle, { color: colors.text }]}>Sign In</Text>
+            <Text style={[styles.formCaption, { color: colors.textSecondary }]}>Secure access to your workspace</Text>
+          </View>
+
           <View style={[styles.inputGroup, { backgroundColor: colors.inputBg, borderColor: colors.border }]}>
             <View style={styles.inputIcon}>
               <Ionicons name="mail-outline" size={20} color={colors.textLight} />
@@ -109,18 +121,17 @@ export default function LoginScreen({ navigation }: any) {
             activeOpacity={0.8}
           >
             {loading ? (
-              <ActivityIndicator color="#fff" />
+              <ActivityIndicator color={colors.text} />
             ) : (
               <View style={styles.buttonContent}>
                 <Text style={styles.buttonText}>Sign In</Text>
-                <Ionicons name="arrow-forward" size={18} color="#fff" style={{ marginLeft: 8 }} />
+                <Ionicons name="arrow-forward" size={18} color={colors.text} style={{ marginLeft: 8 }} />
               </View>
             )}
           </TouchableOpacity>
         </View>
 
-        {/* Footer */}
-        <View style={[styles.footer, { backgroundColor: colors.card }]}>
+        <View style={styles.footer}>
           <TouchableOpacity
             style={styles.registerButton}
             onPress={() => navigation.navigate('Register')}
@@ -139,41 +150,65 @@ export default function LoginScreen({ navigation }: any) {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  scroll: { flexGrow: 1 },
+  scroll: { flexGrow: 1, paddingHorizontal: spacing.lg, paddingBottom: 40 },
 
-  // Toggle
+  decorWrap: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: 'hidden',
+  },
+  decorBubbleA: {
+    position: 'absolute',
+    width: 240,
+    height: 240,
+    borderRadius: 120,
+    top: -70,
+    right: -60,
+  },
+  decorBubbleB: {
+    position: 'absolute',
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+    bottom: 60,
+    left: -40,
+  },
+
   toggleRow: {
-    position: 'absolute', top: Platform.OS === 'ios' ? 54 : 38, right: spacing.lg,
-    zIndex: 10,
+    alignItems: 'flex-end',
+    marginTop: Platform.OS === 'ios' ? 52 : 28,
   },
   toggleButton: {
-    width: 40, height: 40, borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    borderWidth: 1,
     justifyContent: 'center', alignItems: 'center',
   },
 
-  // Hero
   heroSection: {
-    alignItems: 'center', paddingTop: 80, paddingBottom: spacing.xl,
-    paddingHorizontal: spacing.lg,
+    alignItems: 'center',
+    paddingTop: spacing.xl,
+    paddingBottom: spacing.lg,
   },
-  logoCircle: {
-    width: 64, height: 64, borderRadius: 32,
-    backgroundColor: 'rgba(255,255,255,0.2)', justifyContent: 'center', alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  logo: { fontSize: 34, fontWeight: '800', color: '#fff', letterSpacing: 0.5 },
-  tagline: { fontSize: fontSize.sm, color: 'rgba(255,255,255,0.7)', marginTop: 2 },
-  subtitle: { fontSize: fontSize.md, color: 'rgba(255,255,255,0.9)', marginTop: spacing.md, fontWeight: '500' },
+  logo: { fontSize: 30, fontWeight: '800', letterSpacing: 0.5, marginTop: spacing.md },
+  tagline: { fontSize: fontSize.sm, marginTop: 4 },
+  subtitle: { fontSize: fontSize.md, marginTop: spacing.md, fontWeight: '600' },
 
-  // Form
   form: {
-    borderTopLeftRadius: 28, borderTopRightRadius: 28,
-    paddingHorizontal: spacing.lg, paddingTop: spacing.xl + 4, paddingBottom: spacing.md,
-    flex: 1,
-    shadowColor: '#000', shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.08, shadowRadius: 12, elevation: 10,
+    borderRadius: 22,
+    borderWidth: 1,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.md,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.1,
+    shadowRadius: 18,
+    elevation: 8,
   },
+  formHeader: { marginBottom: spacing.md },
+  formTitle: { fontSize: 22, fontWeight: '800' },
+  formCaption: { fontSize: fontSize.sm, marginTop: 4 },
   inputGroup: {
     flexDirection: 'row', alignItems: 'center',
     borderRadius: 14, borderWidth: 1,
@@ -189,10 +224,9 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: { opacity: 0.6 },
   buttonContent: { flexDirection: 'row', alignItems: 'center' },
-  buttonText: { color: '#fff', fontSize: fontSize.md, fontWeight: '700' },
+  buttonText: { color: '#1B2632', fontSize: fontSize.md, fontWeight: '800' },
 
-  // Footer
-  footer: { paddingBottom: 40, alignItems: 'center' },
+  footer: { paddingTop: spacing.lg, alignItems: 'center' },
   registerButton: { paddingVertical: spacing.sm },
   footerText: { fontSize: fontSize.sm },
 });

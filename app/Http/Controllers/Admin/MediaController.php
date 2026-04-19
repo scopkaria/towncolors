@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Models\Media;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
@@ -40,7 +43,7 @@ class MediaController extends Controller
 
     public function index(Request $request): View
     {
-        $query = Media::with('uploader')->latest();
+        $query = $this->scopeForViewer(Media::with('uploader')->latest(), $request);
 
         if ($type = $request->query('type')) {
             $query->where('file_type', $type);
@@ -52,11 +55,12 @@ class MediaController extends Controller
 
         $media = $query->paginate(24)->withQueryString();
 
+        $base = $this->scopeForViewer(Media::query(), $request);
         $counts = [
-            'all'      => Media::count(),
-            'image'    => Media::where('file_type', 'image')->count(),
-            'video'    => Media::where('file_type', 'video')->count(),
-            'document' => Media::where('file_type', 'document')->count(),
+            'all'      => (clone $base)->count(),
+            'image'    => (clone $base)->where('file_type', 'image')->count(),
+            'video'    => (clone $base)->where('file_type', 'video')->count(),
+            'document' => (clone $base)->where('file_type', 'document')->count(),
         ];
 
         return view('admin.media.index', compact('media', 'counts'));
@@ -107,9 +111,9 @@ class MediaController extends Controller
     /**
      * Return media items as JSON for reusable media pickers.
      */
-    public function api(Request $request): \Illuminate\Http\JsonResponse
+    public function api(Request $request): JsonResponse
     {
-        $query = Media::query()
+        $query = $this->scopeForViewer(Media::query(), $request)
             ->when($request->filled('type'), function ($builder) use ($request) {
                 $type = (string) $request->query('type');
                 if (in_array($type, ['image', 'video', 'document'], true)) {
@@ -136,11 +140,70 @@ class MediaController extends Controller
         return response()->json($media);
     }
 
+    /**
+     * Async upload for modal pickers (WordPress-like flow).
+     */
+    public function apiUpload(Request $request): JsonResponse
+    {
+        $request->validate([
+            'files'   => ['required', 'array', 'min:1'],
+            'files.*' => ['required', 'file', 'max:102400'],
+        ]);
+
+        $uploaded = [];
+
+        foreach ($request->file('files') as $file) {
+            $mime = $file->getMimeType() ?? '';
+
+            if (! array_key_exists($mime, self::ALLOWED)) {
+                continue;
+            }
+
+            if ($file->getSize() > self::ALLOWED[$mime]) {
+                continue;
+            }
+
+            $path = $file->store(self::DIRECTORY, self::DISK);
+
+            $media = Media::create([
+                'file_name'   => $file->getClientOriginalName(),
+                'file_path'   => $path,
+                'file_type'   => Media::typeFromMime($mime),
+                'size'        => $file->getSize(),
+                'uploaded_by' => $request->user()->id,
+            ]);
+
+            $uploaded[] = [
+                'id'   => $media->id,
+                'name' => $media->file_name,
+                'type' => $media->file_type,
+                'url'  => $media->url(),
+                'size' => $media->humanSize(),
+            ];
+        }
+
+        return response()->json([
+            'items' => $uploaded,
+            'count' => count($uploaded),
+        ]);
+    }
+
     public function destroy(Media $medium): RedirectResponse
     {
         Storage::disk(self::DISK)->delete($medium->file_path);
         $medium->delete();
 
         return back()->with('success', '"' . $medium->file_name . '" deleted.');
+    }
+
+    private function scopeForViewer(Builder $query, Request $request): Builder
+    {
+        $user = $request->user();
+
+        if (! $user || $user->role !== UserRole::ADMIN) {
+            $query->where('uploaded_by', $user?->id ?? 0);
+        }
+
+        return $query;
     }
 }

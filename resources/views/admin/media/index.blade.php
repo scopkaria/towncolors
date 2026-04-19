@@ -687,172 +687,84 @@ $mediaJson = $media->isEmpty() ? [] : $media->map(fn ($item) => [
              x-transition:leave="transition ease-in duration-150"
              x-transition:leave-start="opacity-100"
              x-transition:leave-end="opacity-0"
-             class="fixed inset-0 z-[70] flex flex-col bg-black/95">
+             class="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 p-4"
+             @click.self="closeLightbox()">
 
-            {{-- ── Top bar ── --}}
-            <div class="flex shrink-0 items-center justify-between gap-4 px-4 py-3 md:px-6">
-                <div class="flex min-w-0 items-center gap-3">
-                    <span class="shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ring-1"
-                          :class="{
-                              'bg-blue-900/60 text-blue-300 ring-blue-700/50':   currentLbItem?.file_type === 'image',
-                              'bg-purple-900/60 text-purple-300 ring-purple-700/50': currentLbItem?.file_type === 'video',
-                              'bg-amber-900/60 text-amber-300 ring-amber-700/50': currentLbItem?.file_type === 'document',
-                          }"
-                          x-text="currentLbItem?.file_type
-                                  ? currentLbItem.file_type.charAt(0).toUpperCase() + currentLbItem.file_type.slice(1)
-                                  : ''">
-                    </span>
-                    <p class="truncate text-sm font-medium text-white/80"
-                       x-text="currentLbItem?.file_name"></p>
+            <div class="relative flex h-[80vh] w-[78vw] max-w-6xl flex-col rounded-2xl border border-white/10 bg-slate-950 shadow-2xl">
+                {{-- Close button --}}
+                <button @click="closeLightbox()"
+                        class="absolute right-3 top-3 z-20 rounded-full bg-black/45 p-2 text-white transition hover:bg-black/70"
+                        title="Close preview">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+
+                <div class="flex shrink-0 items-center justify-between border-b border-white/10 px-4 py-3 pr-14">
+                    <div class="min-w-0">
+                        <p class="truncate text-sm font-semibold text-white" x-text="currentLbItem?.file_name"></p>
+                        <p class="mt-0.5 text-xs text-white/55" x-text="currentLbItem?.size ?? ''"></p>
+                    </div>
+                    <div class="ml-4 flex items-center gap-2">
+                        <button @click="copyUrl(currentLbItem?.url)"
+                                class="rounded-lg border border-white/20 px-2.5 py-1.5 text-xs font-semibold text-white/80 transition hover:bg-white/10">
+                            Copy URL
+                        </button>
+                        <a :href="currentLbItem?.url" target="_blank" rel="noopener"
+                           class="rounded-lg border border-white/20 px-2.5 py-1.5 text-xs font-semibold text-white/80 transition hover:bg-white/10">
+                            Open
+                        </a>
+                    </div>
                 </div>
-                <div class="ml-4 flex shrink-0 items-center gap-1">
-                    {{-- Counter --}}
-                    <span class="mr-2 text-xs text-white/40" x-show="mediaItems.length > 1">
+
+                <div class="relative flex min-h-0 flex-1 items-center justify-center p-4">
+                    <button x-show="mediaItems.length > 1" @click="prevLb()"
+                            class="absolute left-2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/45 text-white transition hover:bg-black/70">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+
+                    <div class="flex h-full w-full items-center justify-center">
+                        <template x-if="currentLbItem?.file_type === 'image'">
+                            <img :src="currentLbItem.url" :alt="currentLbItem.file_name" class="max-h-full max-w-full rounded-lg object-contain">
+                        </template>
+
+                        <template x-if="currentLbItem?.file_type === 'video'">
+                            <video id="lb-video-el" controls class="max-h-full max-w-full rounded-lg" :src="currentLbItem.url"></video>
+                        </template>
+
+                        <template x-if="currentLbItem?.file_type === 'document' && currentLbItem.ext === 'PDF'">
+                            <iframe :src="currentLbItem.url" class="h-full w-full rounded-lg bg-white"></iframe>
+                        </template>
+
+                        <template x-if="currentLbItem?.file_type === 'document' && currentLbItem.ext !== 'PDF'">
+                            <div class="text-center text-white/80">
+                                <p class="text-sm font-semibold" x-text="(currentLbItem?.ext ?? '') + ' file preview is limited in browser'"></p>
+                                <a :href="currentLbItem?.url" :download="currentLbItem?.file_name" class="mt-4 inline-flex rounded-lg border border-white/30 px-4 py-2 text-xs font-semibold hover:bg-white/10">Download File</a>
+                            </div>
+                        </template>
+                    </div>
+
+                    <button x-show="mediaItems.length > 1" @click="nextLb()"
+                            class="absolute right-2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/45 text-white transition hover:bg-black/70">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="flex shrink-0 items-center justify-between border-t border-white/10 px-4 py-2.5">
+                    <span class="text-xs text-white/55">
                         <span x-text="lightbox.index + 1"></span>
-                        <span class="text-white/25">/</span>
+                        /
                         <span x-text="mediaItems.length"></span>
                     </span>
-                    {{-- Copy URL --}}
-                    <button @click="copyUrl(currentLbItem?.url)"
-                            class="rounded-lg p-2 text-white/60 transition hover:bg-white/10 hover:text-white"
-                            title="Copy URL">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                             stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2
-                                     m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                        </svg>
-                    </button>
-                    {{-- Open in new tab --}}
-                    <a :href="currentLbItem?.url" target="_blank" rel="noopener"
-                       class="rounded-lg p-2 text-white/60 transition hover:bg-white/10 hover:text-white"
-                       title="Open in new tab">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                             stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4
-                                     M14 4h6m0 0v6m0-6L10 14"/>
-                        </svg>
-                    </a>
-                    {{-- Close --}}
-                    <button @click="closeLightbox()"
-                            class="rounded-lg p-2 text-white/60 transition hover:bg-white/10 hover:text-white"
-                            title="Close (Esc)">
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                             stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            {{-- ── Preview area ── --}}
-            <div class="relative flex min-h-0 flex-1 items-center justify-center px-6 py-4 md:px-12">
-
-                <div class="flex h-full w-full max-w-[1200px] items-center justify-center">
-
-                {{-- Prev --}}
-                <button x-show="mediaItems.length > 1" @click="prevLb()"
-                        class="absolute left-2 z-10 flex h-11 w-11 items-center justify-center
-                               rounded-full bg-white/10 text-white transition hover:bg-white/25
-                               focus:outline-none md:left-4">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                         stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
-                    </svg>
-                </button>
-
-                {{-- Image --}}
-                    <template x-if="currentLbItem?.file_type === 'image'">
-                        <img :src="currentLbItem.url"
-                             :alt="currentLbItem.file_name"
-                             class="max-h-[78vh] max-w-full rounded-lg object-contain shadow-2xl">
-                    </template>
-
-                {{-- Video --}}
-                    <template x-if="currentLbItem?.file_type === 'video'">
-                        <video id="lb-video-el" controls
-                               class="max-h-[78vh] max-w-full rounded-lg shadow-2xl"
-                               :src="currentLbItem.url">
-                        </video>
-                    </template>
-
-                {{-- PDF / TXT — embeddable in browser --}}
-                    <template x-if="currentLbItem?.file_type === 'document'
-                             && (currentLbItem.ext === 'PDF' || currentLbItem.ext === 'TXT')">
-                    <iframe :src="currentLbItem.url"
-                        class="h-[78vh] w-full rounded-lg border-0 bg-warm-100 shadow-2xl">
-                    </iframe>
-                    </template>
-
-                {{-- Other document (Word, Excel, etc.) — download-only --}}
-                    <template x-if="currentLbItem?.file_type === 'document'
-                             && currentLbItem.ext !== 'PDF'
-                             && currentLbItem.ext !== 'TXT'">
-                    <div class="flex flex-col items-center gap-6 text-center">
-                        <div class="flex h-24 w-24 items-center justify-center rounded-3xl bg-white/10">
-                            <svg class="h-12 w-12 text-white/70" fill="none" viewBox="0 0 24 24"
-                                 stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586
-                                         a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-sm font-semibold text-white/80"
-                               x-text="(currentLbItem?.ext ?? '') + ' Document'"></p>
-                            <p class="mt-1 text-xs text-white/40">Preview not available in browser</p>
-                        </div>
-                        <a :href="currentLbItem?.url" :download="currentLbItem?.file_name"
-                           class="inline-flex items-center gap-2 rounded-xl bg-white/15 px-6 py-3
-                                  text-sm font-semibold text-white transition hover:bg-white/25">
-                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                                 stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                            </svg>
-                            Download File
-                        </a>
-                        </div>
-                    </template>
-
-                </div>
-
-                {{-- Next --}}
-                <button x-show="mediaItems.length > 1" @click="nextLb()"
-                        class="absolute right-2 z-10 flex h-11 w-11 items-center justify-center
-                               rounded-full bg-white/10 text-white transition hover:bg-white/25
-                               focus:outline-none md:right-4">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                         stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </button>
-            </div>
-
-            {{-- ── Bottom bar ── --}}
-            <div class="flex shrink-0 items-center justify-between px-4 py-3 md:px-6">
-                <p class="text-xs text-white/40" x-text="currentLbItem?.size ?? ''"></p>
-                <div class="flex items-center gap-3">
-                    {{-- Select / Deselect in lightbox --}}
                     <button @click="toggleSelect(currentLbItem?.id)"
-                            class="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs
-                                   font-semibold transition ring-1"
-                            :class="isSelected(currentLbItem?.id)
-                                    ? 'bg-brand-primary/20 text-brand-primary ring-brand-primary/50 hover:bg-brand-primary/30'
-                                    : 'bg-white/10 text-white/70 ring-white/20 hover:bg-white/20'">
-                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
-                             stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <span x-text="isSelected(currentLbItem?.id) ? 'Selected' : 'Select'"></span>
-                    </button>
+                            class="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-white/80 transition hover:bg-white/10"
+                            x-text="isSelected(currentLbItem?.id) ? 'Deselect' : 'Select'"></button>
                 </div>
             </div>
-
-            {{-- Click-outside-backdrop to close (covers the whole modal except controls) --}}
-            <div class="absolute inset-0 -z-10" @click="closeLightbox()"></div>
         </div>
     </template>
 

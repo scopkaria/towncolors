@@ -3,11 +3,17 @@ import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
   KeyboardAvoidingView, Platform, ScrollView, Alert, ActivityIndicator,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../contexts/AuthContext';
-import { colors, spacing, fontSize } from '../theme';
+import { useTheme } from '../contexts/ThemeContext';
+import { useBranding } from '../contexts/BrandingContext';
+import BrandMark from '../components/BrandMark';
+import { spacing, fontSize } from '../theme';
 
 export default function RegisterScreen({ navigation }: any) {
   const { register } = useAuth();
+  const { colors } = useTheme();
+  const branding = useBranding();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -43,77 +49,103 @@ export default function RegisterScreen({ navigation }: any) {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.background }]}
     >
-      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-        <View style={styles.header}>
-          <Text style={styles.logo}>Towncore</Text>
-          <Text style={styles.subtitle}>Create your account</Text>
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.decorWrap} pointerEvents="none">
+          <View style={[styles.decorBubbleA, { backgroundColor: `${colors.primary}20` }]} />
+          <View style={[styles.decorBubbleB, { backgroundColor: `${colors.primaryDark}18` }]} />
         </View>
 
-        <View style={styles.form}>
-          {/* Role Selector */}
-          <Text style={styles.label}>I am a</Text>
+        <View style={styles.header}>
+          <BrandMark size={54} showName={false} />
+          <Text style={[styles.logo, { color: colors.text }]}>{branding.appName}</Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Create your account</Text>
+        </View>
+
+        <View style={[styles.form, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <Text style={[styles.formTitle, { color: colors.text }]}>Get Started</Text>
+          <Text style={[styles.formSubtitle, { color: colors.textSecondary }]}>Set up your role and credentials</Text>
+
+          <Text style={[styles.label, { color: colors.text }]}>I am a</Text>
           <View style={styles.roleRow}>
             <TouchableOpacity
-              style={[styles.roleButton, role === 'client' && styles.roleActive]}
+              style={[
+                styles.roleButton,
+                { borderColor: colors.border, backgroundColor: colors.inputBg },
+                role === 'client' && { borderColor: colors.primary, backgroundColor: `${colors.primary}1A` },
+              ]}
               onPress={() => setRole('client')}
             >
-              <Text style={[styles.roleText, role === 'client' && styles.roleTextActive]}>Client</Text>
+              <Ionicons name="briefcase-outline" size={18} color={role === 'client' ? colors.primary : colors.textSecondary} />
+              <Text style={[styles.roleText, { color: role === 'client' ? colors.primary : colors.textSecondary }]}>Client</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.roleButton, role === 'freelancer' && styles.roleActive]}
+              style={[
+                styles.roleButton,
+                { borderColor: colors.border, backgroundColor: colors.inputBg },
+                role === 'freelancer' && { borderColor: colors.primary, backgroundColor: `${colors.primary}1A` },
+              ]}
               onPress={() => setRole('freelancer')}
             >
-              <Text style={[styles.roleText, role === 'freelancer' && styles.roleTextActive]}>Freelancer</Text>
+              <Ionicons name="color-wand-outline" size={18} color={role === 'freelancer' ? colors.primary : colors.textSecondary} />
+              <Text style={[styles.roleText, { color: role === 'freelancer' ? colors.primary : colors.textSecondary }]}>Freelancer</Text>
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.label}>Full Name</Text>
+          <Text style={[styles.label, { color: colors.text }]}>Full Name</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { backgroundColor: colors.inputBg, borderColor: colors.border, color: colors.text }]}
             value={name}
             onChangeText={setName}
             placeholder="John Doe"
+            placeholderTextColor={colors.textLight}
             autoCapitalize="words"
           />
 
-          <Text style={styles.label}>Email</Text>
+          <Text style={[styles.label, { color: colors.text }]}>Email</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { backgroundColor: colors.inputBg, borderColor: colors.border, color: colors.text }]}
             value={email}
             onChangeText={setEmail}
             placeholder="you@example.com"
+            placeholderTextColor={colors.textLight}
             keyboardType="email-address"
             autoCapitalize="none"
             autoCorrect={false}
           />
 
-          <Text style={styles.label}>Password</Text>
+          <Text style={[styles.label, { color: colors.text }]}>Password</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { backgroundColor: colors.inputBg, borderColor: colors.border, color: colors.text }]}
             value={password}
             onChangeText={setPassword}
             placeholder="••••••••"
+            placeholderTextColor={colors.textLight}
             secureTextEntry
           />
 
-          <Text style={styles.label}>Confirm Password</Text>
+          <Text style={[styles.label, { color: colors.text }]}>Confirm Password</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { backgroundColor: colors.inputBg, borderColor: colors.border, color: colors.text }]}
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             placeholder="••••••••"
+            placeholderTextColor={colors.textLight}
             secureTextEntry
           />
 
           <TouchableOpacity
-            style={[styles.button, loading && styles.buttonDisabled]}
+            style={[styles.button, { backgroundColor: colors.primary }, loading && styles.buttonDisabled]}
             onPress={handleRegister}
             disabled={loading}
           >
             {loading ? (
-              <ActivityIndicator color="#fff" />
+              <ActivityIndicator color={colors.text} />
             ) : (
               <Text style={styles.buttonText}>Create Account</Text>
             )}
@@ -123,8 +155,8 @@ export default function RegisterScreen({ navigation }: any) {
             style={styles.linkButton}
             onPress={() => navigation.navigate('Login')}
           >
-            <Text style={styles.linkText}>
-              Already have an account? <Text style={styles.linkBold}>Sign In</Text>
+            <Text style={[styles.linkText, { color: colors.textSecondary }]}>
+              Already have an account? <Text style={[styles.linkBold, { color: colors.primary }]}>Sign In</Text>
             </Text>
           </TouchableOpacity>
         </View>
@@ -134,23 +166,52 @@ export default function RegisterScreen({ navigation }: any) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background },
+  container: { flex: 1 },
   scroll: { flexGrow: 1, justifyContent: 'center', padding: spacing.lg },
+  decorWrap: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: 'hidden',
+  },
+  decorBubbleA: {
+    position: 'absolute',
+    width: 210,
+    height: 210,
+    borderRadius: 105,
+    top: -60,
+    right: -30,
+  },
+  decorBubbleB: {
+    position: 'absolute',
+    width: 170,
+    height: 170,
+    borderRadius: 85,
+    bottom: 40,
+    left: -35,
+  },
   header: { alignItems: 'center', marginBottom: spacing.xl },
-  logo: { fontSize: 36, fontWeight: '800', color: colors.primary },
-  subtitle: { fontSize: fontSize.md, color: colors.textSecondary, marginTop: spacing.xs },
-  form: { backgroundColor: colors.card, borderRadius: 16, padding: spacing.lg, shadowColor: colors.shadow, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 3 },
-  label: { fontSize: fontSize.sm, fontWeight: '600', color: colors.text, marginBottom: spacing.xs, marginTop: spacing.md },
-  input: { backgroundColor: colors.inputBg, borderRadius: 12, padding: 14, fontSize: fontSize.md, borderWidth: 1, borderColor: colors.border },
+  logo: { fontSize: 30, fontWeight: '800', marginTop: spacing.md },
+  subtitle: { fontSize: fontSize.md, marginTop: spacing.xs },
+  form: {
+    borderRadius: 20,
+    borderWidth: 1,
+    padding: spacing.lg,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.1,
+    shadowRadius: 18,
+    elevation: 8,
+  },
+  formTitle: { fontSize: 22, fontWeight: '800' },
+  formSubtitle: { marginTop: 4, fontSize: fontSize.sm },
+  label: { fontSize: fontSize.sm, fontWeight: '700', marginBottom: spacing.xs, marginTop: spacing.md },
+  input: { borderRadius: 12, padding: 14, fontSize: fontSize.md, borderWidth: 1 },
   roleRow: { flexDirection: 'row', gap: spacing.sm },
-  roleButton: { flex: 1, padding: 14, borderRadius: 12, borderWidth: 2, borderColor: colors.border, alignItems: 'center' },
-  roleActive: { borderColor: colors.primary, backgroundColor: colors.primary + '10' },
-  roleText: { fontSize: fontSize.md, fontWeight: '600', color: colors.textSecondary },
-  roleTextActive: { color: colors.primary },
-  button: { backgroundColor: colors.primary, borderRadius: 12, padding: 16, alignItems: 'center', marginTop: spacing.lg },
+  roleButton: { flex: 1, padding: 13, borderRadius: 12, borderWidth: 1.5, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8 },
+  roleText: { fontSize: fontSize.sm, fontWeight: '700' },
+  button: { borderRadius: 12, padding: 16, alignItems: 'center', marginTop: spacing.lg },
   buttonDisabled: { opacity: 0.6 },
-  buttonText: { color: colors.white, fontSize: fontSize.md, fontWeight: '700' },
+  buttonText: { color: '#1B2632', fontSize: fontSize.md, fontWeight: '800' },
   linkButton: { alignItems: 'center', marginTop: spacing.lg },
-  linkText: { color: colors.textSecondary, fontSize: fontSize.sm },
-  linkBold: { color: colors.primary, fontWeight: '700' },
+  linkText: { fontSize: fontSize.sm },
+  linkBold: { fontWeight: '700' },
 });

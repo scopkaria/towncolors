@@ -265,6 +265,7 @@ Route::prefix('admin')
 
         Route::get('/media', [\App\Http\Controllers\Admin\MediaController::class, 'index'])->name('media.index');
         Route::get('/media/api', [\App\Http\Controllers\Admin\MediaController::class, 'api'])->name('media.api');
+        Route::post('/media/api/upload', [\App\Http\Controllers\Admin\MediaController::class, 'apiUpload'])->name('media.api.upload');
         Route::post('/media', [\App\Http\Controllers\Admin\MediaController::class, 'store'])->name('media.store');
         Route::delete('/media/{medium}', [\App\Http\Controllers\Admin\MediaController::class, 'destroy'])->name('media.destroy');
 

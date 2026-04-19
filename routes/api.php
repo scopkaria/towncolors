@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\PortfolioController;
 use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\MobileBrandingController;
 use App\Http\Controllers\LiveChatController;
 
 /*
@@ -30,6 +31,7 @@ Route::prefix('live-chat')->group(function () {
 });
 
 // Public content
+Route::get('/mobile/branding', [MobileBrandingController::class, 'show']);
 Route::get('/blog', [BlogController::class, 'index']);
 Route::get('/blog/{post:slug}', [BlogController::class, 'show']);
 Route::get('/portfolio', [PortfolioController::class, 'index']);

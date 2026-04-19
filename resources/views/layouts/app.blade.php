@@ -113,6 +113,7 @@
                         'label' => 'Website',
                         'items' => [
                             ['label' => 'Pages',       'route' => route('admin.pages.index'),       'match' => 'admin.pages.*',       'icon' => $ic['pages']],
+                            ['label' => 'Hero & Page Controls', 'route' => route('admin.pages.index'), 'match' => 'admin.pages.*', 'icon' => $ic['settings']],
                             ['label' => 'Blog',        'route' => route('admin.posts.index'),       'match' => 'admin.posts.*',       'icon' => $ic['blog']],
                             ['label' => 'Blog Comments','route' => route('admin.posts.comments.index'),'match' => 'admin.posts.comments.*','icon' => $ic['messages']],
                             ['label' => 'Portfolio',   'route' => route('admin.portfolio.index'),   'match' => 'admin.portfolio.*',   'icon' => $ic['portfolio']],

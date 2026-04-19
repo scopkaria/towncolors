@@ -40,6 +40,8 @@ class SettingController extends Controller
             'logo_media_id'    => ['nullable', 'integer', 'exists:media,id'],
             'light_logo_media_id' => ['nullable', 'integer', 'exists:media,id'],
             'dark_logo_media_id' => ['nullable', 'integer', 'exists:media,id'],
+            'mobile_logo_media_id' => ['nullable', 'integer', 'exists:media,id'],
+            'mobile_icon_media_id' => ['nullable', 'integer', 'exists:media,id'],
             'primary_color'    => ['nullable', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'secondary_color'  => ['nullable', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'background_color' => ['nullable', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],

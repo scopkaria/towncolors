@@ -7,6 +7,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useBranding } from '../contexts/BrandingContext';
 import { dashboardApi } from '../api';
 import { spacing, fontSize, statusColors } from '../theme';
 
@@ -16,6 +17,7 @@ const DRAWER_WIDTH = SCREEN_WIDTH * 0.78;
 export default function DashboardScreen({ navigation }: any) {
   const { user, logout } = useAuth();
   const { colors, isDark, toggleTheme } = useTheme();
+  const branding = useBranding();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -80,7 +82,7 @@ export default function DashboardScreen({ navigation }: any) {
         </TouchableOpacity>
 
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>Towncore</Text>
+          <Text style={styles.headerTitle}>{branding.appName}</Text>
         </View>
 
         <TouchableOpacity onPress={() => setProfileOpen(true)} style={styles.avatarBtn} activeOpacity={0.7}>
@@ -116,7 +118,7 @@ export default function DashboardScreen({ navigation }: any) {
               onPress={() => { toggleTheme(); }}
               activeOpacity={0.6}
             >
-              <Ionicons name={isDark ? 'moon' : 'sunny'} size={20} color={isDark ? '#fbbf24' : '#f97316'} />
+              <Ionicons name={isDark ? 'moon' : 'sunny'} size={20} color={colors.primary} />
               <Text style={[styles.profileMenuText, { color: colors.text }]}>
                 {isDark ? 'Dark Mode' : 'Light Mode'}
               </Text>
@@ -205,7 +207,7 @@ export default function DashboardScreen({ navigation }: any) {
 
               {/* Theme toggle in drawer */}
               <TouchableOpacity style={styles.drawerItem} onPress={toggleTheme} activeOpacity={0.6}>
-                <Ionicons name={isDark ? 'moon' : 'sunny'} size={22} color={isDark ? '#fbbf24' : '#f97316'} />
+                <Ionicons name={isDark ? 'moon' : 'sunny'} size={22} color={colors.primary} />
                 <Text style={[styles.drawerLabel, { color: colors.text }]}>{isDark ? 'Dark Mode' : 'Light Mode'}</Text>
               </TouchableOpacity>
             </ScrollView>
@@ -335,7 +337,7 @@ export default function DashboardScreen({ navigation }: any) {
           ))}
         </View>
 
-        <View style={{ height: 30 }} />
+        <View style={{ height: 96 }} />
       </ScrollView>
     </View>
   );

@@ -13,6 +13,8 @@ class Setting extends Model
         'logo_media_id',
         'light_logo_media_id',
         'dark_logo_media_id',
+        'mobile_logo_media_id',
+        'mobile_icon_media_id',
         'phone',
         'email',
         'address',
@@ -71,6 +73,16 @@ class Setting extends Model
         return $this->belongsTo(Media::class, 'dark_logo_media_id');
     }
 
+    public function mobileLogoMedia(): BelongsTo
+    {
+        return $this->belongsTo(Media::class, 'mobile_logo_media_id');
+    }
+
+    public function mobileIconMedia(): BelongsTo
+    {
+        return $this->belongsTo(Media::class, 'mobile_icon_media_id');
+    }
+
     /**
      * Returns the logo URL, preferring the Media Library selection
      * over the legacy direct-upload logo_path.
@@ -95,6 +107,24 @@ class Setting extends Model
         }
 
         return $this->logoUrl();
+    }
+
+    public function mobileLogoUrl(): ?string
+    {
+        if ($this->mobile_logo_media_id && $this->mobileLogoMedia) {
+            return $this->mobileLogoMedia->url();
+        }
+
+        return $this->logoUrl();
+    }
+
+    public function mobileIconUrl(): ?string
+    {
+        if ($this->mobile_icon_media_id && $this->mobileIconMedia) {
+            return $this->mobileIconMedia->url();
+        }
+
+        return $this->mobileLogoUrl();
     }
 
     /**

@@ -94,11 +94,24 @@ function MainTabs() {
         tabBarInactiveTintColor: colors.textLight,
         tabBarStyle: {
           backgroundColor: colors.card,
-          borderTopColor: colors.border,
-          paddingBottom: 4,
-          height: 56,
+          borderTopColor: 'transparent',
+          borderTopWidth: 0,
+          position: 'absolute',
+          left: 12,
+          right: 12,
+          bottom: 10,
+          borderRadius: 18,
+          paddingTop: 8,
+          paddingBottom: 8,
+          height: 64,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 6 },
+          shadowOpacity: 0.12,
+          shadowRadius: 14,
+          elevation: 10,
         },
-        tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
+        tabBarLabelStyle: { fontSize: 11, fontWeight: '700' },
+        tabBarItemStyle: { borderRadius: 12, marginHorizontal: 2 },
         tabBarIcon: ({ focused, color }) => {
           let iconName: any;
           switch (route.name) {
