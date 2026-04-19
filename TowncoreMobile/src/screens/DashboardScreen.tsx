@@ -2,14 +2,16 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, RefreshControl,
   TouchableOpacity, ActivityIndicator, Animated, Dimensions,
-  Modal, Platform, StatusBar,
+  Modal, StatusBar, Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useBranding } from '../contexts/BrandingContext';
 import { dashboardApi } from '../api';
 import { spacing, fontSize, statusColors } from '../theme';
+import { TAB_BAR_TOTAL_HEIGHT } from '../navigation/AppNavigator';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const DRAWER_WIDTH = SCREEN_WIDTH * 0.78;
@@ -18,6 +20,7 @@ export default function DashboardScreen({ navigation }: any) {
   const { user, logout } = useAuth();
   const { colors, isDark, toggleTheme } = useTheme();
   const branding = useBranding();
+  const insets = useSafeAreaInsets();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -76,7 +79,7 @@ export default function DashboardScreen({ navigation }: any) {
       />
 
       {/* ── Custom Header ─────────────────────────────── */}
-      <View style={[styles.headerBar, { backgroundColor: colors.primary }]}>
+      <View style={[styles.headerBar, { backgroundColor: colors.primary, paddingTop: insets.top + 8 }]}>
         <TouchableOpacity onPress={openDrawer} style={styles.headerBtn} activeOpacity={0.7}>
           <Ionicons name="menu" size={26} color="#fff" />
         </TouchableOpacity>
@@ -172,7 +175,7 @@ export default function DashboardScreen({ navigation }: any) {
           />
           <Animated.View style={[styles.drawer, { backgroundColor: colors.card, transform: [{ translateX: drawerAnim }] }]}>
             {/* Drawer header */}
-            <View style={[styles.drawerHeader, { backgroundColor: colors.primary }]}>
+            <View style={[styles.drawerHeader, { backgroundColor: colors.primary, paddingTop: insets.top + 20 }]}>
               <View style={styles.drawerAvatarCircle}>
                 <Text style={styles.drawerAvatarText}>{initials}</Text>
               </View>
@@ -337,7 +340,7 @@ export default function DashboardScreen({ navigation }: any) {
           ))}
         </View>
 
-        <View style={{ height: 96 }} />
+        <View style={{ height: TAB_BAR_TOTAL_HEIGHT + insets.bottom }} />
       </ScrollView>
     </View>
   );
@@ -391,7 +394,6 @@ const styles = StyleSheet.create({
   // Header
   headerBar: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingTop: Platform.OS === 'ios' ? 54 : StatusBar.currentHeight ? StatusBar.currentHeight + 8 : 38,
     paddingBottom: 12, paddingHorizontal: spacing.md,
   },
   headerBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.18)', justifyContent: 'center', alignItems: 'center' },
@@ -429,7 +431,6 @@ const styles = StyleSheet.create({
     shadowColor: '#000', shadowOffset: { width: 4, height: 0 }, shadowOpacity: 0.2, shadowRadius: 16, elevation: 16,
   },
   drawerHeader: {
-    paddingTop: Platform.OS === 'ios' ? 60 : StatusBar.currentHeight ? StatusBar.currentHeight + 20 : 44,
     paddingBottom: spacing.lg, paddingHorizontal: spacing.lg,
   },
   drawerAvatarCircle: { width: 56, height: 56, borderRadius: 28, backgroundColor: 'rgba(255,255,255,0.25)', justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: 'rgba(255,255,255,0.4)', marginBottom: spacing.sm },

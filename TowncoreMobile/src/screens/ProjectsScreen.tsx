@@ -1,19 +1,22 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
   View, Text, StyleSheet, FlatList, TouchableOpacity,
-  RefreshControl, ActivityIndicator, TextInput, Platform, StatusBar,
+  RefreshControl, ActivityIndicator, TextInput, StatusBar,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { projectsApi } from '../api';
 import { spacing, fontSize, statusColors } from '../theme';
+import { TAB_BAR_TOTAL_HEIGHT } from '../navigation/AppNavigator';
 
 const STATUS_FILTERS = ['all', 'pending', 'assigned', 'in_progress', 'completed'];
 
 export default function ProjectsScreen({ navigation }: any) {
   const { user } = useAuth();
   const { colors, isDark } = useTheme();
+  const insets = useSafeAreaInsets();
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -128,7 +131,7 @@ export default function ProjectsScreen({ navigation }: any) {
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.primary} />
 
       {/* ── Header ────────────────────────────────────── */}
-      <View style={[styles.header, { backgroundColor: colors.primary }]}>
+      <View style={[styles.header, { backgroundColor: colors.primary, paddingTop: insets.top + 12 }]}>
         <Text style={styles.headerTitle}>Projects</Text>
         <Text style={styles.headerSub}>{filtered.length} project{filtered.length !== 1 ? 's' : ''}</Text>
       </View>
@@ -187,7 +190,7 @@ export default function ProjectsScreen({ navigation }: any) {
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
           onEndReached={loadMore}
           onEndReachedThreshold={0.3}
-          contentContainerStyle={styles.list}
+          contentContainerStyle={[styles.list, { paddingBottom: TAB_BAR_TOTAL_HEIGHT + insets.bottom }]}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <View style={styles.emptyWrap}>
@@ -223,7 +226,6 @@ const styles = StyleSheet.create({
 
   // Header
   header: {
-    paddingTop: Platform.OS === 'ios' ? 54 : StatusBar.currentHeight ? StatusBar.currentHeight + 12 : 42,
     paddingBottom: 20, paddingHorizontal: spacing.lg,
   },
   headerTitle: { fontSize: 26, fontWeight: '800', color: '#fff' },
@@ -244,7 +246,7 @@ const styles = StyleSheet.create({
   filterTextActive: { color: '#fff' },
 
   // List
-  list: { padding: spacing.md, paddingBottom: 100 },
+  list: { padding: spacing.md },
 
   // Card
   card: {

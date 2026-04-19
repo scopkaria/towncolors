@@ -1,9 +1,10 @@
 import React from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, View, Platform } from 'react-native';
 import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -30,6 +31,9 @@ import LiveChatScreen from '../screens/LiveChatScreen';
 import NotificationSettingsScreen from '../screens/NotificationSettingsScreen';
 
 export const navigationRef = createNavigationContainerRef<any>();
+
+/** Height of the floating tab bar + gap — use for bottom content padding in tab screens */
+export const TAB_BAR_TOTAL_HEIGHT = 80;
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -86,6 +90,9 @@ function MessagesStack() {
 // Main Tab Navigator (3 tabs — no More tab, drawer handles extras)
 function MainTabs() {
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
+  const bottomInset = Math.max(insets.bottom, 8);
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -99,11 +106,11 @@ function MainTabs() {
           position: 'absolute',
           left: 12,
           right: 12,
-          bottom: 10,
+          bottom: bottomInset,
           borderRadius: 18,
-          paddingTop: 8,
-          paddingBottom: 8,
-          height: 64,
+          paddingTop: 6,
+          paddingBottom: 6,
+          height: 60,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 6 },
           shadowOpacity: 0.12,

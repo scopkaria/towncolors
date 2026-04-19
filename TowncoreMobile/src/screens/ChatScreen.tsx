@@ -5,6 +5,7 @@ import {
   Image, Linking, Keyboard,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { chatApi } from '../api';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -14,6 +15,7 @@ export default function ChatScreen({ route }: any) {
   const { conversationId } = route.params;
   const { user } = useAuth();
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   const [messages, setMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [text, setText] = useState('');
@@ -125,7 +127,7 @@ export default function ChatScreen({ route }: any) {
 
             {item.message_type === 'image' && item.file_path ? (
               <Image
-                source={{ uri: `http://twncolors.com/storage/${item.file_path}` }}
+                source={{ uri: `https://twncolors.com/storage/${item.file_path}` }}
                 style={styles.imageMsg}
                 resizeMode="cover"
               />
@@ -142,7 +144,7 @@ export default function ChatScreen({ route }: any) {
                 </View>
               </TouchableOpacity>
             ) : item.message_type === 'document' && item.file_path ? (
-              <TouchableOpacity onPress={() => Linking.openURL(`http://twncolors.com/storage/${item.file_path}`)}>
+              <TouchableOpacity onPress={() => Linking.openURL(`https://twncolors.com/storage/${item.file_path}`)}>
                 <View style={styles.attachRow}>
                   <Ionicons name="document-attach" size={18} color={isMe ? '#fff' : colors.primary} />
                   <Text style={{ color: isMe ? '#fff' : colors.primary, fontWeight: '600', marginLeft: 6 }}>
@@ -184,8 +186,8 @@ export default function ChatScreen({ route }: any) {
   return (
     <KeyboardAvoidingView
       style={[styles.container, { backgroundColor: colors.background }]}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={90}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
       <FlatList
         ref={flatListRef}
@@ -205,7 +207,7 @@ export default function ChatScreen({ route }: any) {
         }
       />
 
-      <View style={[styles.inputBar, { backgroundColor: colors.card, borderTopColor: colors.border }]}>
+      <View style={[styles.inputBar, { backgroundColor: colors.card, borderTopColor: colors.border, paddingBottom: Math.max(insets.bottom, spacing.sm) }]}>
         <View style={[styles.inputWrap, { backgroundColor: colors.inputBg }]}>
           <TextInput
             style={[styles.textInput, { color: colors.text }]}

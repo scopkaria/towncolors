@@ -4,16 +4,19 @@ import {
   RefreshControl, ActivityIndicator, TextInput, Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { chatApi } from '../api';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { spacing, fontSize } from '../theme';
+import { TAB_BAR_TOTAL_HEIGHT } from '../navigation/AppNavigator';
 
 type TabType = 'chats' | 'contacts';
 
 export default function ConversationsScreen({ navigation }: any) {
   const { user } = useAuth();
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   const [tab, setTab] = useState<TabType>('chats');
   const [conversations, setConversations] = useState<any[]>([]);
   const [contacts, setContacts] = useState<any[]>([]);
@@ -205,7 +208,7 @@ export default function ConversationsScreen({ navigation }: any) {
           keyExtractor={item => item.id.toString()}
           renderItem={renderConversation}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
-          contentContainerStyle={styles.list}
+          contentContainerStyle={[styles.list, { paddingBottom: TAB_BAR_TOTAL_HEIGHT + insets.bottom }]}
           ListEmptyComponent={
             <View style={styles.emptyWrap}>
               <Ionicons name="chatbubbles-outline" size={48} color={colors.textLight} />
@@ -223,7 +226,7 @@ export default function ConversationsScreen({ navigation }: any) {
             keyExtractor={item => item.id.toString()}
             renderItem={renderContact}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
-            contentContainerStyle={styles.list}
+            contentContainerStyle={[styles.list, { paddingBottom: TAB_BAR_TOTAL_HEIGHT + insets.bottom }]}
             ListEmptyComponent={
               <View style={styles.emptyWrap}>
                 <Ionicons name="people-outline" size={48} color={colors.textLight} />
@@ -240,7 +243,7 @@ export default function ConversationsScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 80 },
-  list: { paddingBottom: 20 },
+  list: { },
 
   // Tabs
   tabRow: { flexDirection: 'row', borderBottomWidth: 1 },

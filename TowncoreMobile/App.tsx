@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Alert } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as Notifications from 'expo-notifications';
 import * as Updates from 'expo-updates';
 import { AuthProvider, useAuth } from './src/contexts/AuthContext';
@@ -81,10 +82,12 @@ function Main() {
 
 export default function App() {
   return (
-    <BrandingProvider>
-      <ThemeProvider>
-        <Main />
-      </ThemeProvider>
-    </BrandingProvider>
+    <SafeAreaProvider>
+      <BrandingProvider>
+        <ThemeProvider>
+          <Main />
+        </ThemeProvider>
+      </BrandingProvider>
+    </SafeAreaProvider>
   );
 }
