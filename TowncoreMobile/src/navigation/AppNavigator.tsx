@@ -8,6 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import RoleGuard from '../components/RoleGuard';
 
 // Auth Screens
 import LoginScreen from '../screens/LoginScreen';
@@ -33,11 +34,43 @@ import MenuScreen from '../screens/MenuScreen';
 import SubscriptionScreen from '../screens/SubscriptionScreen';
 import FilesScreen from '../screens/FilesScreen';
 import ChecklistScreen from '../screens/ChecklistScreen';
+import UsersScreen from '../screens/UsersScreen';
+import BlogManageScreen from '../screens/BlogManageScreen';
+import PortfolioManageScreen from '../screens/PortfolioManageScreen';
 
 export const navigationRef = createNavigationContainerRef<any>();
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+
+// ── Role-guarded screen wrappers ──────────────────────────
+
+// Admin-only: LiveChat agent console
+const GuardedLiveChatScreen = (props: any) => (
+  <RoleGuard allowedRoles={['admin']} navigation={props.navigation}>
+    <LiveChatScreen {...props} />
+  </RoleGuard>
+);
+
+// Client-only: Files
+const GuardedFilesScreen = (props: any) => (
+  <RoleGuard allowedRoles={['client']} navigation={props.navigation}>
+    <FilesScreen {...props} />
+  </RoleGuard>
+);
+
+// Admin/Client: Invoices, Subscription
+const GuardedPortfolioScreen = (props: any) => (
+  <RoleGuard allowedRoles={['admin', 'freelancer']} navigation={props.navigation}>
+    <PortfolioScreen {...props} />
+  </RoleGuard>
+);
+
+const GuardedBlogScreen = (props: any) => (
+  <RoleGuard allowedRoles={['admin']} navigation={props.navigation}>
+    <BlogScreen {...props} />
+  </RoleGuard>
+);
 
 // Auth Stack
 function AuthStack() {
@@ -51,39 +84,21 @@ function AuthStack() {
 
 // Projects Stack
 function ProjectsStack() {
-  const { colors } = useTheme();
-  const screenOptions = {
-    headerStyle: { backgroundColor: colors.card },
-    headerTintColor: colors.text,
-    headerTitleStyle: { fontWeight: '700' as const },
-    headerShadowVisible: false,
-  };
   return (
-    <Stack.Navigator screenOptions={screenOptions}>
-      <Stack.Screen name="ProjectsList" component={ProjectsScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="ProjectDetail" component={ProjectDetailScreen} options={{ title: 'Project Details' }} />
-      <Stack.Screen name="CreateProject" component={CreateProjectScreen} options={{ title: 'New Project' }} />
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="ProjectsList" component={ProjectsScreen} />
+      <Stack.Screen name="ProjectDetail" component={ProjectDetailScreen} />
+      <Stack.Screen name="CreateProject" component={CreateProjectScreen} />
     </Stack.Navigator>
   );
 }
 
 // Messages Stack
 function MessagesStack() {
-  const { colors } = useTheme();
-  const screenOptions = {
-    headerStyle: { backgroundColor: colors.card },
-    headerTintColor: colors.text,
-    headerTitleStyle: { fontWeight: '700' as const },
-    headerShadowVisible: false,
-  };
   return (
-    <Stack.Navigator screenOptions={screenOptions}>
-      <Stack.Screen name="Conversations" component={ConversationsScreen} options={{ title: 'Messages' }} />
-      <Stack.Screen
-        name="Chat"
-        component={ChatScreen}
-        options={({ route }: any) => ({ title: route.params?.title || 'Chat' })}
-      />
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Conversations" component={ConversationsScreen} />
+      <Stack.Screen name="Chat" component={ChatScreen} />
     </Stack.Navigator>
   );
 }
@@ -108,11 +123,32 @@ const centerBtnStyles = StyleSheet.create({
   },
 });
 
-// Main Tab Navigator — 5 tabs with center home
+// Main Tab Navigator — role-based tabs
 function MainTabs() {
+  const { user } = useAuth();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const bottomInset = Math.max(insets.bottom, 8);
+  const role = user?.role || 'client';
+
+  const tabBarStyle = {
+    backgroundColor: colors.card,
+    borderTopColor: 'transparent',
+    borderTopWidth: 0,
+    position: 'absolute' as const,
+    left: 12,
+    right: 12,
+    bottom: bottomInset,
+    borderRadius: 22,
+    paddingTop: 6,
+    paddingBottom: 6,
+    height: 64,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 12,
+  };
 
   return (
     <Tab.Navigator
@@ -120,35 +156,20 @@ function MainTabs() {
         headerShown: false,
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textLight,
-        tabBarStyle: {
-          backgroundColor: colors.card,
-          borderTopColor: 'transparent',
-          borderTopWidth: 0,
-          position: 'absolute',
-          left: 12,
-          right: 12,
-          bottom: bottomInset,
-          borderRadius: 22,
-          paddingTop: 6,
-          paddingBottom: 6,
-          height: 64,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 6 },
-          shadowOpacity: 0.15,
-          shadowRadius: 16,
-          elevation: 12,
-        },
+        tabBarStyle,
         tabBarLabelStyle: { fontSize: 10, fontWeight: '700', marginTop: -2 },
         tabBarItemStyle: { borderRadius: 12, marginHorizontal: 1 },
         tabBarIcon: ({ focused, color }) => {
           let iconName: any;
           const size = 22;
           switch (route.name) {
-            case 'Projects': iconName = focused ? 'folder' : 'folder-outline'; break;
-            case 'Messages': iconName = focused ? 'chatbubbles' : 'chatbubbles-outline'; break;
-            case 'Home': iconName = 'home'; break;
-            case 'LiveChat': iconName = focused ? 'chatbubble-ellipses' : 'chatbubble-ellipses-outline'; break;
-            case 'Menu': iconName = focused ? 'grid' : 'grid-outline'; break;
+            case 'Projects':   iconName = focused ? 'folder' : 'folder-outline'; break;
+            case 'Messages':   iconName = focused ? 'chatbubbles' : 'chatbubbles-outline'; break;
+            case 'Home':       iconName = 'home'; break;
+            case 'LiveChat':   iconName = focused ? 'headset' : 'headset-outline'; break;
+            case 'MyPlan':     iconName = focused ? 'shield-checkmark' : 'shield-checkmark-outline'; break;
+            case 'Tasks':      iconName = focused ? 'checkbox' : 'checkbox-outline'; break;
+            case 'Menu':       iconName = focused ? 'grid' : 'grid-outline'; break;
           }
           return <Ionicons name={iconName} size={size} color={color} />;
         },
@@ -160,40 +181,58 @@ function MainTabs() {
         name="Home"
         component={DashboardScreen}
         options={({ navigation: nav }) => ({
-          tabBarButton: (props) => (
+          tabBarButton: () => (
             <CenterTabButton onPress={() => nav.navigate('Home')} colors={colors} />
           ),
         })}
       />
-      <Tab.Screen name="LiveChat" component={LiveChatScreen} options={{ tabBarLabel: 'Chat' }} />
+      {/* 4th tab: role-specific */}
+      {role === 'admin' && (
+        <Tab.Screen
+          name="LiveChat"
+          component={LiveChatScreen}
+          options={{ tabBarLabel: 'Support' }}
+        />
+      )}
+      {role === 'client' && (
+        <Tab.Screen
+          name="MyPlan"
+          component={SubscriptionScreen}
+          options={{ tabBarLabel: 'My Plan' }}
+        />
+      )}
+      {role === 'freelancer' && (
+        <Tab.Screen
+          name="Tasks"
+          component={ChecklistScreen}
+          options={{ tabBarLabel: 'Tasks' }}
+        />
+      )}
       <Tab.Screen name="Menu" component={MenuScreen} />
     </Tab.Navigator>
   );
 }
 
-// App Main — tabs + overlay screens accessible from drawer
+// App Main — tabs + overlay screens
 function AppMain() {
-  const { colors } = useTheme();
-  const screenOptions = {
-    headerStyle: { backgroundColor: colors.card },
-    headerTintColor: colors.text,
-    headerTitleStyle: { fontWeight: '700' as const },
-    headerShadowVisible: false,
-  };
   return (
-    <Stack.Navigator>
-      <Stack.Screen name="Tabs" component={MainTabs} options={{ headerShown: false }} />
-      <Stack.Screen name="Invoices" component={InvoicesScreen} options={{ ...screenOptions, title: 'Invoices' }} />
-      <Stack.Screen name="InvoiceDetail" component={InvoiceDetailScreen} options={{ ...screenOptions, title: 'Invoice Details' }} />
-      <Stack.Screen name="Portfolio" component={PortfolioScreen} options={{ ...screenOptions, title: 'Portfolio' }} />
-      <Stack.Screen name="Blog" component={BlogScreen} options={{ ...screenOptions, title: 'Blog' }} />
-      <Stack.Screen name="BlogPost" component={BlogPostScreen} options={{ ...screenOptions, title: 'Article' }} />
-      <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ ...screenOptions, title: 'Notifications' }} />
-      <Stack.Screen name="Profile" component={ProfileScreen} options={{ ...screenOptions, title: 'Profile' }} />
-      <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} options={{ ...screenOptions, title: 'Notification Settings' }} />
-      <Stack.Screen name="Subscription" component={SubscriptionScreen} options={{ ...screenOptions, headerShown: false }} />
-      <Stack.Screen name="Files" component={FilesScreen} options={{ ...screenOptions, headerShown: false }} />
-      <Stack.Screen name="Checklist" component={ChecklistScreen} options={{ ...screenOptions, headerShown: false }} />
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Tabs" component={MainTabs} />
+      <Stack.Screen name="Invoices" component={InvoicesScreen} />
+      <Stack.Screen name="InvoiceDetail" component={InvoiceDetailScreen} />
+      <Stack.Screen name="Portfolio" component={GuardedPortfolioScreen} />
+      <Stack.Screen name="Blog" component={GuardedBlogScreen} />
+      <Stack.Screen name="BlogPost" component={BlogPostScreen} />
+      <Stack.Screen name="Notifications" component={NotificationsScreen} />
+      <Stack.Screen name="Profile" component={ProfileScreen} />
+      <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} />
+      <Stack.Screen name="Subscription" component={SubscriptionScreen} />
+      <Stack.Screen name="Files" component={GuardedFilesScreen} />
+      <Stack.Screen name="Checklist" component={ChecklistScreen} />
+      <Stack.Screen name="LiveChat" component={LiveChatScreen} />
+      <Stack.Screen name="Users" component={UsersScreen} />
+      <Stack.Screen name="BlogManage" component={BlogManageScreen} />
+      <Stack.Screen name="PortfolioManage" component={PortfolioManageScreen} />
     </Stack.Navigator>
   );
 }

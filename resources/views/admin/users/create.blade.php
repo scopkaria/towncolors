@@ -47,9 +47,12 @@
                         @endforeach
                     </select>
                 </div>
-                <div>
+                <div x-data="{ password: '{{ old('temporary_password') }}' }">
                     <label class="mb-1.5 block text-sm font-semibold text-brand-ink">Temporary Password</label>
-                    <input type="text" name="temporary_password" value="{{ old('temporary_password') }}" class="w-full rounded-xl border border-warm-300/50 px-4 py-2.5 text-sm text-brand-ink focus:border-brand-primary focus:outline-none">
+                    <div class="flex gap-2">
+                        <input type="text" name="temporary_password" x-model="password" class="w-full rounded-xl border border-warm-300/50 px-4 py-2.5 text-sm text-brand-ink focus:border-brand-primary focus:outline-none">
+                        <button type="button" @click="password = [...Array(16)].map(() => 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%&*'[Math.random()*60|0]).join('')" class="shrink-0 rounded-xl border border-warm-300/50 px-3 py-2.5 text-xs font-semibold text-brand-primary hover:bg-accent-light transition">Generate</button>
+                    </div>
                     <p class="mt-1 text-xs text-brand-muted">The user will be forced to change this password on first login.</p>
                 </div>
             </div>

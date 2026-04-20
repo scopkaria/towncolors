@@ -5,10 +5,13 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { blogApi } from '../api';
-import API_BASE_URL from '../config';
-import { colors, spacing, fontSize } from '../theme';
+import { MEDIA_BASE_URL } from '../config';
+import { useTheme } from '../contexts/ThemeContext';
+import { spacing, fontSize } from '../theme';
+import ScreenHeader from '../components/ScreenHeader';
 
 export default function BlogScreen({ navigation }: any) {
+  const { colors } = useTheme();
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -37,8 +40,7 @@ export default function BlogScreen({ navigation }: any) {
 
   function getImageUrl(path: string) {
     if (!path) return null;
-    const baseUrl = API_BASE_URL.replace('/api', '');
-    return `${baseUrl}/storage/${path}`;
+    return `${MEDIA_BASE_URL}/storage/${path}`;
   }
 
   const renderPost = ({ item, index }: any) => {
@@ -47,24 +49,24 @@ export default function BlogScreen({ navigation }: any) {
 
     return (
       <TouchableOpacity
-        style={[styles.card, isFeatured && styles.featuredCard]}
+        style={[styles.card, { backgroundColor: colors.card }, isFeatured && styles.featuredCard]}
         onPress={() => navigation.navigate('BlogPost', { slug: item.slug })}
       >
         {imageUrl && (
           <Image
             source={{ uri: imageUrl }}
-            style={[styles.image, isFeatured && styles.featuredImage]}
+            style={[styles.image, { backgroundColor: colors.inputBg }, isFeatured && styles.featuredImage]}
             resizeMode="cover"
           />
         )}
         <View style={styles.content}>
-          <Text style={[styles.title, isFeatured && styles.featuredTitle]} numberOfLines={2}>
+          <Text style={[styles.title, { color: colors.text }, isFeatured && styles.featuredTitle]} numberOfLines={2}>
             {item.title}
           </Text>
           {item.meta_description && (
-            <Text style={styles.excerpt} numberOfLines={2}>{item.meta_description}</Text>
+            <Text style={[styles.excerpt, { color: colors.textSecondary }]} numberOfLines={2}>{item.meta_description}</Text>
           )}
-          <Text style={styles.date}>
+          <Text style={[styles.date, { color: colors.textLight }]}>
             {new Date(item.published_at).toLocaleDateString('en-US', {
               month: 'short', day: 'numeric', year: 'numeric',
             })}
@@ -79,8 +81,10 @@ export default function BlogScreen({ navigation }: any) {
   }
 
   return (
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <ScreenHeader title="Blog" onBack={() => navigation.goBack()} />
     <FlatList
-      style={styles.container}
+      style={{ flex: 1 }}
       data={posts}
       keyExtractor={item => item.id.toString()}
       renderItem={renderPost}
@@ -91,25 +95,26 @@ export default function BlogScreen({ navigation }: any) {
       ListEmptyComponent={
         <View style={styles.center}>
           <Ionicons name="newspaper-outline" size={48} color={colors.textLight} />
-          <Text style={styles.emptyText}>No blog posts yet</Text>
+          <Text style={[styles.emptyText, { color: colors.textLight }]}>No blog posts yet</Text>
         </View>
       }
     />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background },
+  container: { flex: 1 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 80 },
   list: { padding: spacing.md, paddingBottom: 20 },
-  card: { backgroundColor: colors.card, borderRadius: 16, marginBottom: spacing.md, overflow: 'hidden', shadowColor: colors.shadow, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4, elevation: 2 },
+  card: { borderRadius: 16, marginBottom: spacing.md, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4, elevation: 2 },
   featuredCard: {},
-  image: { width: '100%', height: 160, backgroundColor: colors.inputBg },
+  image: { width: '100%', height: 160 },
   featuredImage: { height: 220 },
   content: { padding: spacing.md },
-  title: { fontSize: fontSize.md, fontWeight: '700', color: colors.text },
+  title: { fontSize: fontSize.md, fontWeight: '700' },
   featuredTitle: { fontSize: fontSize.lg },
-  excerpt: { fontSize: fontSize.sm, color: colors.textSecondary, marginTop: spacing.xs, lineHeight: 20 },
-  date: { fontSize: fontSize.xs, color: colors.textLight, marginTop: spacing.sm },
-  emptyText: { fontSize: fontSize.md, color: colors.textLight, marginTop: spacing.sm },
+  excerpt: { fontSize: fontSize.sm, marginTop: spacing.xs, lineHeight: 20 },
+  date: { fontSize: fontSize.xs, marginTop: spacing.sm },
+  emptyText: { fontSize: fontSize.md, marginTop: spacing.sm },
 });

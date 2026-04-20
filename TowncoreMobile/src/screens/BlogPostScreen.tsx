@@ -4,10 +4,13 @@ import {
   Dimensions, useWindowDimensions,
 } from 'react-native';
 import { blogApi } from '../api';
-import API_BASE_URL from '../config';
-import { colors, spacing, fontSize } from '../theme';
+import { MEDIA_BASE_URL } from '../config';
+import { useTheme } from '../contexts/ThemeContext';
+import { spacing, fontSize } from '../theme';
+import ScreenHeader from '../components/ScreenHeader';
 
-export default function BlogPostScreen({ route }: any) {
+export default function BlogPostScreen({ route, navigation }: any) {
+  const { colors } = useTheme();
   const { slug } = route.params;
   const [post, setPost] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -26,36 +29,38 @@ export default function BlogPostScreen({ route }: any) {
 
   function getImageUrl(path: string) {
     if (!path) return null;
-    const baseUrl = API_BASE_URL.replace('/api', '');
-    return `${baseUrl}/storage/${path}`;
+    return `${MEDIA_BASE_URL}/storage/${path}`;
   }
 
   const imageUrl = getImageUrl(post.featured_image);
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <ScreenHeader title="Article" onBack={() => navigation.goBack()} />
+    <ScrollView style={{ flex: 1 }}>
       {imageUrl && (
-        <Image source={{ uri: imageUrl }} style={styles.image} resizeMode="cover" />
+        <Image source={{ uri: imageUrl }} style={[styles.image, { backgroundColor: colors.inputBg }]} resizeMode="cover" />
       )}
       <View style={styles.content}>
-        <Text style={styles.title}>{post.title}</Text>
-        <Text style={styles.date}>
+        <Text style={[styles.title, { color: colors.text }]}>{post.title}</Text>
+        <Text style={[styles.date, { color: colors.textLight }]}>
           {new Date(post.published_at).toLocaleDateString('en-US', {
             weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
           })}
         </Text>
-        <Text style={styles.body}>{post.content?.replace(/<[^>]*>/g, '') || ''}</Text>
+        <Text style={[styles.body, { color: colors.text }]}>{post.content?.replace(/<[^>]*>/g, '') || ''}</Text>
       </View>
     </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background },
+  container: { flex: 1 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  image: { width: '100%', height: 250, backgroundColor: colors.inputBg },
+  image: { width: '100%', height: 250 },
   content: { padding: spacing.lg },
-  title: { fontSize: fontSize.xxl, fontWeight: '800', color: colors.text, lineHeight: 36 },
-  date: { fontSize: fontSize.sm, color: colors.textLight, marginTop: spacing.sm, marginBottom: spacing.lg },
-  body: { fontSize: fontSize.md, color: colors.text, lineHeight: 26 },
+  title: { fontSize: fontSize.xxl, fontWeight: '800', lineHeight: 36 },
+  date: { fontSize: fontSize.sm, marginTop: spacing.sm, marginBottom: spacing.lg },
+  body: { fontSize: fontSize.md, lineHeight: 26 },
 });

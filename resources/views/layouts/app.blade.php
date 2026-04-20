@@ -395,30 +395,82 @@
             </div>
         </div>
         @if (auth()->check() && !auth()->user()->must_change_password && (!auth()->user()->onboarding_completed || session('show_onboarding')))
-            <div x-data="{ open: true }" x-cloak x-show="open" class="fixed inset-0 z-[70] flex items-center justify-center bg-navy-900/70 p-4 backdrop-blur-sm">
-                <div class="w-full max-w-2xl rounded-3xl border border-white/70 bg-warm-100 p-8 shadow-panel">
-                    <div class="flex items-start justify-between gap-4">
-                        <div>
-                            <p class="text-xs font-semibold uppercase tracking-[0.28em] text-brand-primary">Quick Guide</p>
-                            <h2 class="mt-2 font-display text-2xl text-brand-ink">Welcome to TownCore</h2>
-                            <p class="mt-2 text-sm leading-7 text-brand-muted">Here is a quick overview of the workspace so you can get moving immediately.</p>
+            @php
+                $tourRole = auth()->user()->role->value ?? 'client';
+                $tourSteps = match($tourRole) {
+                    'admin' => [
+                        ['icon' => 'M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25a2.25 2.25 0 0 1-2.25-2.25v-2.25Z', 'title' => 'Dashboard & Overview', 'text' => 'Your command center — revenue metrics, active projects pipeline, top freelancers, and a live activity feed all in one place.'],
+                        ['icon' => 'M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z', 'title' => 'Projects & Delivery', 'text' => 'Create projects, assign freelancers, update statuses, and track progress from start to completion.'],
+                        ['icon' => 'M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z', 'title' => 'Messages & Live Chat', 'text' => 'Project chats, direct messages, and live chat with website visitors — all accessible from the sidebar.'],
+                        ['icon' => 'M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z', 'title' => 'Users & Freelancers', 'text' => 'Create client/freelancer accounts, manage credentials, and oversee freelancer performance and invoices.'],
+                        ['icon' => 'M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418', 'title' => 'Website & Content', 'text' => 'Manage blog posts, portfolio items, shop products, categories, FAQ, CMS pages, and media library.'],
+                    ],
+                    'freelancer' => [
+                        ['icon' => 'M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25a2.25 2.25 0 0 1-2.25-2.25v-2.25Z', 'title' => 'Dashboard & Overview', 'text' => 'See your workload at a glance — active projects, recent activity, and performance metrics.'],
+                        ['icon' => 'M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z', 'title' => 'Assigned Projects', 'text' => 'View projects assigned to you, update progress status, and communicate through project chat.'],
+                        ['icon' => 'M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z', 'title' => 'Messages', 'text' => 'Chat with admins and other freelancers. Filter by project or direct messages.'],
+                        ['icon' => 'M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z', 'title' => 'Invoices & Earnings', 'text' => 'Submit invoices for completed work and track your earnings across all projects.'],
+                        ['icon' => 'M9 12h6m-6 4h6M7.5 4.5h9A2.25 2.25 0 0 1 18.75 6.75v10.5A2.25 2.25 0 0 1 16.5 19.5h-9a2.25 2.25 0 0 1-2.25-2.25V6.75A2.25 2.25 0 0 1 7.5 4.5ZM9 8h6', 'title' => 'Portfolio & Guide', 'text' => 'Upload your work samples to showcase your skills. Open the User Guide anytime from the sidebar.'],
+                    ],
+                    default => [
+                        ['icon' => 'M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25a2.25 2.25 0 0 1-2.25-2.25v-2.25Z', 'title' => 'Dashboard', 'text' => 'Your home base — see project progress, subscription status, and important updates at a glance.'],
+                        ['icon' => 'M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z', 'title' => 'Your Projects', 'text' => 'Track all your submitted projects, view milestones, and check delivery status.'],
+                        ['icon' => 'M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z', 'title' => 'Messages', 'text' => 'Chat directly with your team. Requires an active subscription to access.'],
+                        ['icon' => 'M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z', 'title' => 'Files & Invoices', 'text' => 'Upload project files and keep track of invoices and payments all in one place.'],
+                        ['icon' => 'M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.431.992a6.759 6.759 0 0 1 0 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.28Z M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z', 'title' => 'Plan & Settings', 'text' => 'Manage your subscription, update your profile, and check your progress checklist.'],
+                    ],
+                };
+            @endphp
+            <div x-data="{ open: true, step: 0, steps: {{ count($tourSteps) }} }" x-cloak x-show="open" class="fixed inset-0 z-[70] flex items-center justify-center bg-navy-900/70 p-4 backdrop-blur-sm">
+                <div class="w-full max-w-lg rounded-3xl border border-white/70 bg-warm-100 shadow-panel overflow-hidden">
+                    {{-- Progress bar --}}
+                    <div class="h-1 bg-warm-200">
+                        <div class="h-1 bg-brand-primary transition-all duration-300" :style="'width:' + ((step + 1) / steps * 100) + '%'"></div>
+                    </div>
+
+                    <div class="p-8">
+                        {{-- Step indicator --}}
+                        <div class="flex items-center justify-between">
+                            <p class="text-xs font-semibold uppercase tracking-[0.28em] text-brand-primary">Welcome Tour</p>
+                            <span class="text-xs text-brand-muted" x-text="(step + 1) + ' / ' + steps"></span>
                         </div>
-                    </div>
-                    <div class="mt-6 grid gap-4 sm:grid-cols-2">
-                        <div class="rounded-2xl border border-warm-300/50 bg-warm-200/50 p-4"><p class="font-semibold text-brand-ink">Dashboard</p><p class="mt-1 text-sm text-brand-muted">See your activity, billing, subscription state, and current workspace summary.</p></div>
-                        <div class="rounded-2xl border border-warm-300/50 bg-warm-200/50 p-4"><p class="font-semibold text-brand-ink">Projects</p><p class="mt-1 text-sm text-brand-muted">Track delivery progress, milestones, and the latest project updates.</p></div>
-                        <div class="rounded-2xl border border-warm-300/50 bg-warm-200/50 p-4"><p class="font-semibold text-brand-ink">Messages</p><p class="mt-1 text-sm text-brand-muted">Collaborate with your team and keep conversations attached to the work.</p></div>
-                        <div class="rounded-2xl border border-warm-300/50 bg-warm-200/50 p-4"><p class="font-semibold text-brand-ink">Files</p><p class="mt-1 text-sm text-brand-muted">Review and manage private files shared for your projects.</p></div>
-                    </div>
-                    <div class="mt-6 flex flex-wrap gap-3">
-                        <form method="POST" action="{{ route('onboarding.complete') }}">
-                            @csrf
-                            <button type="submit" class="btn-primary">Finish Tour</button>
-                        </form>
-                        <form method="POST" action="{{ route('onboarding.complete') }}">
-                            @csrf
-                            <button type="submit" class="btn-secondary">Skip for now</button>
-                        </form>
+
+                        {{-- Step content --}}
+                        @foreach ($tourSteps as $i => $tourStep)
+                            <div x-show="step === {{ $i }}" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-x-4" x-transition:enter-end="opacity-100 translate-x-0" class="mt-6">
+                                <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-accent-light to-amber-50">
+                                    <svg class="h-8 w-8 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="{{ $tourStep['icon'] }}"/>
+                                    </svg>
+                                </div>
+                                <h2 class="mt-4 font-display text-2xl text-brand-ink">{{ $tourStep['title'] }}</h2>
+                                <p class="mt-2 text-sm leading-7 text-brand-muted">{{ $tourStep['text'] }}</p>
+                            </div>
+                        @endforeach
+
+                        {{-- Navigation --}}
+                        <div class="mt-8 flex items-center justify-between gap-3">
+                            <button x-show="step > 0" @click="step--" class="btn-secondary text-sm">Back</button>
+                            <div x-show="step === 0"></div>
+                            <div class="flex gap-2">
+                                <form method="POST" action="{{ route('onboarding.complete') }}">
+                                    @csrf
+                                    <button type="submit" class="text-sm text-brand-muted hover:text-brand-ink transition">Skip</button>
+                                </form>
+                                <button x-show="step < steps - 1" @click="step++" class="btn-primary text-sm">Next</button>
+                                <form x-show="step === steps - 1" method="POST" action="{{ route('onboarding.complete') }}">
+                                    @csrf
+                                    <button type="submit" class="btn-primary text-sm">Get Started</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        {{-- Step dots --}}
+                        <div class="mt-6 flex justify-center gap-1.5">
+                            @for ($d = 0; $d < count($tourSteps); $d++)
+                                <div class="h-1.5 rounded-full transition-all duration-300" :class="step === {{ $d }} ? 'w-6 bg-brand-primary' : 'w-1.5 bg-warm-300'"></div>
+                            @endfor
+                        </div>
                     </div>
                 </div>
             </div>

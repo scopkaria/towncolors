@@ -20,6 +20,9 @@ class Kernel extends ConsoleKernel
 
         // Subscriptions: notify clients expiring within 5 days, auto-expire overdue (runs at 08:00)
         $schedule->command('subscriptions:check-expiring --days=5')->dailyAt('08:00');
+
+        // Live Chat: auto-close sessions inactive for 30 minutes
+        $schedule->command('livechat:close-inactive --minutes=30')->everyFiveMinutes();
     }
 
     /**

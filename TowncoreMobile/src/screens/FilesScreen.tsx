@@ -11,6 +11,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { clientFilesApi } from '../api';
 import { spacing, fontSize } from '../theme';
 import { TAB_BAR_TOTAL_HEIGHT } from '../constants/layout';
+import ScreenHeader from '../components/ScreenHeader';
 
 function getFileIcon(mimeType?: string): { name: string; color: string } {
   if (!mimeType) return { name: 'document-outline', color: '#6366f1' };
@@ -150,29 +151,16 @@ export default function FilesScreen({ navigation }: any) {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
+      <StatusBar barStyle="light-content" />
 
-      {/* Header */}
-      <View style={[styles.header, { backgroundColor: colors.primary, paddingTop: insets.top + 8 }]}>
-        <TouchableOpacity onPress={() => currentFolderId ? navigateBack() : navigation.goBack()} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={24} color="#fff" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle} numberOfLines={1}>
-          {breadcrumbs.length > 0 ? breadcrumbs[breadcrumbs.length - 1].name : 'My Files'}
-        </Text>
-        <View style={styles.headerActions}>
-          <TouchableOpacity onPress={() => { setNewFolderName(''); setFolderModal(true); }} style={styles.headerActionBtn}>
-            <Ionicons name="folder-open-outline" size={20} color="#fff" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleUpload} style={styles.headerActionBtn} disabled={uploading}>
-            {uploading ? (
-              <ActivityIndicator size="small" color="#fff" />
-            ) : (
-              <Ionicons name="cloud-upload-outline" size={20} color="#fff" />
-            )}
-          </TouchableOpacity>
-        </View>
-      </View>
+      <ScreenHeader
+        title={breadcrumbs.length > 0 ? breadcrumbs[breadcrumbs.length - 1].name : 'My Files'}
+        onBack={() => currentFolderId ? navigateBack() : navigation.goBack()}
+        rightIcon="cloud-upload-outline"
+        onRight={handleUpload}
+        rightIcon2="folder-open-outline"
+        onRight2={() => { setNewFolderName(''); setFolderModal(true); }}
+      />
 
       {/* Breadcrumbs */}
       {breadcrumbs.length > 0 && (

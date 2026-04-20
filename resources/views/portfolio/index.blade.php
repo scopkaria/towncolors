@@ -214,7 +214,7 @@
             <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 @foreach ($items as $index => $item)
                     <article
-                        class="portfolio-card group relative flex flex-col overflow-hidden rounded-3xl border border-warm-300/40 bg-white shadow-card transition-all duration-300 hover:shadow-lg hover:-translate-y-1 dark:border-slate-700/50 dark:bg-navy-800/80"
+                        class="portfolio-card group relative flex flex-col overflow-hidden rounded-3xl border border-warm-300/40 bg-white shadow-card transition-all duration-300 hover:shadow-lg hover:-translate-y-1 dark:border-slate-700/50 dark:bg-navy-800/80 cursor-pointer"
                         x-show="isVisible(
                             @js($item->title),
                             @js($item->freelancer?->name ?? ''),
@@ -226,7 +226,8 @@
                         x-transition:enter-end="opacity-100 translate-y-0"
                         x-transition:leave="transition ease-in duration-150"
                         x-transition:leave-start="opacity-100"
-                        x-transition:leave-end="opacity-0">
+                        x-transition:leave-end="opacity-0"
+                        @click="if(!$event.target.closest('a')) window.location.href='{{ ($item->item_type ?? 'project') === 'product' ? route('shop.show', $item) : route('portfolio.show', $item->slug) }}'">
 
                         {{-- ── Image ── --}}
                         <div class="relative h-56 shrink-0 overflow-hidden bg-gradient-to-br from-warm-200 to-warm-100 dark:from-navy-700 dark:to-navy-800">
@@ -354,10 +355,11 @@
                                             <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>
                                         </a>
                                     @else
-                                        <span class="inline-flex items-center gap-1 text-xs font-semibold text-brand-primary opacity-0 transition group-hover:opacity-100">
+                                        <a href="{{ route('portfolio.show', $item->slug) }}"
+                                           class="inline-flex items-center gap-1 text-xs font-semibold text-brand-primary opacity-0 transition group-hover:opacity-100">
                                             Details
                                             <svg class="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>
-                                        </span>
+                                        </a>
                                     @endif
                                 </div>
                             </div>

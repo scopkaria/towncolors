@@ -9,6 +9,7 @@ import { notificationsApi } from '../api';
 import { useTheme } from '../contexts/ThemeContext';
 import { getNotificationRoute } from '../services/notifications';
 import { spacing, fontSize } from '../theme';
+import ScreenHeader from '../components/ScreenHeader';
 
 export default function NotificationsScreen() {
   const { colors } = useTheme();
@@ -113,11 +114,12 @@ export default function NotificationsScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {unreadCount > 0 && (
-        <TouchableOpacity style={styles.markAllBtn} onPress={handleMarkAllAsRead}>
-          <Text style={[styles.markAllText, { color: colors.primary }]}>Mark all as read ({unreadCount})</Text>
-        </TouchableOpacity>
-      )}
+      <ScreenHeader
+        title="Notifications"
+        onBack={() => navigation.goBack()}
+        rightIcon={unreadCount > 0 ? 'checkmark-done-outline' : undefined}
+        onRight={unreadCount > 0 ? handleMarkAllAsRead : undefined}
+      />
 
       <FlatList
         data={notifications}

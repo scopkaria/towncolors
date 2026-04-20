@@ -83,7 +83,19 @@ class PortfolioController extends Controller
             'purchase_url' => $validated['purchase_url'] ?? null,
         ]);
 
-        return redirect()->route('admin.portfolio.index')->with('success', 'Portfolio item updated successfully.');
+        $redirectRoute = $portfolio->item_type === 'product' ? 'admin.shop.index' : 'admin.portfolio.index';
+
+        return redirect()->route($redirectRoute)->with('success', 'Item updated successfully.');
+    }
+
+    public function destroy(Portfolio $portfolio): RedirectResponse
+    {
+        $isProduct = $portfolio->item_type === 'product';
+        $portfolio->delete();
+
+        $redirectRoute = $isProduct ? 'admin.shop.index' : 'admin.portfolio.index';
+
+        return redirect()->route($redirectRoute)->with('success', 'Item deleted successfully.');
     }
 
     private function parseTags(?string $input): array

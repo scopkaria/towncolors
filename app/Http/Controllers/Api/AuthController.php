@@ -86,6 +86,7 @@ class AuthController extends Controller
             'email' => $user->email,
             'role' => $user->role->value,
             'email_verified_at' => $user->email_verified_at,
+            'profile_image_url' => $user->profileImageUrl(),
         ]);
     }
 
@@ -152,5 +153,28 @@ class AuthController extends Controller
         ]);
 
         return response()->json(['message' => 'Push token saved']);
+    }
+
+    public function uploadProfileImage(Request $request)
+    {
+        $request->validate([
+            'image' => ['required', 'image', 'max:5120'],
+        ]);
+
+        $user = $request->user();
+
+        // Delete old image if exists
+        if ($user->profile_image_path && \Storage::disk('public')->exists($user->profile_image_path)) {
+            \Storage::disk('public')->delete($user->profile_image_path);
+        }
+
+        $path = $request->file('image')->store('avatars', 'public');
+
+        $user->update(['profile_image_path' => $path]);
+
+        return response()->json([
+            'profile_image_path' => $path,
+            'profile_image_url' => asset('storage/' . $path),
+        ]);
     }
 }

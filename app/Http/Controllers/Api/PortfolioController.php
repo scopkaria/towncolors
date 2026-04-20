@@ -108,6 +108,38 @@ class PortfolioController extends Controller
         return response()->json(['message' => 'Deleted']);
     }
 
+    // ── Admin: approve/reject portfolio items ────────
+
+    public function adminIndex(Request $request)
+    {
+        if ($request->user()->role->value !== 'admin') {
+            abort(403);
+        }
+
+        $query = Portfolio::with('freelancer:id,name');
+
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+
+        return response()->json($query->latest()->paginate(20));
+    }
+
+    public function updateStatus(Request $request, Portfolio $portfolio)
+    {
+        if ($request->user()->role->value !== 'admin') {
+            abort(403);
+        }
+
+        $request->validate([
+            'status' => ['required', 'in:approved,rejected,pending'],
+        ]);
+
+        $portfolio->update(['status' => $request->status]);
+
+        return response()->json($portfolio);
+    }
+
     private function parseTags(?string $input): array
     {
         if (! $input) {

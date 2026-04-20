@@ -11,6 +11,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { dashboardApi } from '../api';
 import { spacing, fontSize, statusColors } from '../theme';
 import { TAB_BAR_TOTAL_HEIGHT } from '../constants/layout';
+import ScreenHeader from '../components/ScreenHeader';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -60,22 +61,14 @@ export default function DashboardScreen({ navigation }: any) {
         backgroundColor={colors.primary}
       />
 
-      {/* ── Custom Header ─────────────────────────────── */}
-      <View style={[styles.headerBar, { backgroundColor: colors.primary, paddingTop: insets.top + 8 }]}>
-        <View style={styles.headerBtn}>
-          <Ionicons name="home" size={22} color="#fff" />
-        </View>
-
-        <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>TOWNCORE</Text>
-        </View>
-
-        <TouchableOpacity onPress={() => setProfileOpen(true)} style={styles.avatarBtn} activeOpacity={0.7}>
-          <View style={styles.headerAvatar}>
-            <Text style={styles.headerAvatarText}>{initials}</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
+      {/* ── Universal Header ─────────────────────────────── */}
+      <ScreenHeader
+        title="Home"
+        rightIcon="person-circle-outline"
+        onRight={() => setProfileOpen(true)}
+        rightIcon2="notifications-outline"
+        onRight2={() => navigation.navigate('Notifications')}
+      />
 
       {/* ── Profile Dropdown Modal ────────────────────── */}
       <Modal visible={profileOpen} transparent animationType="fade" onRequestClose={() => setProfileOpen(false)}>

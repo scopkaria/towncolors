@@ -405,7 +405,11 @@
                                 @endif
                                 <div class="mt-3 flex items-center justify-between gap-2">
                                     <a href="{{ route('admin.portfolio.edit', $product) }}" class="text-xs font-semibold text-brand-primary hover:underline">Edit</a>
-                                    <a href="{{ route('shop.show', $product) }}" target="_blank" class="text-xs font-semibold text-emerald-600 hover:underline">View Product</a>
+                                    <a href="{{ route('shop.show', $product) }}" target="_blank" class="text-xs font-semibold text-emerald-600 hover:underline">View</a>
+                                    <form method="POST" action="{{ route('admin.portfolio.destroy', $product) }}" onsubmit="return confirm('Delete this product permanently?')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="text-xs font-semibold text-red-500 hover:underline">Delete</button>
+                                    </form>
                                     <span class="text-[10px] text-brand-muted">{{ $product->created_at->format('M d, Y') }}</span>
                                 </div>
                             </div>

@@ -115,41 +115,55 @@
             $homeServices = [
                 [
                     'title' => 'Website Design & Development',
+                    'slug'  => 'website-design',
                     'description' => 'We build modern, fast, and responsive websites designed to convert visitors into customers.',
+                    'icon'  => '<path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17 9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2Z" />',
                 ],
                 [
                     'title' => 'Custom Software & Systems Development',
+                    'slug'  => 'custom-web-development',
                     'description' => 'We develop powerful systems including business management systems, hospital systems, and educational platforms.',
+                    'icon'  => '<path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />',
                 ],
                 [
                     'title' => 'Mobile App Development',
+                    'slug'  => 'app-development',
                     'description' => 'We create high-performance mobile applications tailored for business operations and customer engagement.',
+                    'icon'  => '<path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />',
                 ],
                 [
                     'title' => 'Graphic Design',
+                    'slug'  => 'graphic-design',
                     'description' => 'We design professional branding materials including logos, marketing designs, and digital assets. Printing is outsourced to trusted partners.',
+                    'icon'  => '<path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" />',
                 ],
                 [
                     'title' => 'Photography & Videography',
+                    'slug'  => 'photography-and-videography',
                     'description' => 'We produce high-quality visual content to elevate your brand presence across campaigns and product launches.',
+                    'icon'  => '<path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />',
                 ],
                 [
                     'title' => 'SEO (Search Engine Optimization)',
+                    'slug'  => 'seo',
                     'description' => 'We optimize your business to rank higher on search engines and attract more qualified customers.',
+                    'icon'  => '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5m.75-9 3-3 2.148 2.148A12.061 12.061 0 0 1 16.5 7.605" />',
                 ],
                 [
                     'title' => 'Content Creation',
+                    'slug'  => 'content-creation',
                     'description' => 'We create engaging content that connects your brand with your audience and supports sustainable growth.',
+                    'icon'  => '<path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />',
                 ],
             ];
         @endphp
 
         <div class="mt-10 grid gap-5 sm:mt-14 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
             @foreach ($homeServices as $index => $service)
-                <div class="reveal reveal-delay-{{ ($index % 4) + 1 }} group card-premium rounded-2xl border border-white/70 bg-white/90 p-5 shadow-card backdrop-blur-sm dark:border-slate-700/50 dark:bg-slate-800/80 sm:rounded-3xl sm:p-6">
+                <a href="{{ route('services.show', $service['slug']) }}" class="reveal reveal-delay-{{ ($index % 4) + 1 }} group card-premium rounded-2xl border border-white/70 bg-white/90 p-5 shadow-card backdrop-blur-sm transition hover:-translate-y-0.5 hover:shadow-panel dark:border-slate-700/50 dark:bg-slate-800/80 sm:rounded-3xl sm:p-6 block no-underline">
                     <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-accent-light text-brand-primary dark:bg-accent/10">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17 9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2Z" />
+                            {!! $service['icon'] !!}
                         </svg>
                     </div>
                     <h3 class="mt-4 font-display text-lg text-brand-ink transition duration-200 group-hover:text-brand-primary sm:text-xl">
@@ -158,7 +172,7 @@
                     <p class="mt-2 text-sm leading-7 text-brand-muted">
                         {{ $service['description'] }}
                     </p>
-                </div>
+                </a>
             @endforeach
         </div>
 
@@ -196,7 +210,7 @@
         {{-- Portfolio grid --}}
         <div class="mt-10 grid gap-5 sm:mt-14 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
             @forelse ($portfolios as $index => $item)
-                <div class="reveal reveal-delay-{{ ($index % 4) + 1 }} group relative overflow-hidden rounded-2xl border border-warm-300/40 bg-warm-100 shadow-card transition duration-300 hover:border-brand-primary/30 hover:shadow-md sm:rounded-3xl">
+                <a href="{{ route('portfolio.show', $item->slug) }}" class="reveal reveal-delay-{{ ($index % 4) + 1 }} group relative overflow-hidden rounded-2xl border border-warm-300/40 bg-warm-100 shadow-card transition duration-300 hover:border-brand-primary/30 hover:shadow-md sm:rounded-3xl block no-underline">
 
                     {{-- Image --}}
                     <div class="relative h-44 overflow-hidden sm:h-56">
@@ -223,7 +237,7 @@
                             {{ $item->description }}
                         </p>
                     </div>
-                </div>
+                </a>
             @empty
                 {{-- Placeholder items --}}
                 @foreach (['Brand Identity Redesign', 'E-commerce Platform', 'Mobile Banking App', 'SaaS Dashboard', 'Marketing Website', 'Social Media App'] as $i => $name)

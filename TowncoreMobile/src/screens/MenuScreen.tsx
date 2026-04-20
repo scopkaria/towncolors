@@ -1,13 +1,15 @@
 import React, { useEffect, useRef } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity, ScrollView,
-  Animated, Dimensions, Platform, StatusBar,
+  Animated, Dimensions, StatusBar, Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useNotifications } from '../hooks/useNotifications';
 import { spacing, fontSize } from '../theme';
+import { TAB_BAR_TOTAL_HEIGHT } from '../constants/layout';
+import ScreenHeader from '../components/ScreenHeader';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const COLUMN_COUNT = 3;
@@ -19,93 +21,108 @@ interface MenuItem {
   icon: string;
   label: string;
   screen: string;
-  color: string;
-  roles?: string[];
+  roles: string[];
 }
 
-const MENU_ITEMS: MenuItem[] = [
-  { icon: 'person-outline', label: 'Profile', screen: 'Profile', color: '#3b82f6' },
-  { icon: 'card-outline', label: 'Subscription', screen: 'Subscription', color: '#16a34a' },
-  { icon: 'folder-outline', label: 'My Files', screen: 'Files', color: '#8b5cf6', roles: ['client'] },
-  { icon: 'checkbox-outline', label: 'Checklist', screen: 'Checklist', color: '#14b8a6', roles: ['client', 'freelancer'] },
-  { icon: 'receipt-outline', label: 'Invoices', screen: 'Invoices', color: '#f59e0b', roles: ['admin', 'client'] },
-  { icon: 'images-outline', label: 'Portfolio', screen: 'Portfolio', color: '#ec4899', roles: ['admin'] },
-  { icon: 'newspaper-outline', label: 'Blog', screen: 'Blog', color: '#6366f1', roles: ['admin'] },
-  { icon: 'settings-outline', label: 'Settings', screen: 'NotificationSettings', color: '#64748b' },
-  { icon: 'notifications-outline', label: 'Alerts', screen: 'Notifications', color: '#dc2626' },
+// ── Strict role-based menu definitions ─────────────────────────
+const ADMIN_MENU: MenuItem[] = [
+  { icon: 'person-outline',        label: 'Profile',       screen: 'Profile',              roles: ['admin'] },
+  { icon: 'people-outline',        label: 'Users',         screen: 'Users',                roles: ['admin'] },
+  { icon: 'receipt-outline',       label: 'Invoices',      screen: 'Invoices',             roles: ['admin'] },
+  { icon: 'folder-outline',        label: 'Leads',         screen: 'Projects',             roles: ['admin'] },
+  { icon: 'images-outline',        label: 'Portfolio',     screen: 'PortfolioManage',      roles: ['admin'] },
+  { icon: 'newspaper-outline',     label: 'Blog',          screen: 'BlogManage',           roles: ['admin'] },
+  { icon: 'headset-outline',       label: 'Live Chat',     screen: 'LiveChat',             roles: ['admin'] },
+  { icon: 'settings-outline',      label: 'Settings',      screen: 'NotificationSettings', roles: ['admin'] },
 ];
+
+const CLIENT_MENU: MenuItem[] = [
+  { icon: 'person-outline',        label: 'Profile',       screen: 'Profile',              roles: ['client'] },
+  { icon: 'folder-outline',        label: 'My Files',      screen: 'Files',                roles: ['client'] },
+  { icon: 'receipt-outline',       label: 'Invoices',      screen: 'Invoices',             roles: ['client'] },
+  { icon: 'shield-checkmark-outline', label: 'My Plan',    screen: 'Subscription',         roles: ['client'] },
+  { icon: 'checkbox-outline',      label: 'Checklist',     screen: 'Checklist',            roles: ['client'] },
+  { icon: 'settings-outline',      label: 'Settings',      screen: 'NotificationSettings', roles: ['client'] },
+];
+
+const FREELANCER_MENU: MenuItem[] = [
+  { icon: 'person-outline',        label: 'Profile',       screen: 'Profile',              roles: ['freelancer'] },
+  { icon: 'checkbox-outline',      label: 'Checklist',     screen: 'Checklist',            roles: ['freelancer'] },
+  { icon: 'receipt-outline',       label: 'Earnings',      screen: 'Invoices',             roles: ['freelancer'] },
+  { icon: 'images-outline',        label: 'Portfolio',     screen: 'Portfolio',             roles: ['freelancer'] },
+  { icon: 'settings-outline',      label: 'Settings',      screen: 'NotificationSettings', roles: ['freelancer'] },
+];
+
+function getMenuForRole(role: string): MenuItem[] {
+  switch (role) {
+    case 'admin': return ADMIN_MENU;
+    case 'freelancer': return FREELANCER_MENU;
+    default: return CLIENT_MENU;
+  }
+}
 
 export default function MenuScreen({ navigation }: any) {
   const { user, logout } = useAuth();
   const { colors, isDark, toggleTheme } = useTheme();
-  const insets = useSafeAreaInsets();
+  const { unreadCount } = useNotifications();
 
-  // Filter items by role
-  const visibleItems = MENU_ITEMS.filter(
-    item => !item.roles || item.roles.includes(user?.role || '')
-  );
+  const visibleItems = getMenuForRole(user?.role || 'client');
 
   // Animations
-  const headerAnim = useRef(new Animated.Value(0)).current;
   const tileAnims = useRef(visibleItems.map(() => new Animated.Value(0))).current;
   const footerAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    // Header fade in
-    Animated.timing(headerAnim, {
-      toValue: 1, duration: 300, useNativeDriver: true,
-    }).start();
-
-    // Staggered tile entrance
     const tileAnimations = tileAnims.map((anim, i) =>
       Animated.spring(anim, {
-        toValue: 1, friction: 7, tension: 50, delay: 80 + i * 60,
+        toValue: 1, friction: 7, tension: 50, delay: 60 + i * 50,
         useNativeDriver: true,
       })
     );
-    Animated.stagger(60, tileAnimations).start();
+    Animated.stagger(50, tileAnimations).start();
 
-    // Footer
     Animated.timing(footerAnim, {
-      toValue: 1, duration: 400, delay: 300 + visibleItems.length * 60,
+      toValue: 1, duration: 400, delay: 200 + visibleItems.length * 50,
       useNativeDriver: true,
     }).start();
   }, []);
 
   const initials = user?.name?.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2) || '?';
 
-  function handlePress(screen: string) {
-    navigation.navigate(screen);
-  }
-
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
+      <StatusBar barStyle="light-content" />
 
-      {/* Header with user info */}
-      <Animated.View style={[
-        styles.header,
-        { backgroundColor: colors.primary, paddingTop: insets.top + 12, opacity: headerAnim },
-      ]}>
-        <View style={styles.headerContent}>
-          <View style={styles.avatarCircle}>
-            <Text style={styles.avatarText}>{initials}</Text>
-          </View>
-          <View style={styles.userInfo}>
-            <Text style={styles.userName}>{user?.name}</Text>
-            <Text style={styles.userEmail}>{user?.email}</Text>
-            <View style={styles.roleBadge}>
-              <Text style={styles.roleText}>{user?.role?.toUpperCase()}</Text>
-            </View>
-          </View>
-        </View>
-      </Animated.View>
+      <ScreenHeader
+        title="Menu"
+        rightIcon="notifications-outline"
+        onRight={() => navigation.navigate('Notifications')}
+        rightBadge={unreadCount}
+      />
 
       <ScrollView
         style={styles.scrollArea}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        {/* User Card */}
+        <View style={[styles.userCard, { backgroundColor: colors.card }]}>
+          {user?.profile_image_url ? (
+            <Image source={{ uri: user.profile_image_url }} style={styles.avatarImage} />
+          ) : (
+            <View style={[styles.avatarCircle, { backgroundColor: colors.primary + '20' }]}>
+              <Text style={[styles.avatarText, { color: colors.primary }]}>{initials}</Text>
+            </View>
+          )}
+          <View style={styles.userInfo}>
+            <Text style={[styles.userName, { color: colors.text }]}>{user?.name}</Text>
+            <Text style={[styles.userEmail, { color: colors.textLight }]}>{user?.email}</Text>
+          </View>
+          <View style={[styles.roleBadge, { backgroundColor: colors.primary + '15' }]}>
+            <Text style={[styles.roleText, { color: colors.primary }]}>{user?.role?.toUpperCase()}</Text>
+          </View>
+        </View>
+
         {/* Grid */}
         <View style={styles.grid}>
           {visibleItems.map((item, index) => {
@@ -117,16 +134,16 @@ export default function MenuScreen({ navigation }: any) {
 
             return (
               <Animated.View
-                key={item.screen}
+                key={item.screen + item.label}
                 style={[styles.tileWrapper, { opacity, transform: [{ scale: scale as any }] }]}
               >
                 <TouchableOpacity
                   style={[styles.tile, { backgroundColor: colors.card }]}
-                  onPress={() => handlePress(item.screen)}
+                  onPress={() => navigation.navigate(item.screen)}
                   activeOpacity={0.7}
                 >
-                  <View style={[styles.tileIconBg, { backgroundColor: item.color + '15' }]}>
-                    <Ionicons name={item.icon as any} size={26} color={item.color} />
+                  <View style={[styles.tileIconBg, { backgroundColor: colors.primary + '12' }]}>
+                    <Ionicons name={item.icon as any} size={26} color={colors.primary} />
                   </View>
                   <Text style={[styles.tileLabel, { color: colors.text }]}>{item.label}</Text>
                 </TouchableOpacity>
@@ -135,15 +152,15 @@ export default function MenuScreen({ navigation }: any) {
           })}
         </View>
 
-        {/* Theme Toggle Card */}
+        {/* Theme Toggle */}
         <Animated.View style={{ opacity: footerAnim, transform: [{ translateY: footerAnim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }] }}>
           <TouchableOpacity
             style={[styles.themeCard, { backgroundColor: colors.card }]}
             onPress={toggleTheme}
             activeOpacity={0.7}
           >
-            <View style={[styles.themeIconBg, { backgroundColor: (isDark ? '#6366f1' : '#f59e0b') + '15' }]}>
-              <Ionicons name={isDark ? 'moon' : 'sunny'} size={22} color={isDark ? '#6366f1' : '#f59e0b'} />
+            <View style={[styles.themeIconBg, { backgroundColor: colors.primary + '12' }]}>
+              <Ionicons name={isDark ? 'moon' : 'sunny'} size={22} color={colors.primary} />
             </View>
             <Text style={[styles.themeLabel, { color: colors.text }]}>
               {isDark ? 'Dark Mode' : 'Light Mode'}
@@ -154,19 +171,19 @@ export default function MenuScreen({ navigation }: any) {
           </TouchableOpacity>
         </Animated.View>
 
-        {/* Logout Button */}
+        {/* Logout */}
         <Animated.View style={{ opacity: footerAnim, transform: [{ translateY: footerAnim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }] }}>
           <TouchableOpacity
-            style={[styles.logoutBtn, { backgroundColor: '#dc262612' }]}
+            style={[styles.logoutBtn, { backgroundColor: colors.danger + '10' }]}
             onPress={logout}
             activeOpacity={0.7}
           >
-            <Ionicons name="log-out-outline" size={22} color="#dc2626" />
-            <Text style={styles.logoutText}>Logout</Text>
+            <Ionicons name="log-out-outline" size={22} color={colors.danger} />
+            <Text style={[styles.logoutText, { color: colors.danger }]}>Logout</Text>
           </TouchableOpacity>
         </Animated.View>
 
-        <View style={{ height: 100 }} />
+        <View style={{ height: TAB_BAR_TOTAL_HEIGHT + 20 }} />
       </ScrollView>
     </View>
   );
@@ -175,39 +192,36 @@ export default function MenuScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   container: { flex: 1 },
 
-  // Header
-  header: { paddingBottom: 20, paddingHorizontal: GRID_PADDING },
-  headerContent: { flexDirection: 'row', alignItems: 'center' },
+  // User card
+  userCard: {
+    flexDirection: 'row', alignItems: 'center', borderRadius: 16,
+    padding: spacing.md, marginBottom: spacing.lg,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1,
+  },
   avatarCircle: {
-    width: 52, height: 52, borderRadius: 26,
-    backgroundColor: 'rgba(255,255,255,0.25)',
+    width: 48, height: 48, borderRadius: 24,
     justifyContent: 'center', alignItems: 'center',
-    borderWidth: 2, borderColor: 'rgba(255,255,255,0.4)',
   },
-  avatarText: { fontSize: 20, fontWeight: '800', color: '#fff' },
+  avatarImage: { width: 48, height: 48, borderRadius: 24 },
+  avatarText: { fontSize: 18, fontWeight: '800' },
   userInfo: { flex: 1, marginLeft: spacing.md },
-  userName: { fontSize: 18, fontWeight: '700', color: '#fff' },
-  userEmail: { fontSize: 12, color: 'rgba(255,255,255,0.7)', marginTop: 1 },
+  userName: { fontSize: 16, fontWeight: '700' },
+  userEmail: { fontSize: 12, marginTop: 1 },
   roleBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6, marginTop: 4,
+    paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8,
   },
-  roleText: { fontSize: 10, fontWeight: '700', color: '#fff', letterSpacing: 1 },
+  roleText: { fontSize: 10, fontWeight: '700', letterSpacing: 1 },
 
   // Scroll
   scrollArea: { flex: 1 },
-  scrollContent: { paddingTop: 20, paddingHorizontal: GRID_PADDING },
+  scrollContent: { paddingTop: spacing.lg, paddingHorizontal: GRID_PADDING },
 
   // Grid
-  grid: {
-    flexDirection: 'row', flexWrap: 'wrap',
-    gap: GRID_GAP,
-  },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: GRID_GAP },
   tileWrapper: { width: TILE_SIZE, height: TILE_SIZE },
   tile: {
     flex: 1, borderRadius: 18, alignItems: 'center', justifyContent: 'center',
-    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 6, elevation: 2,
   },
   tileIconBg: {
     width: 50, height: 50, borderRadius: 16, justifyContent: 'center', alignItems: 'center', marginBottom: 8,
@@ -232,5 +246,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
     borderRadius: 16, padding: 16, marginTop: 12, gap: 8,
   },
-  logoutText: { fontSize: fontSize.md, fontWeight: '700', color: '#dc2626' },
+  logoutText: { fontSize: fontSize.md, fontWeight: '700' },
 });

@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\MobileBrandingController;
 use App\Http\Controllers\Api\SubscriptionApiController;
 use App\Http\Controllers\Api\ChecklistApiController;
 use App\Http\Controllers\Api\ClientFileApiController;
+use App\Http\Controllers\Api\AdminUserController;
 use App\Http\Controllers\LiveChatController;
 
 /*
@@ -49,6 +50,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/user/profile', [AuthController::class, 'updateProfile']);
     Route::put('/user/password', [AuthController::class, 'updatePassword']);
     Route::post('/user/push-token', [AuthController::class, 'storePushToken']);
+    Route::post('/user/profile-image', [AuthController::class, 'uploadProfileImage']);
 
     // Contacts (role-scoped)
     Route::get('/contacts', [ChatController::class, 'contacts']);
@@ -75,11 +77,32 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/conversations/{conversation}/messages', [ChatController::class, 'messages']);
     Route::post('/conversations/{conversation}/messages', [ChatController::class, 'sendMessage']);
     Route::post('/conversations', [ChatController::class, 'createConversation']);
+    Route::post('/conversations/by-project', [ChatController::class, 'findOrCreateByProject']);
 
     // Portfolio (freelancer)
     Route::get('/my-portfolio', [PortfolioController::class, 'myPortfolio']);
     Route::post('/portfolio', [PortfolioController::class, 'store']);
     Route::delete('/portfolio/{portfolio}', [PortfolioController::class, 'destroy']);
+
+    // Portfolio (admin)
+    Route::get('/admin/portfolio', [PortfolioController::class, 'adminIndex']);
+    Route::put('/admin/portfolio/{portfolio}/status', [PortfolioController::class, 'updateStatus']);
+
+    // Blog (admin CRUD)
+    Route::get('/admin/blog', [BlogController::class, 'adminIndex']);
+    Route::post('/admin/blog', [BlogController::class, 'store']);
+    Route::put('/admin/blog/{post}', [BlogController::class, 'update']);
+    Route::delete('/admin/blog/{post}', [BlogController::class, 'destroy']);
+
+    // Admin: User Management
+    Route::prefix('admin/users')->group(function () {
+        Route::get('/', [AdminUserController::class, 'index']);
+        Route::get('/freelancers', [AdminUserController::class, 'freelancers']);
+        Route::get('/{user}', [AdminUserController::class, 'show']);
+        Route::post('/', [AdminUserController::class, 'store']);
+        Route::put('/{user}', [AdminUserController::class, 'update']);
+        Route::delete('/{user}', [AdminUserController::class, 'destroy']);
+    });
 
     // Notifications
     Route::get('/notifications', [NotificationController::class, 'index']);
@@ -90,6 +113,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Live Chat (agent/admin endpoints — auth required)
     Route::prefix('live-chat/agent')->group(function () {
         Route::get('/sessions',              [LiveChatController::class, 'apiSessions']);
+        Route::get('/history',               [LiveChatController::class, 'sessionHistory']);
         Route::post('/{session}/join',       [LiveChatController::class, 'agentJoin']);
         Route::post('/{session}/send',       [LiveChatController::class, 'agentSend']);
         Route::get('/{session}/messages',    [LiveChatController::class, 'agentMessages']);

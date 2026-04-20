@@ -38,6 +38,12 @@
 
             {{-- Search (shared, label changes per tab) --}}
             <div class="px-3 py-3">
+                {{-- Chat sub-filter (All / Project / Direct) — only in chats tab --}}
+                <div x-show="activeTab === 'chats'" class="mb-2 flex gap-1">
+                    <button @click="chatFilter = 'all'" class="rounded-lg px-2.5 py-1 text-[11px] font-semibold transition" :class="chatFilter === 'all' ? 'bg-brand-primary text-white' : 'text-brand-muted hover:text-brand-ink'">All</button>
+                    <button @click="chatFilter = 'project'" class="rounded-lg px-2.5 py-1 text-[11px] font-semibold transition" :class="chatFilter === 'project' ? 'bg-brand-primary text-white' : 'text-brand-muted hover:text-brand-ink'">Projects</button>
+                    <button @click="chatFilter = 'direct'" class="rounded-lg px-2.5 py-1 text-[11px] font-semibold transition" :class="chatFilter === 'direct' ? 'bg-brand-primary text-white' : 'text-brand-muted hover:text-brand-ink'">Direct</button>
+                </div>
                 <div class="relative">
                     <svg class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-muted/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
@@ -616,6 +622,7 @@
             conversations:      @json($conversations),
             activeConversation: null,
             activeTab:          'chats',
+            chatFilter:         'all',
             search:             '',
             contactSearch:      '',
             loadingConvs:       false,
@@ -679,9 +686,12 @@
             },
 
             get filteredConversations() {
-                if (!this.search) return this.conversations;
+                let list = this.conversations;
+                if (this.chatFilter === 'project') list = list.filter(c => c.type === 'project');
+                else if (this.chatFilter === 'direct') list = list.filter(c => c.type === 'direct');
+                if (!this.search) return list;
                 const q = this.search.toLowerCase();
-                return this.conversations.filter(c =>
+                return list.filter(c =>
                     c.title.toLowerCase().includes(q) ||
                     (c.subtitle || '').toLowerCase().includes(q)
                 );

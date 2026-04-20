@@ -9,6 +9,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { checklistApi } from '../api';
 import { spacing, fontSize } from '../theme';
 import { TAB_BAR_TOTAL_HEIGHT } from '../constants/layout';
+import ScreenHeader from '../components/ScreenHeader';
 
 const STATUS_CONFIG: Record<string, { icon: string; color: string; label: string }> = {
   pending: { icon: 'ellipse-outline', color: '#94a3b8', label: 'Pending' },
@@ -54,16 +55,9 @@ export default function ChecklistScreen({ navigation }: any) {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
+      <StatusBar barStyle="light-content" />
 
-      {/* Header */}
-      <View style={[styles.header, { backgroundColor: colors.primary, paddingTop: insets.top + 8 }]}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={24} color="#fff" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Checklist</Text>
-        <View style={{ width: 40 }} />
-      </View>
+      <ScreenHeader title="Checklist" onBack={() => navigation.goBack()} />
 
       <ScrollView
         style={{ flex: 1 }}

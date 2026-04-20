@@ -55,4 +55,19 @@ class PublicPortfolioController extends Controller
 
         return view('portfolio.index', compact('items', 'freelancers', 'categories'));
     }
+
+    public function show(Portfolio $portfolio): View
+    {
+        abort_unless(in_array($portfolio->status, ['approved', 'published']), 404);
+
+        $relatedItems = Portfolio::whereIn('status', ['approved', 'published'])
+            ->whereKeyNot($portfolio->id)
+            ->with('freelancer:id,name')
+            ->orderByDesc('featured')
+            ->latest()
+            ->take(6)
+            ->get();
+
+        return view('portfolio.show', compact('portfolio', 'relatedItems'));
+    }
 }

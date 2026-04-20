@@ -2,13 +2,17 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
   FlatList, KeyboardAvoidingView, Platform, ActivityIndicator,
-  Alert, SafeAreaView, RefreshControl,
+  Alert, RefreshControl, Keyboard,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { liveChatAgentApi } from '../api';
+import { liveChatAgentApi, liveChatApi } from '../api';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { spacing, fontSize } from '../theme';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import ScreenHeader from '../components/ScreenHeader';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { TAB_BAR_TOTAL_HEIGHT } from '../constants/layout';
 
 const POLL_INTERVAL = 4000;
 
@@ -21,6 +25,7 @@ type Session = {
   messages_count: number;
   created_at: string;
   updated_at: string;
+  closed_at?: string | null;
 };
 
 type Message = {
@@ -33,7 +38,287 @@ type Message = {
 
 export default function LiveChatScreen({ navigation }: any) {
   const { user } = useAuth();
+
+  // Admin/support_agent sees session manager; client/freelancer sees direct chat
+  if (user?.role === 'admin' || user?.role === 'support_agent') {
+    return <AgentLiveChatScreen navigation={navigation} />;
+  }
+  return <ClientLiveChatScreen navigation={navigation} />;
+}
+
+// ─── Client / Freelancer Live Chat ────────────────────────────
+const SESSION_KEY_STORAGE = 'live_chat_session_key';
+
+function ClientLiveChatScreen({ navigation }: any) {
+  const { user } = useAuth();
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', () => setKeyboardVisible(true));
+    const hideSub = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () => setKeyboardVisible(false));
+    return () => { showSub.remove(); hideSub.remove(); };
+  }, []);
+
+  const [sessionKey, setSessionKey] = useState<string | null>(null);
+  const [messages, setMessages] = useState<any[]>([]);
+  const [input, setInput] = useState('');
+  const [sending, setSending] = useState(false);
+  const [starting, setStarting] = useState(true);
+
+  const flatListRef = useRef<FlatList>(null);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const lastMsgIdRef = useRef(0);
+
+  // Start or resume session
+  useEffect(() => {
+    (async () => {
+      try {
+        // Check for existing session
+        const savedKey = await AsyncStorage.getItem(SESSION_KEY_STORAGE);
+        if (savedKey) {
+          setSessionKey(savedKey);
+        } else {
+          // Start new session
+          const data = await liveChatApi.startSession(
+            user?.name || 'Guest',
+            user?.email || '',
+          );
+          const key = data.session_key || data.data?.session_key;
+          if (key) {
+            await AsyncStorage.setItem(SESSION_KEY_STORAGE, key);
+            setSessionKey(key);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to start live chat session', err);
+      } finally {
+        setStarting(false);
+      }
+    })();
+  }, []);
+
+  // Poll messages
+  const fetchMessages = useCallback(async () => {
+    if (!sessionKey) return;
+    try {
+      const data = await liveChatApi.getMessages(sessionKey, lastMsgIdRef.current || undefined);
+      const newMsgs = data.messages || data.data || [];
+      if (newMsgs.length > 0) {
+        setMessages(prev => {
+          const existingIds = new Set(prev.filter(m => !String(m.id).startsWith('temp_')).map(m => m.id));
+          const fresh = newMsgs.filter((m: any) => !existingIds.has(m.id));
+          const serverTexts = new Set(newMsgs.map((m: any) => `${m.sender_type}_${m.body}`));
+          const remainingTemp = prev.filter(m => String(m.id).startsWith('temp_') && !serverTexts.has(`visitor_${m.body}`));
+          const realMsgs = prev.filter(m => !String(m.id).startsWith('temp_'));
+          if (fresh.length === 0) return [...realMsgs, ...remainingTemp];
+          return [...realMsgs, ...fresh, ...remainingTemp];
+        });
+        lastMsgIdRef.current = newMsgs[newMsgs.length - 1].id;
+      }
+    } catch (err) {
+      console.error('Failed to fetch messages', err);
+    }
+  }, [sessionKey]);
+
+  useEffect(() => {
+    if (sessionKey) {
+      fetchMessages();
+      pollRef.current = setInterval(fetchMessages, 4000);
+      return () => { if (pollRef.current) clearInterval(pollRef.current); };
+    }
+  }, [sessionKey, fetchMessages]);
+
+  async function handleSend() {
+    const text = input.trim();
+    if (!text || !sessionKey || sending) return;
+
+    const tempId = `temp_${Date.now()}`;
+    setSending(true);
+    setInput('');
+    setMessages(prev => [...prev, { id: tempId, sender_type: 'visitor', body: text, created_at: new Date().toISOString() }]);
+    setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 50);
+
+    try {
+      await liveChatApi.sendMessage(sessionKey, text);
+    } catch (err: any) {
+      Alert.alert('Error', err.message || 'Failed to send message.');
+      setMessages(prev => prev.filter(m => m.id !== tempId));
+      setInput(text);
+    } finally {
+      setSending(false);
+    }
+  }
+
+  async function handleNewSession() {
+    Alert.alert('New Conversation', 'Start a new chat session?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Start New', onPress: async () => {
+          await AsyncStorage.removeItem(SESSION_KEY_STORAGE);
+          setMessages([]);
+          lastMsgIdRef.current = 0;
+          setStarting(true);
+          try {
+            const data = await liveChatApi.startSession(user?.name || 'Guest', user?.email || '');
+            const key = data.session_key || data.data?.session_key;
+            if (key) {
+              await AsyncStorage.setItem(SESSION_KEY_STORAGE, key);
+              setSessionKey(key);
+            }
+          } catch (err) {
+            console.error(err);
+          } finally {
+            setStarting(false);
+          }
+        },
+      },
+    ]);
+  }
+
+  function formatTime(dateStr: string) {
+    return new Date(dateStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  if (starting) {
+    return (
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
+        <ScreenHeader title="Live Chat" onBack={() => navigation.goBack()} />
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={{ color: colors.textSecondary, marginTop: 12 }}>Connecting to support...</Text>
+        </View>
+      </View>
+    );
+  }
+
+  return (
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <ScreenHeader
+        title="Live Chat"
+        onBack={() => navigation.goBack()}
+        rightIcon="add-circle-outline"
+        onRight={handleNewSession}
+      />
+
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+      >
+        <FlatList
+          ref={flatListRef}
+          data={messages}
+          keyExtractor={item => String(item.id)}
+          contentContainerStyle={{ padding: spacing.md, paddingBottom: spacing.xl, flexGrow: 1 }}
+          onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
+          onLayout={() => flatListRef.current?.scrollToEnd({ animated: false })}
+          ListEmptyComponent={
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 80 }}>
+              <Ionicons name="chatbubble-outline" size={48} color={colors.border} />
+              <Text style={{ fontSize: fontSize.sm, color: colors.textLight, textAlign: 'center', marginTop: spacing.md, lineHeight: 20 }}>
+                Send a message to start chatting{'\n'}with our support team.
+              </Text>
+            </View>
+          }
+          renderItem={({ item }) => {
+            const isMe = item.sender_type === 'visitor';
+            return (
+              <View style={{
+                flexDirection: 'row', marginBottom: spacing.sm, alignItems: 'flex-end',
+                justifyContent: isMe ? 'flex-end' : 'flex-start',
+              }}>
+                {!isMe && (
+                  <View style={{
+                    width: 28, height: 28, borderRadius: 14, backgroundColor: colors.success + '20',
+                    justifyContent: 'center', alignItems: 'center', marginRight: spacing.xs,
+                  }}>
+                    <Ionicons name="headset" size={14} color={colors.success} />
+                  </View>
+                )}
+                <View style={{
+                  maxWidth: '75%', borderRadius: 16, paddingHorizontal: 14, paddingVertical: 10,
+                  ...(isMe
+                    ? { backgroundColor: colors.primary, borderBottomRightRadius: 4 }
+                    : { backgroundColor: colors.card, borderBottomLeftRadius: 4, borderWidth: 1, borderColor: colors.border }),
+                }}>
+                  {!isMe && (
+                    <Text style={{ fontSize: 11, fontWeight: '700', color: colors.success, marginBottom: 2 }}>
+                      Support
+                    </Text>
+                  )}
+                  <Text style={{ fontSize: 15, lineHeight: 21, color: isMe ? '#fff' : colors.text }}>
+                    {item.body}
+                  </Text>
+                  <Text style={{
+                    fontSize: 10, marginTop: 4,
+                    color: isMe ? 'rgba(255,255,255,0.7)' : colors.textLight,
+                    textAlign: isMe ? 'right' : 'left',
+                  }}>
+                    {formatTime(item.created_at)}
+                  </Text>
+                </View>
+              </View>
+            );
+          }}
+        />
+
+        <View style={{
+          flexDirection: 'row', alignItems: 'flex-end', padding: spacing.sm,
+          paddingHorizontal: spacing.md, paddingBottom: keyboardVisible ? Math.max(insets.bottom, 4) : TAB_BAR_TOTAL_HEIGHT + insets.bottom + 8,
+          backgroundColor: colors.card,
+          borderTopWidth: 1, borderTopColor: colors.border,
+        }}>
+          <TextInput
+            style={{
+              flex: 1, backgroundColor: colors.inputBg, borderRadius: 20,
+              paddingHorizontal: 16, paddingTop: 10, paddingBottom: 10,
+              fontSize: 15, maxHeight: 100, color: colors.text,
+              marginRight: spacing.sm,
+            }}
+            value={input}
+            onChangeText={setInput}
+            placeholder="Type a message..."
+            placeholderTextColor={colors.textLight}
+            multiline
+            maxLength={2000}
+          />
+          <TouchableOpacity
+            style={{
+              width: 42, height: 42, borderRadius: 21,
+              backgroundColor: !input.trim() || sending ? colors.textLight : colors.primary,
+              justifyContent: 'center', alignItems: 'center',
+            }}
+            onPress={handleSend}
+            disabled={!input.trim() || sending}
+            activeOpacity={0.7}
+          >
+            {sending ? (
+              <ActivityIndicator color="#fff" size="small" />
+            ) : (
+              <Ionicons name="send" size={18} color="#fff" />
+            )}
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
+    </View>
+  );
+}
+
+// ─── Admin / Agent Live Chat (Session Manager) ───────────────
+
+function AgentLiveChatScreen({ navigation }: any) {
+  const { user } = useAuth();
+  const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', () => setKeyboardVisible(true));
+    const hideSub = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () => setKeyboardVisible(false));
+    return () => { showSub.remove(); hideSub.remove(); };
+  }, []);
 
   const [view, setView] = useState<'list' | 'chat'>('list');
   const [activeSession, setActiveSession] = useState<Session | null>(null);
@@ -214,41 +499,31 @@ export default function LiveChatScreen({ navigation }: any) {
       s === 'waiting' ? colors.warning : s === 'active' ? colors.success : colors.textLight;
 
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-        <View style={{ backgroundColor: colors.primary, paddingTop: Platform.OS === 'ios' ? 0 : 12, paddingBottom: 16, paddingHorizontal: spacing.md }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 14 }}>
-            <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginRight: 12 }}>
-              <Ionicons name="arrow-back" size={24} color="#fff" />
-            </TouchableOpacity>
-            <View style={{ flex: 1 }}>
-              <Text style={{ color: '#fff', fontSize: fontSize.lg, fontWeight: '800' }}>Live Chat</Text>
-              <Text style={{ color: 'rgba(255,255,255,0.75)', fontSize: 12 }}>
-                {sessions.filter(s => s.status === 'waiting').length} waiting
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
+        <ScreenHeader
+          title="Live Chat"
+          onBack={() => navigation.goBack()}
+          rightIcon="refresh"
+          onRight={() => loadSessions()}
+        />
+        <View style={{ flexDirection: 'row', gap: 8, paddingHorizontal: spacing.md, paddingVertical: 10, backgroundColor: colors.primary }}>
+          {filters.map(f => (
+            <TouchableOpacity
+              key={f.key}
+              onPress={() => setFilter(f.key)}
+              style={{
+                paddingHorizontal: 14, paddingVertical: 6, borderRadius: 16,
+                backgroundColor: filter === f.key ? '#fff' : 'rgba(255,255,255,0.2)',
+              }}
+            >
+              <Text style={{
+                fontSize: 12, fontWeight: '700',
+                color: filter === f.key ? colors.primary : '#fff',
+              }}>
+                {f.label}
               </Text>
-            </View>
-            <TouchableOpacity onPress={() => loadSessions()}>
-              <Ionicons name="refresh" size={22} color="#fff" />
             </TouchableOpacity>
-          </View>
-          <View style={{ flexDirection: 'row', gap: 8 }}>
-            {filters.map(f => (
-              <TouchableOpacity
-                key={f.key}
-                onPress={() => setFilter(f.key)}
-                style={{
-                  paddingHorizontal: 14, paddingVertical: 6, borderRadius: 16,
-                  backgroundColor: filter === f.key ? '#fff' : 'rgba(255,255,255,0.2)',
-                }}
-              >
-                <Text style={{
-                  fontSize: 12, fontWeight: '700',
-                  color: filter === f.key ? colors.primary : '#fff',
-                }}>
-                  {f.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          ))}
         </View>
 
         {loadingSessions && sessions.length === 0 ? (
@@ -259,7 +534,7 @@ export default function LiveChatScreen({ navigation }: any) {
           <FlatList
             data={sessions}
             keyExtractor={item => item.id.toString()}
-            contentContainerStyle={{ paddingVertical: spacing.sm }}
+            contentContainerStyle={{ paddingVertical: spacing.sm, paddingBottom: TAB_BAR_TOTAL_HEIGHT + insets.bottom + 20 }}
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); loadSessions(); }} colors={[colors.primary]} />
             }
@@ -320,6 +595,11 @@ export default function LiveChatScreen({ navigation }: any) {
                       Agent: {item.agent.name}
                     </Text>
                   )}
+                  {item.status === 'closed' && item.closed_at && (
+                    <Text style={{ fontSize: 10, color: colors.textLight, marginTop: 2, fontStyle: 'italic' }}>
+                      Closed {formatDate(item.closed_at)}
+                    </Text>
+                  )}
                 </View>
                 {item.messages_count > 0 && (
                   <View style={{
@@ -334,30 +614,20 @@ export default function LiveChatScreen({ navigation }: any) {
             )}
           />
         )}
-      </SafeAreaView>
+      </View>
     );
   }
 
   // --- CHAT VIEW ---
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-      <View style={{
-        flexDirection: 'row', alignItems: 'center',
-        paddingHorizontal: spacing.md, paddingVertical: 12,
-        backgroundColor: colors.card, borderBottomWidth: 1, borderBottomColor: colors.border,
-      }}>
-        <TouchableOpacity onPress={goBack} style={{ marginRight: 12 }}>
-          <Ionicons name="arrow-back" size={24} color={colors.text} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text }}>
-            {activeSession?.visitor_name}
-          </Text>
-          <Text style={{ fontSize: 12, color: colors.textSecondary }}>
-            {activeSession?.visitor_email}
-          </Text>
-        </View>
-        {sessionStatus === 'waiting' && (
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <ScreenHeader
+        title={activeSession?.visitor_name || 'Chat'}
+        onBack={goBack}
+        {...(sessionStatus === 'active' ? { rightIcon: 'close-circle', onRight: handleClose } : {})}
+      />
+      {sessionStatus === 'waiting' && (
+        <View style={{ flexDirection: 'row', justifyContent: 'center', padding: spacing.sm, backgroundColor: colors.card, borderBottomWidth: 1, borderBottomColor: colors.border }}>
           <TouchableOpacity
             onPress={handleJoin}
             disabled={joining}
@@ -374,13 +644,8 @@ export default function LiveChatScreen({ navigation }: any) {
               </>
             )}
           </TouchableOpacity>
-        )}
-        {sessionStatus === 'active' && (
-          <TouchableOpacity onPress={handleClose}>
-            <Ionicons name="close-circle" size={26} color={colors.danger} />
-          </TouchableOpacity>
-        )}
-      </View>
+        </View>
+      )}
 
       <View style={{
         flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
@@ -401,14 +666,16 @@ export default function LiveChatScreen({ navigation }: any) {
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
       >
         <FlatList
           ref={flatListRef}
           data={messages}
           keyExtractor={item => String(item.id)}
           contentContainerStyle={{ padding: spacing.md, paddingBottom: spacing.xl, flexGrow: 1 }}
+          keyboardDismissMode="interactive"
+          keyboardShouldPersistTaps="handled"
           onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
           onLayout={() => flatListRef.current?.scrollToEnd({ animated: false })}
           ListEmptyComponent={
@@ -466,7 +733,8 @@ export default function LiveChatScreen({ navigation }: any) {
         {sessionStatus !== 'closed' && (
           <View style={{
             flexDirection: 'row', alignItems: 'flex-end', padding: spacing.sm,
-            paddingHorizontal: spacing.md, backgroundColor: colors.card,
+            paddingHorizontal: spacing.md, paddingBottom: keyboardVisible ? Math.max(insets.bottom, 4) : TAB_BAR_TOTAL_HEIGHT + insets.bottom + 8,
+            backgroundColor: colors.card,
             borderTopWidth: 1, borderTopColor: colors.border,
           }}>
             <TextInput
@@ -502,6 +770,6 @@ export default function LiveChatScreen({ navigation }: any) {
           </View>
         )}
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }

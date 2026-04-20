@@ -11,6 +11,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { subscriptionApi } from '../api';
 import { spacing, fontSize } from '../theme';
 import { TAB_BAR_TOTAL_HEIGHT } from '../constants/layout';
+import ScreenHeader from '../components/ScreenHeader';
 
 const PLAN_COLORS: Record<string, string> = {
   green: '#16a34a',
@@ -113,16 +114,9 @@ export default function SubscriptionScreen({ navigation }: any) {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
+      <StatusBar barStyle="light-content" />
 
-      {/* Header */}
-      <View style={[styles.header, { backgroundColor: colors.primary, paddingTop: insets.top + 8 }]}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={24} color="#fff" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Subscription</Text>
-        <View style={{ width: 40 }} />
-      </View>
+      <ScreenHeader title="My Plan" onBack={() => navigation.goBack()} />
 
       <ScrollView
         style={{ flex: 1 }}

@@ -8,6 +8,7 @@ import {
   getNotificationSound, setNotificationSound, scheduleLocalNotification,
 } from '../services/notifications';
 import { spacing, fontSize } from '../theme';
+import ScreenHeader from '../components/ScreenHeader';
 
 const SOUND_OPTIONS = [
   { id: 'default', label: 'Default', icon: 'musical-notes' },
@@ -17,7 +18,7 @@ const SOUND_OPTIONS = [
   { id: 'none', label: 'Silent', icon: 'volume-mute' },
 ];
 
-export default function NotificationSettingsScreen() {
+export default function NotificationSettingsScreen({ navigation }: any) {
   const { colors } = useTheme();
   const [selectedSound, setSelectedSound] = useState('default');
 
@@ -46,6 +47,8 @@ export default function NotificationSettingsScreen() {
   }
 
   return (
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+    <ScreenHeader title="Settings" onBack={() => navigation.goBack()} />
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Sound Selection */}
       <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>NOTIFICATION SOUND</Text>
@@ -82,6 +85,7 @@ export default function NotificationSettingsScreen() {
         Notification sounds may behave differently across devices. Some custom sounds require a new app build to take effect.
       </Text>
     </ScrollView>
+    </View>
   );
 }
 

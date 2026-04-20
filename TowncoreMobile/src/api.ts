@@ -96,6 +96,9 @@ export const authApi = {
 
   updatePassword: (data: { current_password: string; password: string; password_confirmation: string }) =>
     api('/user/password', { method: 'PUT', body: data }),
+
+  uploadProfileImage: (formData: FormData) =>
+    api('/user/profile-image', { method: 'POST', body: formData, isFormData: true }),
 };
 
 // Dashboard API
@@ -149,6 +152,8 @@ export const chatApi = {
     api(`/conversations/${conversationId}/messages`, { method: 'POST', body: { message, message_type: 'text' } }),
   createConversation: (userId: number, message?: string) =>
     api('/conversations', { method: 'POST', body: { user_id: userId, ...(message ? { message } : {}) } }),
+  findOrCreateByProject: (projectId: number) =>
+    api('/conversations/by-project', { method: 'POST', body: { project_id: projectId } }),
   contacts: () => api('/contacts'),
 };
 
@@ -160,12 +165,23 @@ export const portfolioApi = {
   create: (formData: FormData) =>
     api('/portfolio', { method: 'POST', body: formData, isFormData: true }),
   delete: (id: number) => api(`/portfolio/${id}`, { method: 'DELETE' }),
+  adminList: (page = 1, status?: string) =>
+    api(`/admin/portfolio?page=${page}${status ? `&status=${status}` : ''}`),
+  updateStatus: (id: number, status: string) =>
+    api(`/admin/portfolio/${id}/status`, { method: 'PUT', body: { status } }),
 };
 
 // Blog API
 export const blogApi = {
   list: (page = 1) => api(`/blog?page=${page}`),
   get: (slug: string) => api(`/blog/${slug}`),
+  adminList: (page = 1, status?: string) =>
+    api(`/admin/blog?page=${page}${status ? `&status=${status}` : ''}`),
+  create: (formData: FormData) =>
+    api('/admin/blog', { method: 'POST', body: formData, isFormData: true }),
+  update: (id: number, formData: FormData) =>
+    api(`/admin/blog/${id}`, { method: 'PUT', body: formData, isFormData: true }),
+  delete: (id: number) => api(`/admin/blog/${id}`, { method: 'DELETE' }),
 };
 
 // Notifications API
@@ -192,6 +208,8 @@ export const liveChatApi = {
 export const liveChatAgentApi = {
   sessions: (status?: string) =>
     api(`/live-chat/agent/sessions${status ? `?status=${status}` : ''}`),
+
+  history: () => api('/live-chat/agent/history'),
 
   joinSession: (sessionId: number) =>
     api(`/live-chat/agent/${sessionId}/join`, { method: 'POST' }),
@@ -239,4 +257,17 @@ export const clientFilesApi = {
     api(`/folders/${folderId}`, { method: 'PATCH', body: { name } }),
   deleteFolder: (folderId: number) =>
     api(`/folders/${folderId}`, { method: 'DELETE' }),
+};
+
+// Admin Users API
+export const adminUsersApi = {
+  list: (page = 1, role?: string, search?: string) =>
+    api(`/admin/users?page=${page}${role ? `&role=${role}` : ''}${search ? `&search=${encodeURIComponent(search)}` : ''}`),
+  get: (id: number) => api(`/admin/users/${id}`),
+  create: (data: { name: string; email: string; password: string; password_confirmation: string; role: string }) =>
+    api('/admin/users', { method: 'POST', body: data }),
+  update: (id: number, data: any) =>
+    api(`/admin/users/${id}`, { method: 'PUT', body: data }),
+  delete: (id: number) => api(`/admin/users/${id}`, { method: 'DELETE' }),
+  freelancers: () => api('/admin/users/freelancers'),
 };

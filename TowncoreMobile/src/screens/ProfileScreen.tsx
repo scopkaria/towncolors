@@ -1,25 +1,58 @@
 import React, { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
-  ScrollView, Alert, ActivityIndicator,
+  ScrollView, Alert, ActivityIndicator, Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { authApi } from '../api';
 import { spacing, fontSize } from '../theme';
+import ScreenHeader from '../components/ScreenHeader';
 
-export default function ProfileScreen() {
-  const { user, logout } = useAuth();
+export default function ProfileScreen({ navigation }: any) {
+  const { user, logout, refreshUser } = useAuth();
   const { colors, isDark, toggleTheme } = useTheme();
   const [name, setName] = useState(user?.name || '');
   const [email, setEmail] = useState(user?.email || '');
   const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [changingPassword, setChangingPassword] = useState(false);
+
+  async function handlePickImage() {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      quality: 0.8,
+      allowsEditing: true,
+      aspect: [1, 1],
+    });
+    if (result.canceled || !result.assets[0]) return;
+
+    setUploadingImage(true);
+    try {
+      const asset = result.assets[0];
+      const filename = asset.uri.split('/').pop() || 'avatar.jpg';
+      const ext = filename.split('.').pop()?.toLowerCase() || 'jpg';
+      const formData = new FormData();
+      formData.append('image', {
+        uri: asset.uri,
+        name: filename,
+        type: `image/${ext === 'jpg' ? 'jpeg' : ext}`,
+      } as any);
+      await authApi.uploadProfileImage(formData);
+      if (refreshUser) await refreshUser();
+      Alert.alert('Success', 'Profile photo updated');
+    } catch (err: any) {
+      Alert.alert('Error', err.message);
+    } finally {
+      setUploadingImage(false);
+    }
+  }
 
   async function handleSaveProfile() {
     setSaving(true);
@@ -68,12 +101,27 @@ export default function ProfileScreen() {
   }
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: colors.background }]} keyboardShouldPersistTaps="handled">
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <ScreenHeader title="Profile" onBack={() => navigation.goBack()} />
+      <ScrollView style={[styles.container, { backgroundColor: colors.background }]} keyboardShouldPersistTaps="handled">
       {/* Profile Header */}
       <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
-        <View style={[styles.avatarCircle, { backgroundColor: colors.primary }]}>
-          <Text style={styles.avatarText}>{user?.name?.charAt(0).toUpperCase()}</Text>
-        </View>
+        <TouchableOpacity onPress={handlePickImage} activeOpacity={0.7} style={styles.avatarWrap}>
+          {user?.profile_image_url ? (
+            <Image source={{ uri: user.profile_image_url }} style={styles.avatarImage} />
+          ) : (
+            <View style={[styles.avatarCircle, { backgroundColor: colors.primary }]}>
+              <Text style={styles.avatarText}>{user?.name?.charAt(0).toUpperCase()}</Text>
+            </View>
+          )}
+          <View style={[styles.cameraIcon, { backgroundColor: colors.primary }]}>
+            {uploadingImage ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Ionicons name="camera" size={14} color="#fff" />
+            )}
+          </View>
+        </TouchableOpacity>
         <Text style={[styles.userName, { color: colors.text }]}>{user?.name}</Text>
         <View style={[styles.roleBadge, { backgroundColor: colors.primary + '15' }]}>
           <Text style={[styles.roleText, { color: colors.primary }]}>{user?.role}</Text>
@@ -133,14 +181,23 @@ export default function ProfileScreen() {
 
       <View style={{ height: 40 }} />
     </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header: { alignItems: 'center', paddingVertical: spacing.xl, borderBottomWidth: 1 },
+  avatarWrap: { position: 'relative' },
   avatarCircle: { width: 80, height: 80, borderRadius: 40, justifyContent: 'center', alignItems: 'center' },
+  avatarImage: { width: 80, height: 80, borderRadius: 40 },
   avatarText: { fontSize: 32, fontWeight: '800', color: '#fff' },
+  cameraIcon: {
+    position: 'absolute', bottom: 0, right: -2,
+    width: 28, height: 28, borderRadius: 14,
+    justifyContent: 'center', alignItems: 'center',
+    borderWidth: 2, borderColor: '#fff',
+  },
   userName: { fontSize: fontSize.xl, fontWeight: '700', marginTop: spacing.sm },
   roleBadge: { paddingHorizontal: 14, paddingVertical: 4, borderRadius: 16, marginTop: spacing.xs },
   roleText: { fontWeight: '700', fontSize: fontSize.xs, textTransform: 'capitalize' },

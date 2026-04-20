@@ -38,7 +38,7 @@ class UserController extends Controller
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'phone' => ['nullable', 'string', 'max:40', 'unique:users,phone'],
             'role' => ['required', 'in:client,freelancer'],
-            'temporary_password' => ['required', 'string', 'min:8', 'max:255'],
+            'temporary_password' => ['required', 'string', 'max:255', \Illuminate\Validation\Rules\Password::defaults()],
         ], [
             'email.unique' => 'This email is already registered',
             'username.unique' => 'This username is already taken',

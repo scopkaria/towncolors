@@ -2,17 +2,23 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
   FlatList, KeyboardAvoidingView, Platform, ActivityIndicator,
-  Image, Linking, Keyboard,
+  Image, Linking, Keyboard, ScrollView, Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as ImagePicker from 'expo-image-picker';
 import { chatApi } from '../api';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { spacing, fontSize } from '../theme';
+import { MEDIA_BASE_URL } from '../config';
+import ScreenHeader from '../components/ScreenHeader';
+import { TAB_BAR_TOTAL_HEIGHT } from '../constants/layout';
 
-export default function ChatScreen({ route }: any) {
-  const { conversationId } = route.params;
+const QUICK_EMOJIS = ['😊', '👍', '❤️', '😂', '🔥', '👏', '🎉', '💯', '✅', '🙏', '😍', '🤔', '😎', '💪', '⭐', '🚀'];
+
+export default function ChatScreen({ route, navigation }: any) {
+  const { conversationId, title: chatTitle } = route.params;
   const { user } = useAuth();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
@@ -20,7 +26,30 @@ export default function ChatScreen({ route }: any) {
   const [loading, setLoading] = useState(true);
   const [text, setText] = useState('');
   const [sending, setSending] = useState(false);
+  const [showEmoji, setShowEmoji] = useState(false);
   const flatListRef = useRef<FlatList>(null);
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', () => setKeyboardVisible(true));
+    const hideSub = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () => setKeyboardVisible(false));
+    return () => { showSub.remove(); hideSub.remove(); };
+  }, []);
+
+  // Guard: if no conversationId, show error instead of polling undefined
+  if (!conversationId) {
+    return (
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
+        <ScreenHeader title={chatTitle || 'Chat'} onBack={() => navigation.goBack()} />
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 32 }}>
+          <Ionicons name="chatbubble-ellipses-outline" size={48} color={colors.textLight} />
+          <Text style={{ color: colors.textLight, fontSize: 16, marginTop: 12, textAlign: 'center' }}>
+            Could not open this conversation.{"\n"}Please try again from Messages.
+          </Text>
+        </View>
+      </View>
+    );
+  }
 
   const loadMessages = useCallback(async () => {
     try {
@@ -77,6 +106,37 @@ export default function ChatScreen({ route }: any) {
     }
   }
 
+  async function handlePickImage() {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      quality: 0.7,
+      allowsEditing: false,
+    });
+    if (result.canceled || !result.assets[0]) return;
+
+    const asset = result.assets[0];
+    const filename = asset.uri.split('/').pop() || 'image.jpg';
+    const ext = filename.split('.').pop()?.toLowerCase() || 'jpg';
+    const formData = new FormData();
+    formData.append('file', {
+      uri: asset.uri,
+      name: filename,
+      type: `image/${ext === 'jpg' ? 'jpeg' : ext}`,
+    } as any);
+    formData.append('message_type', 'image');
+
+    setSending(true);
+    try {
+      await chatApi.sendMessage(conversationId, formData);
+      await loadMessages();
+      setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100);
+    } catch {
+      Alert.alert('Error', 'Failed to send image');
+    } finally {
+      setSending(false);
+    }
+  }
+
   function formatTime(dateStr: string) {
     return new Date(dateStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
@@ -127,7 +187,7 @@ export default function ChatScreen({ route }: any) {
 
             {item.message_type === 'image' && item.file_path ? (
               <Image
-                source={{ uri: `https://twncolors.com/storage/${item.file_path}` }}
+                source={{ uri: `${MEDIA_BASE_URL}/storage/${item.file_path}` }}
                 style={styles.imageMsg}
                 resizeMode="cover"
               />
@@ -144,7 +204,7 @@ export default function ChatScreen({ route }: any) {
                 </View>
               </TouchableOpacity>
             ) : item.message_type === 'document' && item.file_path ? (
-              <TouchableOpacity onPress={() => Linking.openURL(`https://twncolors.com/storage/${item.file_path}`)}>
+              <TouchableOpacity onPress={() => Linking.openURL(`${MEDIA_BASE_URL}/storage/${item.file_path}`)}>
                 <View style={styles.attachRow}>
                   <Ionicons name="document-attach" size={18} color={isMe ? '#fff' : colors.primary} />
                   <Text style={{ color: isMe ? '#fff' : colors.primary, fontWeight: '600', marginLeft: 6 }}>
@@ -187,8 +247,9 @@ export default function ChatScreen({ route }: any) {
     <KeyboardAvoidingView
       style={[styles.container, { backgroundColor: colors.background }]}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
     >
+      <ScreenHeader title={chatTitle || 'Chat'} onBack={() => navigation.goBack()} />
       <FlatList
         ref={flatListRef}
         data={messages}
@@ -196,6 +257,8 @@ export default function ChatScreen({ route }: any) {
         renderItem={renderMessage}
         contentContainerStyle={[styles.messagesList, messages.length === 0 && { flex: 1 }]}
         onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: false })}
+        keyboardDismissMode="interactive"
+        keyboardShouldPersistTaps="handled"
         ListEmptyComponent={
           <View style={styles.emptyWrap}>
             <View style={[styles.emptyIcon, { backgroundColor: colors.primary + '12' }]}>
@@ -207,7 +270,34 @@ export default function ChatScreen({ route }: any) {
         }
       />
 
-      <View style={[styles.inputBar, { backgroundColor: colors.card, borderTopColor: colors.border, paddingBottom: Math.max(insets.bottom, spacing.sm) }]}>
+      {/* Emoji Quick Row */}
+      {showEmoji && (
+        <View style={[styles.emojiRow, { backgroundColor: colors.card, borderTopColor: colors.border }]}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.emojiRowContent}>
+            {QUICK_EMOJIS.map(emoji => (
+              <TouchableOpacity key={emoji} style={styles.emojiBtn} onPress={() => setText(prev => prev + emoji)}>
+                <Text style={styles.emojiText}>{emoji}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      )}
+
+      <View style={[styles.inputBar, { backgroundColor: colors.card, borderTopColor: colors.border, paddingBottom: keyboardVisible ? Math.max(insets.bottom, 4) : TAB_BAR_TOTAL_HEIGHT + insets.bottom + 4 }]}>
+        <TouchableOpacity
+          style={styles.attachBtn}
+          onPress={() => setShowEmoji(!showEmoji)}
+          activeOpacity={0.7}
+        >
+          <Ionicons name={showEmoji ? 'close-circle-outline' : 'happy-outline'} size={24} color={colors.textLight} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.attachBtn}
+          onPress={handlePickImage}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="image-outline" size={24} color={colors.textLight} />
+        </TouchableOpacity>
         <View style={[styles.inputWrap, { backgroundColor: colors.inputBg }]}>
           <TextInput
             style={[styles.textInput, { color: colors.text }]}
@@ -217,6 +307,7 @@ export default function ChatScreen({ route }: any) {
             placeholderTextColor={colors.textLight}
             multiline
             maxLength={5000}
+            onFocus={() => setShowEmoji(false)}
           />
         </View>
         <TouchableOpacity
@@ -261,7 +352,13 @@ const styles = StyleSheet.create({
   emptyDesc: { fontSize: fontSize.sm, marginTop: 4 },
 
   inputBar: { flexDirection: 'row', alignItems: 'flex-end', padding: spacing.sm, borderTopWidth: 1 },
+  attachBtn: { width: 36, height: 44, justifyContent: 'center', alignItems: 'center' },
   inputWrap: { flex: 1, borderRadius: 24, marginRight: spacing.sm },
   textInput: { paddingHorizontal: 16, paddingTop: 10, paddingBottom: 10, fontSize: 15, maxHeight: 100 },
   sendBtn: { width: 44, height: 44, borderRadius: 22, justifyContent: 'center', alignItems: 'center' },
+
+  emojiRow: { borderTopWidth: 1, paddingVertical: 6 },
+  emojiRowContent: { paddingHorizontal: 8, gap: 2 },
+  emojiBtn: { width: 40, height: 40, justifyContent: 'center', alignItems: 'center' },
+  emojiText: { fontSize: 22 },
 });

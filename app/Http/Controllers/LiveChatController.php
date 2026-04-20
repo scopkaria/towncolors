@@ -224,4 +224,18 @@ class LiveChatController extends Controller
 
         return response()->json(['status' => 'closed']);
     }
+
+    /**
+     * Session history — return closed sessions with message counts.
+     */
+    public function sessionHistory(Request $request): JsonResponse
+    {
+        $sessions = LiveChatSession::with('agent:id,name')
+            ->withCount('messages')
+            ->where('status', 'closed')
+            ->latest('closed_at')
+            ->paginate(25);
+
+        return response()->json($sessions);
+    }
 }

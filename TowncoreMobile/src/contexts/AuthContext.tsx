@@ -7,6 +7,7 @@ type User = {
   name: string;
   email: string;
   role: 'admin' | 'client' | 'freelancer';
+  profile_image_url?: string | null;
 };
 
 type AuthContextType = {
@@ -15,6 +16,7 @@ type AuthContextType = {
   login: (email: string, password: string) => Promise<void>;
   register: (data: { name: string; email: string; password: string; password_confirmation: string; role: string }) => Promise<void>;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -61,8 +63,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }
 
+  async function refreshUser() {
+    try {
+      const userData = await authApi.getUser();
+      setUser(userData);
+    } catch {}
+  }
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, login, register, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

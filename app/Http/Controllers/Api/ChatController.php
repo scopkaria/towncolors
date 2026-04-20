@@ -140,6 +140,45 @@ class ChatController extends Controller
         return response()->json($conversation, 201);
     }
 
+    public function findOrCreateByProject(Request $request)
+    {
+        $user = $request->user();
+
+        $request->validate([
+            'project_id' => ['required', 'exists:projects,id'],
+        ]);
+
+        $project = Project::findOrFail($request->project_id);
+
+        // Find existing project conversation
+        $conversation = Conversation::where('project_id', $project->id)->first();
+
+        if (! $conversation) {
+            $conversation = Conversation::create([
+                'type' => 'project',
+                'project_id' => $project->id,
+            ]);
+
+            // Attach relevant users (owner + freelancer + admins)
+            $userIds = collect([$project->user_id, $project->freelancer_id])
+                ->filter()
+                ->unique()
+                ->values()
+                ->toArray();
+
+            $conversation->users()->attach($userIds);
+        }
+
+        // Ensure the requesting user is part of the conversation
+        if (! $conversation->users()->where('user_id', $user->id)->exists()) {
+            $conversation->users()->attach($user->id);
+        }
+
+        $conversation->load(['users:id,name', 'project:id,title', 'latestMessage.sender:id,name']);
+
+        return response()->json($conversation);
+    }
+
     /**
      * Get contacts for the current user based on their role.
      * Admin: sees all clients and freelancers.

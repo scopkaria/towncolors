@@ -72,10 +72,17 @@ Route::get('/', HomeController::class);
 
 // Public portfolio page (no auth required)
 Route::get('/portfolio', [PublicPortfolioController::class, 'index'])->name('portfolio.public');
+Route::get('/portfolio/{portfolio:slug}', [PublicPortfolioController::class, 'show'])->name('portfolio.show');
 Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
 Route::get('/shop/product/{portfolio}', [ShopController::class, 'showProduct'])->name('shop.show');
 Route::get('/shop/{portfolio}/checkout', [ShopController::class, 'checkout'])->name('shop.checkout');
 Route::post('/shop/{portfolio}/checkout', [ShopController::class, 'storeCheckout'])->middleware('auth')->name('shop.checkout.store');
+
+// Cloud services
+Route::view('/cloud-services', 'site.cloud')->name('cloud.index');
+Route::get('/cloud-services/{slug}', function (string $slug) {
+    return view('site.cloud-show', ['slug' => $slug]);
+})->name('cloud.show')->where('slug', '[a-z0-9\-]+');
 
 // Public service pages
 Route::get('/services', [ServicesController::class, 'index'])->name('services.index');
@@ -95,7 +102,6 @@ Route::get('/experiences', [ExperienceController::class, 'index'])->name('experi
 Route::view('/about', 'about')->name('about');
 
 // Premium company pages
-Route::view('/cloud-services', 'site.cloud')->name('cloud.index');
 Route::view('/products', 'site.products')->name('products.index');
 Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
 
@@ -210,6 +216,7 @@ Route::prefix('admin')
         Route::get('/portfolio', [AdminPortfolioController::class, 'index'])->name('portfolio.index');
         Route::get('/portfolio/{portfolio}/edit', [AdminPortfolioController::class, 'edit'])->name('portfolio.edit');
         Route::patch('/portfolio/{portfolio}', [AdminPortfolioController::class, 'update'])->name('portfolio.update');
+        Route::delete('/portfolio/{portfolio}', [AdminPortfolioController::class, 'destroy'])->name('portfolio.destroy');
         Route::patch('/portfolio/{portfolio}/approve', [AdminPortfolioController::class, 'approve'])->name('portfolio.approve');
         Route::patch('/portfolio/{portfolio}/reject', [AdminPortfolioController::class, 'reject'])->name('portfolio.reject');
 

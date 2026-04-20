@@ -10,6 +10,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { spacing, fontSize } from '../theme';
 import { TAB_BAR_TOTAL_HEIGHT } from '../constants/layout';
+import ScreenHeader from '../components/ScreenHeader';
 
 type TabType = 'chats' | 'contacts';
 
@@ -165,6 +166,8 @@ export default function ConversationsScreen({ navigation }: any) {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <ScreenHeader title="Messages" />
+
       {/* Tab Switcher */}
       <View style={[styles.tabRow, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
         <TouchableOpacity

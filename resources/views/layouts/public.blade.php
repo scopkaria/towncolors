@@ -35,14 +35,15 @@
 @php
     $settings = \App\Models\Setting::instance();
     $navLinks = [
-        ['label' => 'Home',     'url' => url('/'),                  'active' => request()->is('/')],
-        ['label' => 'Services', 'url' => route('services.index'),   'active' => request()->is('services*')],
-        ['label' => 'Shop',     'url' => route('shop.index'),       'active' => request()->is('shop')],
-        ['label' => 'Cloud',    'url' => route('cloud.index'),      'active' => request()->is('cloud-services')],
-        ['label' => 'Blog',     'url' => route('blog.index'),       'active' => request()->is('blog*')],
-        ['label' => 'FAQ',      'url' => route('faq.index'),        'active' => request()->is('faq')],
-        ['label' => 'About',    'url' => route('about'),            'active' => request()->is('about')],
-        ['label' => 'Contact',  'url' => route('contact.show'),     'active' => request()->is('contact')],
+        ['label' => 'Home',      'url' => url('/'),                  'active' => request()->is('/')],
+        ['label' => 'Services',  'url' => route('services.index'),   'active' => request()->is('services*')],
+        ['label' => 'Shop',      'url' => route('shop.index'),       'active' => request()->is('shop')],
+        ['label' => 'Cloud',     'url' => route('cloud.index'),      'active' => request()->is('cloud-services')],
+        ['label' => 'Portfolio', 'url' => route('portfolio.public'), 'active' => request()->is('portfolio*')],
+        ['label' => 'Blog',      'url' => route('blog.index'),       'active' => request()->is('blog*')],
+        ['label' => 'FAQ',       'url' => route('faq.index'),        'active' => request()->is('faq')],
+        ['label' => 'About',     'url' => route('about'),            'active' => request()->is('about')],
+        ['label' => 'Contact',   'url' => route('contact.show'),     'active' => request()->is('contact')],
     ];
 @endphp
 
