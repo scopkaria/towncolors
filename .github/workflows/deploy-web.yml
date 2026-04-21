@@ -1,0 +1,71 @@
+name: Deploy Web App
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths-ignore:
+      - "TowncoreMobile/**"
+      - ".github/workflows/eas-*.yml"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy To Server
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          script_stop: true
+          script: |
+            set -e
+
+            APP_PATH="${{ secrets.SERVER_APP_PATH }}"
+            PUBLIC_HTML="${{ secrets.SERVER_PUBLIC_HTML }}"
+
+            # ── 1. Pull latest code into app folder (outside web root) ──
+            cd "$APP_PATH"
+            php artisan down --retry=5 --secret="deploying" || true
+            git pull origin "${{ github.ref_name }}"
+
+            # ── 2. PHP dependencies ──
+            composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction
+
+            # ── 3. Frontend assets ──
+            if command -v npm &>/dev/null && [ -f package.json ]; then
+              npm ci
+              npm run build
+            fi
+
+            # ── 4. Database migrations ──
+            php artisan migrate --force
+
+            # ── 5. Clear and warm caches ──
+            php artisan optimize:clear
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            php artisan event:cache
+
+            # ── 6. Link public/ into web root ──
+            # Copies fresh build assets into public_html so only public/ is exposed
+            if command -v rsync &>/dev/null; then
+              rsync -a --delete "$APP_PATH/public/" "$PUBLIC_HTML/"
+            else
+              rm -rf "$PUBLIC_HTML"/*
+              cp -a "$APP_PATH/public/." "$PUBLIC_HTML/"
+            fi
+
+            # ── 7. Fix permissions ──
+            chmod -R 755 "$APP_PATH/storage" "$APP_PATH/bootstrap/cache"
+            chown -R www-data:www-data "$APP_PATH/storage" "$APP_PATH/bootstrap/cache" 2>/dev/null || true
+
+            # ── 8. Bring site back online ──
+            php artisan up
