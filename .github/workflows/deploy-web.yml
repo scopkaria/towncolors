@@ -16,6 +16,42 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Validate deploy secrets
+        shell: bash
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_PORT: ${{ secrets.SERVER_PORT }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          SERVER_SSH_PASSPHRASE: ${{ secrets.SERVER_SSH_PASSPHRASE }}
+          SERVER_APP_PATH: ${{ secrets.SERVER_APP_PATH }}
+          SERVER_PUBLIC_HTML: ${{ secrets.SERVER_PUBLIC_HTML }}
+        run: |
+          set -euo pipefail
+
+          required=(
+            SERVER_HOST
+            SERVER_PORT
+            SERVER_USER
+            SERVER_SSH_KEY
+            SERVER_APP_PATH
+            SERVER_PUBLIC_HTML
+          )
+
+          for name in "${required[@]}"; do
+            if [ -z "${!name:-}" ]; then
+              echo "Missing required repository secret: ${name}"
+              exit 1
+            fi
+          done
+
+          # If the private key is encrypted, this must be set.
+          # This check is intentionally non-fatal to allow unencrypted keys.
+          if [ -z "${SERVER_SSH_PASSPHRASE:-}" ]; then
+            echo "Warning: SERVER_SSH_PASSPHRASE is empty."
+            echo "If your SSH key is passphrase protected, deployment will fail."
+          fi
+
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -24,7 +60,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           passphrase: ${{ secrets.SERVER_SSH_PASSPHRASE }}
           port: ${{ secrets.SERVER_PORT }}
-          timeout: 120s
+          timeout: 300s
           command_timeout: 30m
           script_stop: true
           script: |
