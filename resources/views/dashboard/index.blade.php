@@ -1,26 +1,190 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="space-y-3">
-            <span class="inline-flex w-fit rounded-full border border-accent/30 bg-accent-light px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary">
-                {{ $dashboard['eyebrow'] }}
-            </span>
-            <div class="space-y-2">
-                <h1 class="font-display text-3xl text-brand-ink sm:text-4xl">
-                    {{ $dashboard['title'] }}
-                </h1>
-                <p class="max-w-3xl text-sm leading-7 text-brand-muted sm:text-base">
-                    {{ $dashboard['description'] }}
-                </p>
+        @if ($role->value === 'admin')
+            <div class="space-y-1">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.26em] text-brand-muted">Dashboard / Project</p>
+                <h1 class="font-display text-2xl text-brand-ink sm:text-3xl">Dashboard</h1>
             </div>
-        </div>
+        @else
+            <div class="space-y-3">
+                <span class="inline-flex w-fit rounded-full border border-accent/30 bg-accent-light px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary">
+                    {{ $dashboard['eyebrow'] }}
+                </span>
+                <div class="space-y-2">
+                    <h1 class="font-display text-3xl text-brand-ink sm:text-4xl">
+                        {{ $dashboard['title'] }}
+                    </h1>
+                    <p class="max-w-3xl text-sm leading-7 text-brand-muted sm:text-base">
+                        {{ $dashboard['description'] }}
+                    </p>
+                </div>
+            </div>
+        @endif
     </x-slot>
 
-    <div class="space-y-8">
+    <div class="{{ $role->value === 'admin' ? 'dashboard-admin-compact space-y-4' : 'space-y-8' }}">
         @if (session('success'))
             <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-medium text-emerald-700">
                 {{ session('success') }}
             </div>
         @endif
+
+        @if ($role->value === 'admin')
+            @php
+                $cardStats = collect($dashboard['stats'])->take(3);
+                $sparkMonths = collect($dashboard['sparkline_months'] ?? []);
+                $sparkMax = max(1, (float) $sparkMonths->max('amount'));
+                $activeProjects = collect($dashboard['active_projects_list'] ?? []);
+                $statusRows = collect([
+                    ['label' => 'In Progress', 'count' => $activeProjects->where('status', 'in_progress')->count(), 'bar' => 'bg-sky-500'],
+                    ['label' => 'Assigned', 'count' => $activeProjects->where('status', 'assigned')->count(), 'bar' => 'bg-amber-500'],
+                    ['label' => 'Pending', 'count' => $activeProjects->where('status', 'pending')->count(), 'bar' => 'bg-indigo-500'],
+                    ['label' => 'Leads', 'count' => (int) ($dashboard['leads_new'] ?? 0), 'bar' => 'bg-rose-500'],
+                ]);
+                $statusMax = max(1, (int) $statusRows->max('count'));
+            @endphp
+
+            <section class="grid gap-3 lg:grid-cols-3">
+                @foreach ($cardStats as $stat)
+                    <article class="dashlite-card rounded-2xl border border-white/70 bg-white/90 p-4 shadow-card dark:border-white/[0.08] dark:bg-[#1B2632]">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-muted">{{ $stat['label'] }}</p>
+                                <p class="mt-2 font-display text-[1.7rem] leading-none text-brand-ink">{{ $stat['value'] }}</p>
+                                <p class="mt-1.5 text-[11px] text-brand-muted">{{ $stat['delta'] }}</p>
+                            </div>
+                            <div class="mt-1 flex items-end gap-1 opacity-70" aria-hidden="true">
+                                <span class="h-4 w-2 rounded-full bg-brand-primary/15"></span>
+                                <span class="h-6 w-2 rounded-full bg-brand-primary/25"></span>
+                                <span class="h-8 w-2 rounded-full bg-brand-primary/40"></span>
+                                <span class="h-5 w-2 rounded-full bg-brand-primary/25"></span>
+                            </div>
+                        </div>
+                    </article>
+                @endforeach
+            </section>
+
+            <section class="grid gap-3 xl:grid-cols-[1.7fr_1fr]">
+                <article class="rounded-2xl border border-white/70 bg-white/90 p-4 shadow-panel dark:border-white/[0.08] dark:bg-[#1B2632]">
+                    <div class="flex items-center justify-between gap-3">
+                        <h2 class="font-display text-lg text-brand-ink">Tasks Overview</h2>
+                        <a href="{{ route('admin.projects.index') }}" class="rounded-lg border border-warm-300/70 bg-warm-100 px-2.5 py-1 text-[11px] font-semibold text-brand-muted transition hover:border-accent/40">Filter</a>
+                    </div>
+
+                    <div class="mt-4 overflow-hidden rounded-xl border border-warm-300/50 bg-gradient-to-br from-white to-warm-100/70 px-3 py-3">
+                        <div class="flex h-[190px] items-end justify-between gap-3">
+                            @forelse ($sparkMonths as $month)
+                                @php
+                                    $filledDots = max(2, (int) round(((float) $month['amount'] / $sparkMax) * 9));
+                                @endphp
+                                <div class="flex flex-1 flex-col items-center justify-end gap-1">
+                                    @for ($dot = 9; $dot >= 1; $dot--)
+                                        <span class="h-2 w-2 rounded-full {{ $dot <= $filledDots ? 'bg-brand-primary/65' : 'bg-brand-primary/15' }}"></span>
+                                    @endfor
+                                    <span class="pt-1 text-[10px] text-brand-muted">{{ $month['label'] }}</span>
+                                </div>
+                            @empty
+                                <div class="flex h-[190px] w-full items-center justify-center text-sm text-brand-muted">No chart data yet.</div>
+                            @endforelse
+                        </div>
+                    </div>
+                </article>
+
+                <article class="rounded-2xl border border-white/70 bg-white/90 p-4 shadow-panel dark:border-white/[0.08] dark:bg-[#1B2632]">
+                    <div class="flex items-center justify-between gap-3">
+                        <h2 class="font-display text-lg text-brand-ink">Project Status</h2>
+                        <span class="rounded-lg border border-warm-300/70 bg-warm-100 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-brand-muted">Monthly</span>
+                    </div>
+
+                    <div class="mt-3 space-y-3">
+                        @foreach ($statusRows as $row)
+                            @php
+                                $percent = (int) round(($row['count'] / $statusMax) * 100);
+                            @endphp
+                            <div>
+                                <div class="mb-1 flex items-center justify-between text-xs">
+                                    <span class="font-medium text-brand-ink">{{ $row['label'] }}</span>
+                                    <span class="text-brand-muted">{{ $row['count'] }}</span>
+                                </div>
+                                <div class="h-1.5 w-full overflow-hidden rounded-full bg-warm-300/65">
+                                    <div class="h-full rounded-full {{ $row['bar'] }}" style="width: {{ $percent }}%"></div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <div class="mt-4 rounded-xl border border-warm-300/50 bg-warm-100/80 px-3 py-2.5">
+                        <p class="text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-muted">Revenue this month</p>
+                        <p class="mt-1 font-display text-xl text-brand-ink">TZS {{ number_format($dashboard['revenue_this_month'], 0) }}</p>
+                    </div>
+                </article>
+            </section>
+
+            <section class="grid gap-3 xl:grid-cols-[1.25fr_1.45fr]">
+                <article class="rounded-2xl border border-white/70 bg-white/90 p-4 shadow-panel dark:border-white/[0.08] dark:bg-[#1B2632]">
+                    <div class="flex items-center justify-between gap-3">
+                        <h2 class="font-display text-lg text-brand-ink">Timesheet Logged Hours</h2>
+                        <span class="rounded-lg border border-warm-300/70 bg-warm-100 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-brand-muted">Last 7 days</span>
+                    </div>
+
+                    <div class="mt-4 rounded-xl border border-warm-300/50 bg-gradient-to-br from-white to-warm-100/70 p-3">
+                        <div class="flex h-20 items-end justify-between gap-2">
+                            @foreach ($sparkMonths->take(7) as $point)
+                                @php
+                                    $height = max(12, (int) round(((float) $point['amount'] / $sparkMax) * 72));
+                                @endphp
+                                <div class="flex flex-1 items-end justify-center">
+                                    <span class="w-2.5 rounded-full bg-brand-primary/40" style="height: {{ $height }}px"></span>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div class="mt-3 grid grid-cols-2 gap-2 text-xs">
+                        <a href="{{ route('admin.freelancers.index') }}" class="inline-flex items-center justify-center rounded-xl border border-warm-300/80 bg-warm-100 px-3 py-2 font-semibold text-brand-primary transition hover:border-accent/40">Freelancers</a>
+                        <a href="{{ route('admin.invoices') }}" class="inline-flex items-center justify-center rounded-xl border border-warm-300/80 bg-warm-100 px-3 py-2 font-semibold text-brand-primary transition hover:border-accent/40">Invoices</a>
+                    </div>
+                </article>
+
+                <article class="rounded-2xl border border-white/70 bg-white/90 p-4 shadow-panel dark:border-white/[0.08] dark:bg-[#1B2632]">
+                    <div class="flex items-center justify-between gap-3">
+                        <h2 class="font-display text-lg text-brand-ink">Top Due Projects</h2>
+                        <a href="{{ route('admin.projects.index') }}" class="text-[11px] font-semibold text-brand-primary hover:underline">See all</a>
+                    </div>
+
+                    <div class="mt-3 overflow-hidden rounded-xl border border-warm-300/50">
+                        <table class="min-w-full divide-y divide-warm-300/50 text-xs">
+                            <thead class="bg-warm-100/80">
+                                <tr>
+                                    <th class="px-3 py-2 text-left font-semibold uppercase tracking-[0.14em] text-brand-muted">Name</th>
+                                    <th class="px-3 py-2 text-left font-semibold uppercase tracking-[0.14em] text-brand-muted">Client</th>
+                                    <th class="px-3 py-2 text-left font-semibold uppercase tracking-[0.14em] text-brand-muted">Updated</th>
+                                    <th class="px-3 py-2 text-left font-semibold uppercase tracking-[0.14em] text-brand-muted">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-warm-300/40 bg-white/70">
+                                @forelse ($activeProjects->take(5) as $proj)
+                                    <tr>
+                                        <td class="px-3 py-2.5 font-medium text-brand-ink">{{ $proj['title'] }}</td>
+                                        <td class="px-3 py-2.5 text-brand-muted">{{ $proj['client'] }}</td>
+                                        <td class="px-3 py-2.5 text-brand-muted">{{ $proj['updated'] }}</td>
+                                        <td class="px-3 py-2.5">
+                                            <span class="inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] {{ $proj['status'] === 'in_progress' ? 'border-sky-200 bg-sky-50 text-sky-700' : ($proj['status'] === 'assigned' ? 'border-amber-200 bg-amber-50 text-amber-700' : 'border-indigo-200 bg-indigo-50 text-indigo-700') }}">
+                                                {{ str_replace('_', ' ', $proj['status']) }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="px-3 py-8 text-center text-sm text-brand-muted">No active projects yet.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+            </section>
+        @else
 
         {{-- Client subscription banner --}}
         @if ($role->value === 'client' && isset($dashboard['subscription']))
@@ -258,6 +422,7 @@
         {{-- Admin smart insights: Revenue · Active Projects · Top Freelancers · Activity --}}
         @if ($role->value === 'admin' && isset($dashboard['activity_feed']))
             @include('dashboard.partials.admin-insights')
+        @endif
         @endif
     </div>
 </x-app-layout>

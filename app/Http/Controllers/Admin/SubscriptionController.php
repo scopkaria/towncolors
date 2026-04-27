@@ -114,6 +114,8 @@ class SubscriptionController extends Controller
             'notes' => $existingNotes !== '' ? ($existingNotes . "\n" . $revocationNote) : $revocationNote,
         ]);
 
-        return back()->with('success', "Subscription for {$subscription->user->name} has been revoked.");
+        $subscriberName = $subscription->user?->name ?? 'deleted user';
+
+        return back()->with('success', "Subscription for {$subscriberName} has been revoked.");
     }
 }

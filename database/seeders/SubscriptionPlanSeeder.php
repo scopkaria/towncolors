@@ -15,8 +15,8 @@ class SubscriptionPlanSeeder extends Seeder
                 'name'          => 'Green Essential',
                 'slug'          => 'green-essential',
                 'color'         => 'green',
-                'price_monthly' => 19.99,
-                'price_yearly'  => 199.99,
+                'price_monthly' => 100,
+                'price_yearly'  => 1000,
                 'features'      => [
                     'Up to 3 active projects',
                     'Basic file storage (1 GB)',
@@ -29,8 +29,8 @@ class SubscriptionPlanSeeder extends Seeder
                 'name'          => 'Blue Advantage',
                 'slug'          => 'blue-advantage',
                 'color'         => 'blue',
-                'price_monthly' => 49.99,
-                'price_yearly'  => 499.99,
+                'price_monthly' => 300,
+                'price_yearly'  => 3000,
                 'features'      => [
                     'Up to 10 active projects',
                     'Extended file storage (10 GB)',
@@ -44,8 +44,8 @@ class SubscriptionPlanSeeder extends Seeder
                 'name'          => 'Purple Elite',
                 'slug'          => 'purple-elite',
                 'color'         => 'purple',
-                'price_monthly' => 99.99,
-                'price_yearly'  => 999.99,
+                'price_monthly' => 400,
+                'price_yearly'  => 4000,
                 'features'      => [
                     'Unlimited active projects',
                     'Large file storage (50 GB)',
@@ -60,8 +60,8 @@ class SubscriptionPlanSeeder extends Seeder
                 'name'          => 'Black Ultimate',
                 'slug'          => 'black-ultimate',
                 'color'         => 'black',
-                'price_monthly' => 199.99,
-                'price_yearly'  => 1999.99,
+                'price_monthly' => 600,
+                'price_yearly'  => 6000,
                 'features'      => [
                     'Unlimited active projects',
                     'Unlimited file storage',
@@ -73,6 +73,20 @@ class SubscriptionPlanSeeder extends Seeder
                     'SLA guarantee',
                 ],
                 'sort_order' => 4,
+            ],
+            [
+                'name'          => 'Professional Plus',
+                'slug'          => 'professional-plus',
+                'color'         => 'black',
+                'price_monthly' => 1000,
+                'price_yearly'  => 10000,
+                'features'      => [
+                    'Monthly professional checklist automation',
+                    'Dedicated admin assignment workflow',
+                    'Priority delivery and support',
+                    'Executive monthly reporting',
+                ],
+                'sort_order' => 5,
             ],
         ];
 

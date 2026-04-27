@@ -43,6 +43,7 @@ class Setting extends Model
         'portfolio_hero_subtitle',
         'about_hero_subtitle',
         'contact_hero_subtitle',
+        'live_chat_enabled',
     ];
 
     protected $casts = [
@@ -51,6 +52,7 @@ class Setting extends Model
         'payment_selcom_enabled' => 'boolean',
         'payment_mpesa_enabled' => 'boolean',
         'payment_bank_enabled' => 'boolean',
+        'live_chat_enabled' => 'boolean',
     ];
 
     public static function instance(): static

@@ -413,7 +413,8 @@
                                 @endforeach
                             </div>
                         @else
-                            <p class="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">No payment methods are enabled by admin yet.</p>
+                            <input type="hidden" name="payment_method" value="manual_review">
+                            <p class="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">No payment methods are enabled yet. Your request will still be submitted for manual admin review.</p>
                         @endif
                     </div>
 

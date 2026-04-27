@@ -167,6 +167,19 @@
                 </div>
             </div>
 
+            <div x-show="activeTab === 'chat'" x-cloak class="rounded-3xl border border-white/70 bg-white/90 p-6 shadow-panel sm:p-8">
+                <h2 class="font-display text-xl text-brand-ink">Live Chat</h2>
+                <p class="mt-1 text-sm text-brand-muted">Manage your live chat widget status and availability.</p>
+
+                <div class="mt-6 space-y-4">
+                    <label class="flex items-center justify-between rounded-2xl border border-warm-300/50 bg-warm-100 px-4 py-4 text-sm font-semibold text-brand-ink">
+                        <span>Enable Live Chat</span>
+                        <input type="checkbox" name="live_chat_enabled" value="1" {{ old('live_chat_enabled', $settings->live_chat_enabled ?? true) ? 'checked' : '' }} class="h-4 w-4 rounded border-warm-400/50 text-emerald-500 focus:ring-emerald-500">
+                    </label>
+                    <p class="text-xs text-brand-muted">When enabled, the chat widget appears as online on your website. When disabled, it appears as offline.</p>
+                </div>
+            </div>
+
             <div x-show="activeTab === 'theme'" x-cloak class="rounded-3xl border border-white/70 bg-white/90 p-6 shadow-panel sm:p-8"
                  x-data="{ primary: '{{ old('primary_color', $settings->primary_color ?? '#FFB162') }}', secondary: '{{ old('secondary_color', $settings->secondary_color ?? '#A35139') }}', background: '{{ old('background_color', $settings->background_color ?? '#EEE9DF') }}' }">
                 <h2 class="font-display text-xl text-brand-ink">Theme & Colors</h2>
@@ -330,6 +343,7 @@
                     { key: 'company', label: 'Company Info' },
                     { key: 'payments', label: 'Payment Methods' },
                     { key: 'bank', label: 'Bank Details' },
+                    { key: 'chat', label: 'Live Chat' },
                     { key: 'theme', label: 'Theme & Colors' },
                     { key: 'mobile', label: 'Mobile App' },
                 ],

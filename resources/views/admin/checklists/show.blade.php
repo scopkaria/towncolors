@@ -6,7 +6,13 @@
                 <h1 class="font-display text-3xl text-brand-ink sm:text-4xl">{{ $user->name }} Checklist</h1>
                 <p class="text-sm text-brand-muted">Track client deliverables and progress items in one place.</p>
             </div>
-            <a href="{{ route('admin.users.index') }}" class="btn-secondary">Back to Users</a>
+            <div class="flex flex-wrap items-center gap-2">
+                <form method="POST" action="{{ route('admin.checklists.apply-professional-template', $user) }}">
+                    @csrf
+                    <button type="submit" class="btn-primary">Apply Professional Monthly Template</button>
+                </form>
+                <a href="{{ route('admin.users.index') }}" class="btn-secondary">Back to Users</a>
+            </div>
         </div>
     </x-slot>
 

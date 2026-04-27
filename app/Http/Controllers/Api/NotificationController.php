@@ -9,8 +9,21 @@ class NotificationController extends Controller
 {
     public function index(Request $request)
     {
+        $category = $request->query('category');
+
         $notifications = $request->user()
             ->notifications()
+            ->when(in_array($category, ['task', 'general'], true), function ($query) use ($category) {
+                if ($category === 'task') {
+                    $query->where('data->category', 'task');
+                    return;
+                }
+
+                $query->where(function ($subQuery) {
+                    $subQuery->whereNull('data->category')
+                        ->orWhere('data->category', '!=', 'task');
+                });
+            })
             ->paginate(20);
 
         return response()->json($notifications);

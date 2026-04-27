@@ -54,7 +54,9 @@ class SubscriptionApiController extends Controller
                 'days_left'    => $active->daysUntilExpiry(),
                 'status'       => $active->status,
             ] : null,
-            'payment_methods' => $settings->enabledPaymentMethods(),
+            'payment_methods' => ! empty($settings->enabledPaymentMethods())
+                ? $settings->enabledPaymentMethods()
+                : ['manual_review' => 'Manual Review'],
             'mpesa_paybill'   => $settings->mpesa_paybill ?? null,
         ]);
     }
@@ -64,14 +66,15 @@ class SubscriptionApiController extends Controller
     {
         $enabledMethods = array_keys(Setting::instance()->enabledPaymentMethods());
 
-        if (empty($enabledMethods)) {
-            return response()->json(['message' => 'No payment methods are currently enabled.'], 422);
+        $allowedMethods = empty($enabledMethods) ? ['manual_review'] : $enabledMethods;
+        if (empty($enabledMethods) && ! $request->filled('payment_method')) {
+            $request->merge(['payment_method' => 'manual_review']);
         }
 
         $data = $request->validate([
             'plan_id'           => ['required', 'exists:subscription_plans,id'],
             'billing_cycle'     => ['required', 'in:monthly,yearly'],
-            'payment_method'    => ['required', 'in:' . implode(',', $enabledMethods)],
+            'payment_method'    => ['required', 'in:' . implode(',', $allowedMethods)],
             'payment_reference' => ['nullable', 'string', 'max:255'],
             'notes'             => ['nullable', 'string', 'max:500'],
         ]);

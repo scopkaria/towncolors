@@ -100,6 +100,18 @@ class LiveChatController extends Controller
         ]);
     }
 
+    /**
+     * Check if live chat is available (online/offline status).
+     */
+    public function checkStatus(): JsonResponse
+    {
+        $settings = \App\Models\Setting::instance();
+        
+        return response()->json([
+            'online' => $settings->live_chat_enabled ?? true,
+        ]);
+    }
+
     // ─── Admin / Support-Agent endpoints ─────────────────────────────
 
     /**

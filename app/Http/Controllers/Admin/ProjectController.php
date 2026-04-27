@@ -86,4 +86,42 @@ class ProjectController extends Controller
 
         return back()->with('success', 'Status updated successfully.');
     }
+
+    public function bulkUpdateStatus(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'ids'      => ['required', 'array', 'min:1'],
+            'ids.*'    => ['integer', 'exists:projects,id'],
+            'status'   => ['nullable', 'in:pending,assigned,in_progress,completed'],
+            'bulk_status' => ['nullable', 'in:pending,assigned,in_progress,completed'],
+        ]);
+
+        $targetStatus = $validated['status'] ?? $validated['bulk_status'] ?? null;
+
+        if (! $targetStatus) {
+            return back()->with('success', 'No status selected for bulk update.');
+        }
+
+        $projects = Project::whereIn('id', $validated['ids'])->get();
+        $updated = 0;
+
+        foreach ($projects as $project) {
+            $oldStatus = $project->status;
+
+            if ($oldStatus === $targetStatus) {
+                continue;
+            }
+
+            $project->update(['status' => $targetStatus]);
+            ProjectStatusChanged::dispatch(
+                $project->load(['client', 'freelancer']),
+                $targetStatus,
+                $oldStatus,
+                $request->user()->id
+            );
+            $updated++;
+        }
+
+        return back()->with('success', $updated . ' project(s) updated successfully.');
+    }
 }

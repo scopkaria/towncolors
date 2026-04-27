@@ -114,7 +114,7 @@
                      class="flex items-center gap-3 border-b border-accent/20 bg-accent/10 px-6 py-3">
                     <span class="text-xs font-semibold text-brand-primary" x-text="selectedIds.length + ' selected'"></span>
                     <div class="ml-2 flex items-center gap-2">
-                        <form method="POST" action="{{ route('admin.projects.index') }}" class="inline">
+                        <form method="POST" action="{{ route('admin.projects.bulk-status') }}" class="inline">
                             @csrf @method('PATCH')
                             <template x-for="id in selectedIds" :key="id">
                                 <input type="hidden" name="ids[]" :value="id">

@@ -29,128 +29,7 @@
 
     <div class="grid gap-8 xl:grid-cols-[420px,1fr]">
         <div class="rounded-3xl border border-white/70 bg-white/90 p-6 shadow-panel"
-             x-data="{
-                mediaModalOpen: false,
-                mediaModalMode: 'single',
-                mediaModalTab: 'library',
-                mediaQuery: '',
-                mediaSelection: [],
-                mediaUploading: false,
-                mediaItems: @js($imageMedia->map(fn ($image) => [
-                    'id' => $image->id,
-                    'name' => $image->file_name,
-                    'url' => Storage::disk('public')->url($image->file_path),
-                ])->values()),
-                featuredId: '{{ old('image_media_id', '') }}',
-                galleryIds: @js(array_values((array) old('gallery_media_ids', []))),
-                openMediaModal(mode) {
-                    this.mediaModalMode = mode;
-                    this.mediaModalOpen = true;
-                    this.mediaQuery = '';
-                    this.mediaModalTab = 'library';
-                    if (mode === 'single') {
-                        this.mediaSelection = this.featuredId ? [String(this.featuredId)] : [];
-                    } else {
-                        this.mediaSelection = [...this.galleryIds];
-                    }
-                },
-                closeMediaModal() {
-                    this.mediaModalOpen = false;
-                },
-                isMediaSelected(id) {
-                    return this.mediaSelection.includes(String(id));
-                },
-                toggleMediaSelection(id) {
-                    const value = String(id);
-                    if (this.mediaModalMode === 'single') {
-                        this.mediaSelection = [value];
-                        return;
-                    }
-
-                    if (this.mediaSelection.includes(value)) {
-                        this.mediaSelection = this.mediaSelection.filter(item => item !== value);
-                        return;
-                    }
-
-                    this.mediaSelection.push(value);
-                },
-                useSelectedMedia() {
-                    if (this.mediaSelection.length === 0) return;
-
-                    if (this.mediaModalMode === 'single') {
-                        this.featuredId = this.mediaSelection[0];
-                    } else {
-                        this.galleryIds = [...new Set(this.mediaSelection)];
-                    }
-
-                    this.mediaModalOpen = false;
-                },
-                async uploadFromModal(event) {
-                    const files = event.target.files;
-                    if (!files || files.length === 0) return;
-
-                    this.mediaUploading = true;
-                    try {
-                        const form = new FormData();
-                        Array.from(files).forEach(file => form.append('files[]', file));
-
-                        const res = await fetch('{{ route('admin.media.api.upload') }}', {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                                'Accept': 'application/json',
-                            },
-                            body: form,
-                        });
-
-                        if (!res.ok) {
-                            throw new Error('Upload failed');
-                        }
-
-                        const payload = await res.json();
-                        const uploaded = payload.items || [];
-                        if (uploaded.length > 0) {
-                            this.mediaItems = [...uploaded, ...this.mediaItems.filter(item => !uploaded.some(newItem => String(newItem.id) === String(item.id)))];
-                            this.mediaSelection = [String(uploaded[0].id)];
-                            this.mediaModalTab = 'library';
-                        }
-                    } catch (e) {
-                        alert('Upload failed. Please try again.');
-                    } finally {
-                        this.mediaUploading = false;
-                        event.target.value = '';
-                    }
-                },
-                isGallerySelected(id) {
-                    return this.galleryIds.includes(String(id));
-                },
-                toggleGallery(id) {
-                    const value = String(id);
-                    if (this.galleryIds.includes(value)) {
-                        this.galleryIds = this.galleryIds.filter(item => item !== value);
-                        return;
-                    }
-                    this.galleryIds.push(value);
-                },
-                removeGallery(id) {
-                    const value = String(id);
-                    this.galleryIds = this.galleryIds.filter(item => item !== value);
-                },
-                clearFeatured() {
-                    this.featuredId = '';
-                },
-                get filteredMedia() {
-                    const q = this.mediaQuery.trim().toLowerCase();
-                    if (!q) return this.mediaItems;
-                    return this.mediaItems.filter(item => item.name.toLowerCase().includes(q));
-                },
-                get featuredMedia() {
-                    return this.mediaItems.find(item => String(item.id) === String(this.featuredId));
-                },
-                get selectedGalleryMedia() {
-                    return this.mediaItems.filter(item => this.galleryIds.includes(String(item.id)));
-                }
-             }">
+             x-data="window.shopProductForm()">
             <p class="text-sm font-semibold uppercase tracking-[0.24em] text-brand-primary">Add New Product</p>
 
             <form method="POST" action="{{ route('admin.shop.store') }}" enctype="multipart/form-data" class="mt-5 space-y-4">
@@ -420,3 +299,130 @@
         </div>
     </div>
 </x-app-layout>
+
+<script>
+    window.shopProductForm = function () {
+        return {
+            mediaModalOpen: false,
+            mediaModalMode: 'single',
+            mediaModalTab: 'library',
+            mediaQuery: '',
+            mediaSelection: [],
+            mediaUploading: false,
+            mediaItems: @js($imageMedia->map(fn ($image) => [
+                'id' => $image->id,
+                'name' => $image->file_name,
+                'url' => Storage::disk('public')->url($image->file_path),
+            ])->values()),
+            featuredId: '{{ old('image_media_id', '') }}',
+            galleryIds: @js(array_values((array) old('gallery_media_ids', []))),
+            openMediaModal(mode) {
+                this.mediaModalMode = mode;
+                this.mediaModalOpen = true;
+                this.mediaQuery = '';
+                this.mediaModalTab = 'library';
+                if (mode === 'single') {
+                    this.mediaSelection = this.featuredId ? [String(this.featuredId)] : [];
+                } else {
+                    this.mediaSelection = [...this.galleryIds];
+                }
+            },
+            closeMediaModal() {
+                this.mediaModalOpen = false;
+            },
+            isMediaSelected(id) {
+                return this.mediaSelection.includes(String(id));
+            },
+            toggleMediaSelection(id) {
+                const value = String(id);
+                if (this.mediaModalMode === 'single') {
+                    this.mediaSelection = [value];
+                    return;
+                }
+
+                if (this.mediaSelection.includes(value)) {
+                    this.mediaSelection = this.mediaSelection.filter(item => item !== value);
+                    return;
+                }
+
+                this.mediaSelection.push(value);
+            },
+            useSelectedMedia() {
+                if (this.mediaSelection.length === 0) return;
+
+                if (this.mediaModalMode === 'single') {
+                    this.featuredId = this.mediaSelection[0];
+                } else {
+                    this.galleryIds = [...new Set(this.mediaSelection)];
+                }
+
+                this.mediaModalOpen = false;
+            },
+            async uploadFromModal(event) {
+                const files = event.target.files;
+                if (!files || files.length === 0) return;
+
+                this.mediaUploading = true;
+                try {
+                    const form = new FormData();
+                    Array.from(files).forEach(file => form.append('files[]', file));
+
+                    const res = await fetch('{{ route('admin.media.api.upload') }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Accept': 'application/json',
+                        },
+                        body: form,
+                    });
+
+                    if (!res.ok) {
+                        throw new Error('Upload failed');
+                    }
+
+                    const payload = await res.json();
+                    const uploaded = payload.items || [];
+                    if (uploaded.length > 0) {
+                        this.mediaItems = [...uploaded, ...this.mediaItems.filter(item => !uploaded.some(newItem => String(newItem.id) === String(item.id)))];
+                        this.mediaSelection = [String(uploaded[0].id)];
+                        this.mediaModalTab = 'library';
+                    }
+                } catch (e) {
+                    alert('Upload failed. Please try again.');
+                } finally {
+                    this.mediaUploading = false;
+                    event.target.value = '';
+                }
+            },
+            isGallerySelected(id) {
+                return this.galleryIds.includes(String(id));
+            },
+            toggleGallery(id) {
+                const value = String(id);
+                if (this.galleryIds.includes(value)) {
+                    this.galleryIds = this.galleryIds.filter(item => item !== value);
+                    return;
+                }
+                this.galleryIds.push(value);
+            },
+            removeGallery(id) {
+                const value = String(id);
+                this.galleryIds = this.galleryIds.filter(item => item !== value);
+            },
+            clearFeatured() {
+                this.featuredId = '';
+            },
+            get filteredMedia() {
+                const q = this.mediaQuery.trim().toLowerCase();
+                if (!q) return this.mediaItems;
+                return this.mediaItems.filter(item => item.name.toLowerCase().includes(q));
+            },
+            get featuredMedia() {
+                return this.mediaItems.find(item => String(item.id) === String(this.featuredId));
+            },
+            get selectedGalleryMedia() {
+                return this.mediaItems.filter(item => this.galleryIds.includes(String(item.id)));
+            }
+        };
+    };
+</script>

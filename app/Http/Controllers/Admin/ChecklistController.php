@@ -80,4 +80,56 @@ class ChecklistController extends Controller
             ] : null,
         ]);
     }
+
+    public function applyProfessionalTemplate(Request $request, User $user): RedirectResponse
+    {
+        abort_unless($user->role === UserRole::CLIENT, 404);
+
+        $month = now();
+        $monthKey = $month->format('Y-m');
+        $monthLabel = $month->format('F Y');
+
+        $templateItems = [
+            'Kickoff alignment and monthly objective confirmation',
+            'Project roadmap refresh and priority lock',
+            'Weekly client-admin check-in schedule confirmed',
+            'UX/content changes collected and approved',
+            'SEO and performance health review completed',
+            'Backup and security verification completed',
+            'Progress report drafted and shared',
+            'Month-end delivery sign-off and next-month planning',
+        ];
+
+        $created = 0;
+        $nextOrder = ((int) $user->checklistItems()->max('sort_order')) + 1;
+
+        foreach ($templateItems as $title) {
+            $fullTitle = '[' . $monthKey . '] Professional: ' . $title;
+
+            $exists = $user->checklistItems()
+                ->where('title', $fullTitle)
+                ->exists();
+
+            if ($exists) {
+                continue;
+            }
+
+            ClientChecklistItem::create([
+                'client_id' => $user->id,
+                'created_by' => $request->user()->id,
+                'title' => $fullTitle,
+                'status' => 'pending',
+                'sort_order' => $nextOrder,
+            ]);
+
+            $nextOrder++;
+            $created++;
+        }
+
+        if ($created === 0) {
+            return back()->with('success', "{$monthLabel} professional checklist is already applied.");
+        }
+
+        return back()->with('success', "Added {$created} professional checklist items for {$monthLabel}.");
+    }
 }

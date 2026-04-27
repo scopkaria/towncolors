@@ -45,24 +45,19 @@
         ['label' => 'About',     'url' => route('about'),            'active' => request()->is('about')],
         ['label' => 'Contact',   'url' => route('contact.show'),     'active' => request()->is('contact')],
     ];
+
+    $desktopNavLabels = ['Home', 'Services', 'Portfolio', 'About', 'Blog', 'Contact'];
+    $desktopNavLinks = collect($navLinks)->filter(fn ($link) => in_array($link['label'], $desktopNavLabels, true))->values();
 @endphp
 
 {{-- ══════════════════════════════════════════════════════════
      HEADER
 ══════════════════════════════════════════════════════════ --}}
-<header data-home-header x-data="{
-            open: false,
-            isDark: document.documentElement.classList.contains('dark'),
-            toggleDark() {
-                this.isDark = !this.isDark;
-                document.documentElement.classList.toggle('dark', this.isDark);
-                localStorage.setItem('darkMode', this.isDark.toString());
-            }
-        }"
-        class="sticky top-0 z-40 border-b border-warm-300/40 bg-warm-100/80 backdrop-blur-xl transition-colors duration-300
-               dark:border-warm-400/[0.08] dark:bg-navy-900/85">
+<header data-home-header x-data="{ open: false }"
+    class="sticky top-0 z-40 border-b border-warm-300/40 bg-warm-100/95 backdrop-blur-md transition-colors duration-300
+           dark:border-warm-400/[0.08] dark:bg-navy-900/90">
 
-    <div class="flex w-full items-center justify-between gap-4 px-5 py-3.5 sm:gap-6 sm:px-10 sm:py-4">
+    <div class="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-5 py-4 sm:gap-6 sm:px-8 sm:py-5">
 
         {{-- ── Logo ── --}}
           <a href="{{ url('/') }}"
@@ -78,16 +73,16 @@
 
         {{-- ── Desktop nav ── --}}
         <nav data-home-menu class="hidden flex-1 items-center justify-center gap-0.5 md:flex" aria-label="Main navigation">
-            @foreach ($navLinks as $link)
+            @foreach ($desktopNavLinks as $link)
                 <a href="{{ $link['url'] }}"
                    class="relative rounded-xl px-3 py-2 text-[0.8125rem] font-semibold transition duration-200
                           lg:px-4 lg:text-sm
                           {{ $link['active']
-                              ? 'bg-accent-light text-brand-primary dark:bg-accent-light'
-                              : 'text-brand-muted hover:bg-warm-200/60 hover:text-brand-ink dark:hover:bg-warm-400/[0.05] dark:hover:text-warm-100' }}">
+                              ? 'text-brand-primary'
+                              : 'text-brand-muted hover:text-brand-ink' }}">
                     {{ $link['label'] }}
                     @if ($link['active'])
-                        <span class="absolute bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-brand-primary"></span>
+                        <span class="absolute bottom-0 left-1/2 h-0.5 w-8 -translate-x-1/2 rounded-full bg-brand-primary"></span>
                     @endif
                 </a>
             @endforeach
@@ -95,47 +90,15 @@
 
         {{-- ── CTA + dark toggle + hamburger ── --}}
         <div data-home-actions class="flex items-center gap-2 sm:gap-3">
-            {{-- Login --}}
-            <a href="{{ route('login.client') }}"
-               class="hidden items-center gap-1.5 rounded-xl border border-warm-400/40 bg-warm-100 px-4 py-2 text-sm font-semibold text-brand-ink shadow-sm transition duration-200 hover:border-accent hover:bg-accent-light hover:text-accent-hover sm:inline-flex
-                      dark:border-warm-400/[0.08] dark:bg-navy-800 dark:text-warm-100 dark:hover:border-accent dark:hover:bg-accent-light dark:hover:text-brand-primary">
-                <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+            <a href="{{ route('contact.show') }}"
+               class="btn-primary hidden rounded-xl px-7 sm:inline-flex">
+                Get a Quote
+                <svg class="ml-1.5 h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0-4 4m4-4H3" />
                 </svg>
-                Login
-            </a>
-            {{-- Register --}}
-            <a href="{{ route('register.client') }}"
-               class="btn-primary hidden sm:inline-flex">
-                <svg class="mr-1.5 h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                </svg>
-                Register
             </a>
 
-            {{-- ── Dark / Light mode toggle ── --}}
-            <button type="button"
-                    @click="toggleDark()"
-                    class="relative flex h-10 w-10 items-center justify-center rounded-xl border border-warm-400/40 bg-warm-100 text-brand-muted shadow-sm transition duration-200
-                           hover:border-accent hover:bg-accent-light hover:text-accent-hover
-                           dark:border-warm-400/[0.08] dark:bg-navy-800 dark:text-warm-600 dark:hover:border-accent dark:hover:bg-accent-light dark:hover:text-brand-primary"
-                    :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
-                    :title="isDark ? 'Light mode' : 'Dark mode'">
-                {{-- Sun (shown in dark mode → click to go light) --}}
-                <svg x-show="isDark" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                     stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364-.707-.707M6.343 6.343l-.707-.707m12.728 0-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-                {{-- Moon (shown in light mode → click to go dark) --}}
-                <svg x-show="!isDark" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                     stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                </svg>
-            </button>
-
-            <button type="button"
+                <button type="button"
                     class="rounded-xl border border-warm-400/40 bg-warm-100 p-2.5 text-brand-muted
                            shadow-sm transition duration-200 hover:bg-warm-200/60 hover:text-brand-ink
                            dark:border-warm-400/[0.08] dark:bg-navy-800 dark:text-warm-600 dark:hover:bg-warm-400/[0.05] dark:hover:text-warm-100 md:hidden"
@@ -183,7 +146,7 @@
             @endforeach
         </nav>
 
-            <div class="mt-5 border-t border-warm-300/40 pt-5 dark:border-warm-400/[0.08]">
+        <div class="mt-5 border-t border-warm-300/40 pt-5 dark:border-warm-400/[0.08]">
             <div class="flex gap-2">
                 <a href="{{ route('login.client') }}" class="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-warm-400/40 bg-warm-100 px-4 py-3 text-sm font-semibold text-brand-ink transition hover:border-accent hover:bg-accent-light hover:text-accent-hover dark:border-warm-400/[0.08] dark:bg-navy-800 dark:text-warm-100">
                     <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -191,23 +154,18 @@
                     </svg>
                     Login
                 </a>
-                <a href="{{ route('register.client') }}" class="btn-primary flex-1 justify-center">
-                    <svg class="mr-1.5 h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                <a href="{{ route('contact.show') }}" class="btn-primary flex-1 justify-center">
+                    Get a Quote
+                    <svg class="ml-1.5 h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0-4 4m4-4H3" />
                     </svg>
-                    Register
                 </a>
             </div>
-            <button type="button" @click="toggleDark()"
-                    class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-warm-400/40 bg-warm-200/40 px-4 py-3 text-sm font-semibold text-brand-muted transition hover:border-accent hover:bg-accent-light hover:text-accent-hover dark:border-warm-400/[0.08] dark:bg-navy-800 dark:text-warm-600">
-                <svg x-show="isDark" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364-.707-.707M6.343 6.343l-.707-.707m12.728 0-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-                <svg x-show="!isDark" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                </svg>
-                <span x-text="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'"></span>
-            </button>
+            <div class="mt-3">
+                <a href="{{ route('register.client') }}" class="flex w-full items-center justify-center gap-1.5 rounded-xl border border-warm-300/60 bg-white px-4 py-3 text-sm font-semibold text-brand-ink transition hover:border-accent hover:text-brand-primary dark:border-warm-400/[0.08] dark:bg-navy-800 dark:text-warm-100">
+                    Create account
+                </a>
+            </div>
         </div>
     </div>
 </header>
@@ -439,7 +397,10 @@
          style="max-height: calc(100vh - 120px);">
 
         {{-- Header --}}
-        <div class="flex items-center justify-between bg-gradient-to-r from-accent to-accent-hover px-5 py-4 text-white">
+        <div :class="isOnline 
+                ? 'bg-gradient-to-r from-emerald-500 to-emerald-600' 
+                : 'bg-gradient-to-r from-slate-400 to-slate-500'"
+             class="flex items-center justify-between px-5 py-4 text-white transition-all duration-300">
             <div class="flex items-center gap-3">
                 <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/20">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -449,7 +410,10 @@
                 </span>
                 <div>
                     <p class="text-sm font-bold leading-tight">Live Chat</p>
-                    <p class="text-[11px] font-medium text-white/80" x-text="sessionStatus === 'active' ? 'Agent connected' : 'We typically reply instantly'"></p>
+                    <p class="flex items-center gap-2 text-[11px] font-medium text-white/80">
+                        <span :class="isOnline ? 'bg-white' : 'bg-white/50'" class="inline-flex h-2 w-2 rounded-full animate-pulse"></span>
+                        <span x-text="isOnline ? 'Online now' : 'Offline'"></span>
+                    </p>
                 </div>
             </div>
             <button @click="open = false" class="rounded-lg p-1 transition hover:bg-white/20">
@@ -536,10 +500,16 @@
 
     {{-- ── Floating trigger button ── --}}
     <button @click="open = !open"
-            class="group flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-accent to-accent-hover text-navy-800 shadow-lg shadow-accent/30 transition-all duration-200
-                   hover:scale-105 hover:shadow-xl hover:shadow-accent/40
-                   dark:shadow-accent/20 dark:hover:shadow-accent/30"
+            :class="isOnline
+                ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/30 hover:shadow-emerald-600/40'
+                : 'bg-gradient-to-br from-slate-400 to-slate-500 shadow-lg shadow-slate-400/30 hover:shadow-slate-500/40'"
+            class="group relative flex h-14 w-14 items-center justify-center rounded-full text-navy-800 shadow-lg transition-all duration-300
+                   hover:scale-105 hover:shadow-xl dark:shadow-opacity-20"
             :aria-label="open ? 'Close chat' : 'Open live chat'">
+        {{-- Online indicator dot --}}
+        <span :class="isOnline ? 'bg-white' : 'bg-white/40'" 
+              class="absolute top-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-white/30 animate-pulse"></span>
+        
         <svg x-show="!open" class="h-6 w-6 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
             <path stroke-linecap="round" stroke-linejoin="round"
                   d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
@@ -562,7 +532,9 @@ function liveChatWidget() {
         messages: [],
         lastMsgId: 0,
         pollTimer: null,
+        statusTimer: null,
         starting: false,
+        isOnline: true,
 
         init() {
             this.$watch('open', (val) => {
@@ -571,6 +543,23 @@ function liveChatWidget() {
             });
             if (this.sessionKey) {
                 this.fetchMessages();
+            }
+            // Check status immediately and then every 30 seconds
+            this.checkChatStatus();
+            this.statusTimer = setInterval(() => this.checkChatStatus(), 30000);
+        },
+
+        async checkChatStatus() {
+            try {
+                const res = await fetch('{{ route("live-chat.status") }}', {
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    this.isOnline = data.online ?? true;
+                }
+            } catch (e) {
+                console.error('Chat status check error', e);
             }
         },
 
@@ -679,7 +668,10 @@ function liveChatWidget() {
             localStorage.removeItem('lc_session_key');
         },
 
-        destroy() { this.stopPolling(); }
+        destroy() { 
+            this.stopPolling();
+            if (this.statusTimer) clearInterval(this.statusTimer);
+        }
     };
 }
 </script>

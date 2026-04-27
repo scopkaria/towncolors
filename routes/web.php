@@ -46,9 +46,12 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserGuideController;
 use App\Http\Controllers\Admin\ChecklistController as AdminChecklistController;
+use App\Http\Controllers\Admin\ClientTaskController as AdminClientTaskController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\BlogCommentController as AdminBlogCommentController;
 use App\Http\Controllers\Client\ChecklistController as ClientChecklistController;
+use App\Http\Controllers\Client\ClientTaskController as ClientClientTaskController;
+use App\Http\Controllers\Freelancer\ClientTaskController as FreelancerClientTaskController;
 use App\Models\FreelancerInvoice;
 use Illuminate\Support\Facades\Storage;
 use App\Models\User;
@@ -130,6 +133,7 @@ Route::prefix('live-chat')->as('live-chat.')->group(function () {
     Route::post('/start',    [LiveChatController::class, 'startSession'])->name('start');
     Route::post('/send',     [LiveChatController::class, 'visitorSend'])->name('send');
     Route::get('/messages',  [LiveChatController::class, 'visitorMessages'])->name('messages');
+    Route::get('/status',    [LiveChatController::class, 'checkStatus'])->name('status');
 });
 
 // Public CMS pages
@@ -181,6 +185,10 @@ Route::prefix('client')
         Route::get('/checklist', [ClientChecklistController::class, 'show'])->name('checklist.show');
         Route::get('/checklist/snapshot', [ClientChecklistController::class, 'snapshot'])->name('checklist.snapshot');
 
+        // Task requests
+        Route::get('/tasks', [ClientClientTaskController::class, 'index'])->name('tasks.index');
+        Route::post('/tasks', [ClientClientTaskController::class, 'store'])->name('tasks.store');
+
         // Private files
         Route::middleware('subscribed.client')->group(function () {
             Route::get('/files', [ClientFileController::class, 'index'])->name('files.index');
@@ -203,6 +211,7 @@ Route::prefix('admin')
     ->as('admin.')
     ->group(function () {
         Route::get('/projects', [AdminProjectController::class, 'index'])->name('projects.index');
+        Route::patch('/projects/bulk/status', [AdminProjectController::class, 'bulkUpdateStatus'])->name('projects.bulk-status');
         Route::get('/projects/{project}', [AdminProjectController::class, 'show'])->name('projects.show');
         Route::patch('/projects/{project}/assign', [AdminProjectController::class, 'assign'])->name('projects.assign');
         Route::patch('/projects/{project}/status', [AdminProjectController::class, 'updateStatus'])->name('projects.status');
@@ -295,6 +304,12 @@ Route::prefix('admin')
         Route::patch('/clients/{user}/checklist/{item}', [AdminChecklistController::class, 'update'])->name('checklists.update');
         Route::delete('/clients/{user}/checklist/{item}', [AdminChecklistController::class, 'destroy'])->name('checklists.destroy');
         Route::get('/clients/{user}/checklist/snapshot', [AdminChecklistController::class, 'snapshot'])->name('checklists.snapshot');
+        Route::post('/clients/{user}/checklist/professional-monthly-template', [AdminChecklistController::class, 'applyProfessionalTemplate'])->name('checklists.apply-professional-template');
+
+        // Client task inbox and assignment
+        Route::get('/client-tasks', [AdminClientTaskController::class, 'index'])->name('client-tasks.index');
+        Route::patch('/client-tasks/{clientTask}/assign', [AdminClientTaskController::class, 'assign'])->name('client-tasks.assign');
+        Route::patch('/client-tasks/{clientTask}/status', [AdminClientTaskController::class, 'updateStatus'])->name('client-tasks.status');
 
         Route::get('/leads', [AdminLeadController::class, 'index'])->name('leads.index');
         Route::get('/leads/{lead}', [AdminLeadController::class, 'show'])->name('leads.show');
@@ -361,6 +376,9 @@ Route::prefix('freelancer')
         Route::post('/portfolio', [FreelancerPortfolioController::class, 'store'])->name('portfolio.store');
         Route::delete('/portfolio/{portfolio}', [FreelancerPortfolioController::class, 'destroy'])->name('portfolio.destroy');
         Route::get('/checklist', [FreelancerChecklistController::class, 'show'])->name('checklist.show');
+
+        Route::get('/client-tasks', [FreelancerClientTaskController::class, 'index'])->name('client-tasks.index');
+        Route::patch('/client-tasks/{clientTask}/status', [FreelancerClientTaskController::class, 'updateStatus'])->name('client-tasks.status');
 
         // Client private files (read-only for assigned freelancers)
         Route::get('/client-files/{clientFile}/download', [ClientFileController::class, 'download'])->name('client-files.download');

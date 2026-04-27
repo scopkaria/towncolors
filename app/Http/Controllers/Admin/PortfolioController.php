@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Portfolio;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class PortfolioController extends Controller
@@ -59,8 +60,73 @@ class PortfolioController extends Controller
             'is_purchasable' => ['nullable', 'boolean'],
             'price' => ['nullable', 'numeric', 'min:0', 'max:99999999.99'],
             'currency' => ['nullable', 'string', 'max:10'],
-            'purchase_url' => ['nullable', 'url', 'max:255'],
+            'purchase_url' => [
+                'nullable',
+                'string',
+                'max:255',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    if (! is_string($value) || trim($value) === '') {
+                        return;
+                    }
+
+                    $normalized = trim($value);
+
+                    if (filter_var($normalized, FILTER_VALIDATE_URL) || preg_match('/^(mailto:|tel:)/i', $normalized)) {
+                        return;
+                    }
+
+                    $fail('The purchase url field must be a valid URL, mailto link, or tel link.');
+                },
+            ],
+            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
+            'gallery_uploads' => ['nullable', 'array'],
+            'gallery_uploads.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
+            'remove_featured_image' => ['nullable', 'boolean'],
+            'remove_gallery' => ['nullable', 'array'],
+            'remove_gallery.*' => ['string'],
         ]);
+
+        $currentGallery = collect($portfolio->product_gallery ?? [])->filter()->values();
+        $removedGallery = collect($validated['remove_gallery'] ?? [])->filter()->values();
+        $nextGallery = $currentGallery
+            ->reject(fn (string $path) => $removedGallery->contains($path))
+            ->values();
+
+        foreach ($removedGallery as $path) {
+            if ($path !== $portfolio->image_path) {
+                $this->deleteIfExists($path);
+            }
+        }
+
+        $nextImagePath = $portfolio->image_path;
+
+        if ($request->boolean('remove_featured_image')) {
+            if ($portfolio->image_path && ! $nextGallery->contains($portfolio->image_path)) {
+                $this->deleteIfExists($portfolio->image_path);
+            }
+
+            $nextImagePath = null;
+        }
+
+        if ($request->hasFile('image')) {
+            if ($portfolio->image_path && ! $nextGallery->contains($portfolio->image_path)) {
+                $this->deleteIfExists($portfolio->image_path);
+            }
+
+            $nextImagePath = $request->file('image')->store('portfolio/' . ($portfolio->user_id ?? 'admin'), 'public');
+        }
+
+        if ($request->hasFile('gallery_uploads')) {
+            foreach ($request->file('gallery_uploads') as $upload) {
+                $nextGallery->push($upload->store('portfolio/' . ($portfolio->user_id ?? 'admin') . '/gallery', 'public'));
+            }
+        }
+
+        $nextGallery = $nextGallery
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
 
         $portfolio->update([
             'title' => $validated['title'],
@@ -81,6 +147,8 @@ class PortfolioController extends Controller
             'price' => $validated['price'] ?? null,
             'currency' => $validated['currency'] ?? 'USD',
             'purchase_url' => $validated['purchase_url'] ?? null,
+            'image_path' => $nextImagePath,
+            'product_gallery' => $nextGallery,
         ]);
 
         $redirectRoute = $portfolio->item_type === 'product' ? 'admin.shop.index' : 'admin.portfolio.index';
@@ -110,5 +178,12 @@ class PortfolioController extends Controller
             ->unique()
             ->values()
             ->all();
+    }
+
+    private function deleteIfExists(string $path): void
+    {
+        if (Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
+        }
     }
 }

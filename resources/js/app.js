@@ -5,6 +5,8 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import createGlobe from 'cobe';
 
+document.documentElement.classList.add('js');
+
 window.Alpine = Alpine;
 
 Alpine.start();
@@ -232,32 +234,180 @@ function initGlobe(homeRoot, prefersReducedMotion) {
 		spin: prefersReducedMotion ? 0 : 0.0026,
 	};
 
+	const dpr = Math.min(window.devicePixelRatio || 1, 2);
+	const size = {
+		width: 640,
+		height: 640,
+	};
+
+	const syncCanvasSize = () => {
+		const rect = canvas.getBoundingClientRect();
+		const nextWidth = Math.max(320, Math.round(rect.width * dpr));
+		const nextHeight = Math.max(320, Math.round(rect.height * dpr));
+
+		size.width = nextWidth;
+		size.height = nextHeight;
+
+		if (canvas.width !== nextWidth || canvas.height !== nextHeight) {
+			canvas.width = nextWidth;
+			canvas.height = nextHeight;
+		}
+	};
+
+	const supportsWebgl = (() => {
+		try {
+			const gl = canvas.getContext('webgl', { antialias: true, alpha: true }) || canvas.getContext('experimental-webgl');
+			return Boolean(gl);
+		} catch (error) {
+			return false;
+		}
+	})();
+
+	const drawFallbackGlobe = () => {
+		syncCanvasSize();
+		const ctx = canvas.getContext('2d');
+		if (!ctx) {
+			return;
+		}
+
+		const w = canvas.width;
+		const h = canvas.height;
+		const cx = w / 2;
+		const cy = h / 2;
+		const r = Math.min(w, h) * 0.42;
+
+		ctx.clearRect(0, 0, w, h);
+
+		const bg = ctx.createRadialGradient(cx - r * 0.12, cy - r * 0.18, r * 0.22, cx, cy, r * 1.08);
+		bg.addColorStop(0, '#2a3b55');
+		bg.addColorStop(0.58, '#192738');
+		bg.addColorStop(1, '#101b29');
+
+		ctx.fillStyle = bg;
+		ctx.beginPath();
+		ctx.arc(cx, cy, r, 0, Math.PI * 2);
+		ctx.fill();
+
+		const shine = ctx.createRadialGradient(cx - r * 0.36, cy - r * 0.45, r * 0.05, cx - r * 0.1, cy - r * 0.1, r * 0.9);
+		shine.addColorStop(0, 'rgba(182, 205, 236, 0.34)');
+		shine.addColorStop(1, 'rgba(182, 205, 236, 0)');
+		ctx.fillStyle = shine;
+		ctx.beginPath();
+		ctx.arc(cx, cy, r, 0, Math.PI * 2);
+		ctx.fill();
+
+		const continents = [
+			[
+				[-0.44, -0.2],
+				[-0.25, -0.3],
+				[-0.08, -0.16],
+				[-0.1, 0.03],
+				[-0.3, 0.12],
+				[-0.48, -0.03],
+			],
+			[
+				[0.02, -0.38],
+				[0.24, -0.27],
+				[0.27, -0.04],
+				[0.1, 0.12],
+				[-0.02, -0.04],
+			],
+			[
+				[0.16, 0.02],
+				[0.37, 0.1],
+				[0.33, 0.35],
+				[0.13, 0.28],
+			],
+		];
+
+		ctx.fillStyle = 'rgba(243, 249, 255, 0.3)';
+		continents.forEach((polygon) => {
+			ctx.beginPath();
+			polygon.forEach(([px, py], idx) => {
+				const x = cx + px * r;
+				const y = cy + py * r;
+				if (idx === 0) {
+					ctx.moveTo(x, y);
+				} else {
+					ctx.lineTo(x, y);
+				}
+			});
+			ctx.closePath();
+			ctx.fill();
+		});
+
+		ctx.strokeStyle = 'rgba(195, 219, 248, 0.42)';
+		ctx.lineWidth = Math.max(1, r * 0.01);
+		for (let i = -2; i <= 2; i += 1) {
+			ctx.beginPath();
+			ctx.ellipse(cx, cy, r, r * (1 - Math.abs(i) * 0.17), 0, 0, Math.PI * 2);
+			ctx.stroke();
+		}
+
+		for (let i = -2; i <= 2; i += 1) {
+			ctx.beginPath();
+			ctx.ellipse(cx, cy, r * (1 - Math.abs(i) * 0.12), r, 0, 0, Math.PI * 2);
+			ctx.stroke();
+		}
+
+		ctx.fillStyle = '#FFB162';
+		ctx.beginPath();
+		ctx.arc(cx + r * 0.2, cy + r * 0.08, Math.max(4, r * 0.038), 0, Math.PI * 2);
+		ctx.fill();
+
+		ctx.strokeStyle = 'rgba(255, 177, 98, 0.48)';
+		ctx.lineWidth = Math.max(1, r * 0.008);
+		ctx.beginPath();
+		ctx.arc(cx + r * 0.2, cy + r * 0.08, Math.max(6, r * 0.088), 0, Math.PI * 2);
+		ctx.stroke();
+	};
+
 	const targetPhi = (ARUSHA.lng * Math.PI) / 180;
 	const targetTheta = 0.43;
 
-	const globe = createGlobe(canvas, {
-		devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2),
-		width: canvas.offsetWidth * 2,
-		height: canvas.offsetHeight * 2,
-		phi: state.phi,
-		theta: state.theta,
-		dark: 0,
-		diffuse: 0.9,
-		mapSamples: 10000,
-		mapBrightness: 1.15,
-		baseColor: [0.94, 0.95, 0.98],
-		markerColor: [0.976, 0.451, 0.086],
-		glowColor: [1, 1, 1],
-		markers: [{ location: [ARUSHA.lat, ARUSHA.lng], size: 0.12 }],
-		onRender: (renderState) => {
-			state.phi += state.spin;
+	syncCanvasSize();
 
-			renderState.phi = state.phi;
-			renderState.theta = state.theta;
-			renderState.width = canvas.offsetWidth * 2;
-			renderState.height = canvas.offsetHeight * 2;
-		},
+	let globe = null;
+	if (!supportsWebgl) {
+		drawFallbackGlobe();
+	} else {
+
+		try {
+			globe = createGlobe(canvas, {
+				devicePixelRatio: dpr,
+				width: size.width,
+				height: size.height,
+				phi: state.phi,
+				theta: state.theta,
+				dark: 0,
+				diffuse: 1.35,
+				mapSamples: 14000,
+				mapBrightness: 2.25,
+				baseColor: [0.19, 0.31, 0.5],
+				markerColor: [0.976, 0.451, 0.086],
+				glowColor: [0.2, 0.31, 0.45],
+				markers: [{ location: [ARUSHA.lat, ARUSHA.lng], size: 0.13 }],
+				onRender: (renderState) => {
+					state.phi += state.spin;
+
+					renderState.phi = state.phi;
+					renderState.theta = state.theta;
+					renderState.width = size.width;
+					renderState.height = size.height;
+				},
+			});
+		} catch (error) {
+			drawFallbackGlobe();
+		}
+	}
+
+	const resizeObserver = new ResizeObserver(() => {
+		syncCanvasSize();
+		if (!globe) {
+			drawFallbackGlobe();
+		}
 	});
+	resizeObserver.observe(canvas);
 
 	const zoomToArusha = () => {
 		gsap.to(state, {
@@ -306,7 +456,8 @@ function initGlobe(homeRoot, prefersReducedMotion) {
 	});
 
 	window.addEventListener('beforeunload', () => {
-		globe.destroy();
+		resizeObserver.disconnect();
+		globe?.destroy();
 	});
 }
 

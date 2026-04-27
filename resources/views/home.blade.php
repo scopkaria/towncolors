@@ -19,75 +19,91 @@
 {{-- ╔══════════════════════════════════════════════════════════════════╗
      ║  1 · HERO                                                       ║
      ╚══════════════════════════════════════════════════════════════════╝ --}}
-<section id="home-hero" data-home-section data-home-hero class="tc-section relative overflow-hidden py-20 sm:py-28 lg:py-36">
+<section id="home-hero" data-home-section data-home-hero class="tc-section relative overflow-hidden py-8 sm:py-10 lg:py-12">
     <div class="pointer-events-none absolute inset-0" aria-hidden="true">
         <div class="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-brand-primary/8 blur-[80px] sm:h-[420px] sm:w-[420px]"></div>
         <div class="absolute -bottom-20 right-0 h-56 w-56 rounded-full bg-accent-light blur-[60px] sm:h-[340px] sm:w-[340px]"></div>
     </div>
 
     <div class="relative mx-auto max-w-7xl px-4 sm:px-8">
-        <div class="mx-auto max-w-3xl text-center">
-            <span data-home-hero-item class="reveal inline-flex rounded-full border border-accent/30 bg-accent-light px-3.5 py-1 text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-primary sm:px-4 sm:py-1.5 sm:text-[11px] sm:tracking-[0.3em]">
-                Crafted in Arusha, Trusted Worldwide
-            </span>
+        <div class="grid items-center gap-8 md:grid-cols-[0.95fr_1.05fr] md:gap-6">
+                <div>
+                    <span data-home-hero-item class="reveal inline-flex px-0 py-1 text-[13px] font-semibold uppercase tracking-[0.2em] text-brand-primary">
+                        Digital solutions that drive growth
+                    </span>
 
-            <h1 data-home-hero-item class="reveal reveal-delay-1 mt-6 font-display text-[1.75rem] font-bold leading-[1.15] text-brand-ink sm:mt-8 sm:text-4xl md:text-5xl lg:text-6xl">
-                Transforming Ideas Into
-                <span class="bg-gradient-to-r from-brand-primary to-accent bg-clip-text text-transparent">
-                    Powerful Digital Solutions
-                </span>
-            </h1>
+                    <h1 data-home-hero-item class="reveal reveal-delay-1 mt-4 font-display text-[2.7rem] font-bold leading-[1.08] text-brand-ink sm:text-[3.35rem] lg:text-[3.9rem]">
+                        We Build Websites, Systems & Brands That
+                        <span class="text-brand-primary">Grow</span>
+                        Businesses
+                    </h1>
 
-            <p data-home-hero-item class="reveal reveal-delay-2 mt-4 text-[0.95rem] leading-7 text-brand-muted sm:mt-6 sm:text-lg sm:leading-8 lg:text-xl">
-                We design, develop, and deliver high-performance websites, software, and digital experiences that help businesses grow and dominate in the modern digital world.
-            </p>
+                    <p data-home-hero-item class="reveal reveal-delay-2 mt-5 max-w-xl text-[1.05rem] leading-9 text-brand-muted sm:text-[1.05rem] sm:leading-8 lg:text-[1.15rem]">
+                        Town Colors helps businesses grow through modern websites, smart systems, branding, printing, media production and digital marketing solutions.
+                    </p>
 
-            <div data-home-hero-item class="reveal reveal-delay-3 mt-8 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:justify-center sm:gap-4">
-                @auth
-                    @if (auth()->user()->role?->value === 'client')
-                        <a href="{{ route('client.projects.create') }}" class="btn-primary w-full text-[0.9375rem] sm:w-auto sm:text-base">
-                    @else
-                        <a href="#quick-inquiry" class="btn-primary w-full text-[0.9375rem] sm:w-auto sm:text-base">
-                    @endif
-                @else
-                    <a href="#quick-inquiry" class="btn-primary w-full text-[0.9375rem] sm:w-auto sm:text-base">
-                @endauth
-                    <svg class="mr-2 h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                    Get Started
-                </a>
-                <a href="{{ route('portfolio.public') }}" class="btn-secondary w-full sm:w-auto">
-                    <svg class="mr-2 h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    View Our Work
-                </a>
-            </div>
+                    <div data-home-hero-item class="reveal reveal-delay-3 mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+                        @auth
+                            @if (auth()->user()->role?->value === 'client')
+                                <a href="{{ route('client.projects.create') }}" class="btn-primary w-full justify-center sm:w-auto">
+                            @else
+                                <a href="#quick-inquiry" class="btn-primary w-full justify-center sm:w-auto">
+                            @endif
+                        @else
+                            <a href="#quick-inquiry" class="btn-primary w-full justify-center rounded-xl px-8 sm:w-auto">
+                        @endauth
+                            Start Your Project
+                            <svg class="ml-2 h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0-4 4m4-4H3" />
+                            </svg>
+                        </a>
 
-            {{-- Why choose us indicators --}}
-            <div data-home-hero-item class="reveal reveal-delay-4 mt-12 grid grid-cols-2 gap-4 border-t border-warm-300/50 pt-8 sm:mt-16 sm:grid-cols-4 sm:gap-8 sm:pt-10">
-                <div class="text-center">
-                    <p class="font-display text-2xl text-brand-ink sm:text-3xl">50+</p>
-                    <p class="mt-1 text-[10px] uppercase tracking-[0.15em] text-brand-muted sm:text-xs sm:tracking-[0.2em]">Completed Projects</p>
+                        <a href="{{ route('portfolio.public') }}" class="btn-secondary w-full justify-center rounded-xl px-8 sm:w-auto">
+                            View Our Work
+                            <svg class="ml-2 h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0-4 4m4-4H3" />
+                            </svg>
+                        </a>
+                    </div>
                 </div>
-                <div class="text-center">
-                    <p class="font-display text-2xl text-brand-ink sm:text-3xl">100+</p>
-                    <p class="mt-1 text-[10px] uppercase tracking-[0.15em] text-brand-muted sm:text-xs sm:tracking-[0.2em]">Happy Clients</p>
+
+                <div data-home-hero-item class="reveal reveal-delay-2 relative">
+                    <div class="relative">
+                        <img src="{{ asset('images/hero-section-tc.png') }}" alt="Town Colors hero visual" class="mx-auto h-auto w-full max-w-[46rem] object-contain md:max-w-none md:scale-[1.12] md:translate-x-10 md:-translate-y-8 lg:scale-[1.18] lg:translate-x-14 lg:-translate-y-10">
+                    </div>
                 </div>
-                <div class="text-center">
-                    <p class="font-display text-2xl text-brand-ink sm:text-3xl">99%</p>
-                    <p class="mt-1 text-[10px] uppercase tracking-[0.15em] text-brand-muted sm:text-xs sm:tracking-[0.2em]">Client Retention</p>
-                </div>
-                <div class="text-center">
-                    <p class="font-display text-2xl text-brand-ink sm:text-3xl">10</p>
-                    <p class="mt-1 text-[10px] uppercase tracking-[0.15em] text-brand-muted sm:text-xs sm:tracking-[0.2em]">Dedicated Professionals</p>
-                </div>
-            </div>
-            <p data-home-hero-item class="reveal reveal-delay-4 mt-6 text-sm leading-7 text-brand-muted sm:text-base">
-                We focus on delivering results, not just services. Our team ensures every project is aligned with your business goals.
-            </p>
         </div>
+
+        <div data-home-hero-item class="reveal reveal-delay-4 mt-9 grid grid-cols-2 overflow-hidden rounded-2xl border border-warm-300/60 bg-white shadow-card sm:grid-cols-4">
+                <div class="flex items-center gap-3 border-b border-r border-warm-300/60 px-4 py-4 sm:border-b-0 sm:px-6 sm:py-6">
+                    <svg class="h-7 w-7 shrink-0 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M6 4.5h12A1.5 1.5 0 0 1 19.5 6v12a1.5 1.5 0 0 1-1.5 1.5H6A1.5 1.5 0 0 1 4.5 18V6A1.5 1.5 0 0 1 6 4.5Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 15.5 10 13l2 2 4-4" /><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 11.5v4m4.5-6v6m4.5-3v3" /></svg>
+                    <div>
+                        <p class="font-display text-3xl text-brand-ink">100+</p>
+                        <p class="text-[11px] text-brand-muted sm:text-sm">Projects Completed</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 border-b border-warm-300/60 px-4 py-4 sm:border-b-0 sm:border-r sm:px-6 sm:py-6">
+                    <svg class="h-7 w-7 shrink-0 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M6 4.5h12A1.5 1.5 0 0 1 19.5 6v12a1.5 1.5 0 0 1-1.5 1.5H6A1.5 1.5 0 0 1 4.5 18V6A1.5 1.5 0 0 1 6 4.5Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M9.25 11a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5Zm5.5 1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 16.5a2.75 2.75 0 0 1 5.5 0m1 0a1.75 1.75 0 0 1 3.5 0" /></svg>
+                    <div>
+                        <p class="font-display text-3xl text-brand-ink">50+</p>
+                        <p class="text-[11px] text-brand-muted sm:text-sm">Happy Clients</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 border-r border-warm-300/60 px-4 py-4 sm:px-6 sm:py-6">
+                    <svg class="h-7 w-7 shrink-0 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M6 4.5h12A1.5 1.5 0 0 1 19.5 6v12a1.5 1.5 0 0 1-1.5 1.5H6A1.5 1.5 0 0 1 4.5 18V6A1.5 1.5 0 0 1 6 4.5Z" /><path stroke-linecap="round" stroke-linejoin="round" d="m12 8.25 1.35 2.74 3.03.44-2.19 2.13.52 3.01L12 15.1l-2.71 1.47.52-3.01-2.19-2.13 3.03-.44L12 8.25Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 15.9v2.35L12 17.2l1.5 1.05V15.9" /></svg>
+                    <div>
+                        <p class="font-display text-3xl text-brand-ink">5+</p>
+                        <p class="text-[11px] text-brand-muted sm:text-sm">Years of Experience</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 px-4 py-4 sm:px-6 sm:py-6">
+                    <svg class="h-7 w-7 shrink-0 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M6 4.5h12A1.5 1.5 0 0 1 19.5 6v12a1.5 1.5 0 0 1-1.5 1.5H6A1.5 1.5 0 0 1 4.5 18V6A1.5 1.5 0 0 1 6 4.5Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 12a3.75 3.75 0 1 1 7.5 0v1.25" /><path stroke-linecap="round" stroke-linejoin="round" d="M8 12.5h.5a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1Zm7.5 0h.5a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1h-.5a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 13.5v2h1.5" /></svg>
+                    <div>
+                        <p class="font-display text-3xl text-brand-ink">24/7</p>
+                        <p class="text-[11px] text-brand-muted sm:text-sm">Support & Maintenance</p>
+                    </div>
+                </div>
+            </div>
     </div>
 </section>
 
@@ -377,7 +393,10 @@
 
         <div class="reveal reveal-delay-2">
             <div class="tc-globe-panel relative mx-auto flex max-w-[28rem] items-center justify-center rounded-3xl border border-white/70 bg-white/90 p-5 shadow-panel sm:p-6">
-                <canvas id="tc-globe-canvas" class="tc-globe-canvas h-[18rem] w-[18rem] sm:h-[22rem] sm:w-[22rem]" width="640" height="640" aria-label="Interactive globe centered on Arusha"></canvas>
+                <div class="relative h-[18rem] w-[18rem] sm:h-[22rem] sm:w-[22rem]">
+                    <canvas id="tc-globe-canvas" class="tc-globe-canvas h-full w-full" width="640" height="640" aria-label="Interactive globe centered on Arusha"></canvas>
+                    <div class="tc-globe-map-overlay" aria-hidden="true"></div>
+                </div>
                 <button type="button" data-globe-target class="tc-globe-target" aria-label="Arusha, Tanzania">
                     <span class="tc-globe-target__dot"></span>
                     <span class="tc-globe-target__label">Arusha, Tanzania</span>

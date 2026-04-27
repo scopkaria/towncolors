@@ -9,6 +9,7 @@ use App\Models\Subscription;
 use App\Models\ClientFile;
 use App\Models\ClientFolder;
 use App\Models\ClientChecklistItem;
+use App\Models\ClientTask;
 use App\Models\SubscriptionRequest;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -166,6 +167,21 @@ class User extends Authenticatable
     public function createdChecklistItems(): HasMany
     {
         return $this->hasMany(ClientChecklistItem::class, 'created_by');
+    }
+
+    public function clientTasks(): HasMany
+    {
+        return $this->hasMany(ClientTask::class, 'client_id');
+    }
+
+    public function assignedClientTasks(): HasMany
+    {
+        return $this->hasMany(ClientTask::class, 'assigned_to');
+    }
+
+    public function createdClientTaskAssignments(): HasMany
+    {
+        return $this->hasMany(ClientTask::class, 'assigned_by');
     }
 
     public function profileImageUrl(): ?string

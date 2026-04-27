@@ -71,10 +71,16 @@
             </thead>
             <tbody class="divide-y divide-warm-200/50">
                 @forelse ($subscriptions as $sub)
+                    @php($client = $sub->user)
                     <tr class="hover:bg-warm-200/50 transition-colors">
                         <td class="px-5 py-4">
-                            <p class="font-semibold text-brand-ink">{{ $sub->user->name }}</p>
-                            <p class="text-xs text-brand-muted">{{ $sub->user->email }}</p>
+                            @if ($client)
+                                <p class="font-semibold text-brand-ink">{{ $client->name }}</p>
+                                <p class="text-xs text-brand-muted">{{ $client->email }}</p>
+                            @else
+                                <p class="font-semibold text-brand-ink">Deleted user</p>
+                                <p class="text-xs text-brand-muted">This subscription is orphaned.</p>
+                            @endif
                         </td>
                         <td class="px-5 py-4">
                             @if ($sub->plan)
@@ -106,10 +112,12 @@
                         </td>
                         <td class="px-5 py-4 text-right">
                             <div class="flex items-center justify-end gap-2">
-                                <a href="{{ route('admin.subscriptions.assign', $sub->user) }}"
-                                   class="rounded-xl border border-warm-300/50 bg-warm-100 px-3 py-1.5 text-xs font-semibold text-brand-ink transition hover:border-brand-primary/40">
-                                    Assign New
-                                </a>
+                                @if ($client)
+                                    <a href="{{ route('admin.subscriptions.assign', $client) }}"
+                                       class="rounded-xl border border-warm-300/50 bg-warm-100 px-3 py-1.5 text-xs font-semibold text-brand-ink transition hover:border-brand-primary/40">
+                                        Assign New
+                                    </a>
+                                @endif
                                 <a href="{{ route('admin.subscriptions.edit', $sub) }}"
                                    class="rounded-xl border border-warm-300/50 bg-warm-100 px-3 py-1.5 text-xs font-semibold text-brand-ink transition hover:border-brand-primary/40">
                                     Edit

@@ -3,7 +3,11 @@
         <div class="space-y-1">
             <span class="inline-flex w-fit rounded-full border border-accent/30 bg-accent-light px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-brand-primary">Admin · Subscriptions</span>
             <h1 class="font-display text-3xl text-brand-ink">Edit Subscription</h1>
-            <p class="text-sm text-brand-muted">{{ $subscription->user->name }} · {{ $subscription->user->email }}</p>
+            @if ($subscription->user)
+                <p class="text-sm text-brand-muted">{{ $subscription->user->name }} · {{ $subscription->user->email }}</p>
+            @else
+                <p class="text-sm text-brand-muted">Deleted user · orphaned subscription</p>
+            @endif
         </div>
     </x-slot>
 

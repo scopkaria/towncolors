@@ -14,14 +14,16 @@ class SubscriptionRequestController extends Controller
     {
         $enabledMethods = array_keys(Setting::instance()->enabledPaymentMethods());
 
-        if (empty($enabledMethods)) {
-            return back()->with('error', 'No payment methods are currently enabled. Please contact admin.');
+        // Fallback keeps requests visible to admin even when payments are not configured yet.
+        $allowedMethods = empty($enabledMethods) ? ['manual_review'] : $enabledMethods;
+        if (empty($enabledMethods) && ! $request->filled('payment_method')) {
+            $request->merge(['payment_method' => 'manual_review']);
         }
 
         $data = $request->validate([
             'plan_id'       => ['required', 'exists:subscription_plans,id'],
             'billing_cycle' => ['required', 'in:monthly,yearly'],
-            'payment_method' => ['required', 'in:' . implode(',', $enabledMethods)],
+            'payment_method' => ['required', 'in:' . implode(',', $allowedMethods)],
             'payment_reference' => ['nullable', 'string', 'max:255'],
             'notes'         => ['nullable', 'string', 'max:500'],
         ]);

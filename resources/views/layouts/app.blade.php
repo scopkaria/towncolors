@@ -18,7 +18,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @include('partials.theme-vars')
     </head>
-    <body class="h-screen overflow-hidden font-sans antialiased transition-colors duration-300">
+    <body class="backend-shell h-screen overflow-hidden font-sans antialiased transition-colors duration-300">
         @php
             $user = auth()->user();
             $role = $user?->role?->value ?? 'client';
@@ -29,6 +29,9 @@
             $tabHelp = [
                 'Dashboard' => 'Overview of your activity and progress',
                 'Projects' => 'Create and manage your work requests',
+                'Tasks' => 'Submit and track operational tasks',
+                'Client Tasks' => 'Review and assign client tasks',
+                'Assigned Tasks' => 'Work on tasks assigned to you',
                 'Messages' => 'Communicate with your assigned team',
                 'My Files' => 'Upload and manage project files',
                 'Invoices' => 'View your payments',
@@ -70,6 +73,7 @@
                 $items = [
                     ['label' => 'Dashboard',     'route' => route('client.dashboard'),          'match' => 'client.dashboard',                             'icon' => $ic['dashboard']],
                     ['label' => 'Projects',      'route' => route('client.projects.index'),     'match' => 'client.projects.*',                            'icon' => $ic['projects']],
+                    ['label' => 'Tasks',         'route' => route('client.tasks.index'),        'match' => 'client.tasks.*',                               'icon' => $ic['projects']],
                 ];
 
                 if ($hasActiveSubscription) {
@@ -85,6 +89,7 @@
                 $items = [
                     ['label' => 'Dashboard', 'route' => route('freelancer.dashboard'),          'match' => 'freelancer.dashboard',                              'icon' => $ic['dashboard']],
                     ['label' => 'Projects',  'route' => route('freelancer.projects.index'),     'match' => 'freelancer.projects.*',                             'icon' => $ic['projects']],
+                    ['label' => 'Assigned Tasks', 'route' => route('freelancer.client-tasks.index'), 'match' => 'freelancer.client-tasks.*',                     'icon' => $ic['projects']],
                     ['label' => 'Messages',  'route' => route('freelancer.messages'),           'match' => 'freelancer.messages|chat.*',                        'icon' => $ic['messages']],
                     ['label' => 'Invoices',  'route' => route('freelancer.invoices'),           'match' => 'freelancer.invoices|freelancer.freelancerInvoices.*','icon' => $ic['invoices']],
                     ['label' => 'Portfolio', 'route' => route('freelancer.portfolio.index'),    'match' => 'freelancer.portfolio.*',                            'icon' => $ic['portfolio']],
@@ -138,6 +143,7 @@
                     [
                         'label' => 'Business',
                         'items' => [
+                            ['label' => 'Client Tasks',   'route' => route('admin.client-tasks.index'),             'match' => 'admin.client-tasks.*',              'icon' => $ic['projects']],
                             ['label' => 'Subscriptions',  'route' => route('admin.subscriptions.index'),          'match' => 'admin.subscriptions.*',           'icon' => 'M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.745 3.745 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.745 3.745 0 0 1 3.296-1.043A3.745 3.745 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.745 3.745 0 0 1 3.296 1.043 3.745 3.745 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z'],
                             ['label' => 'Sub Requests',   'route' => route('admin.subscription-requests.index'), 'match' => 'admin.subscription-requests.*',    'icon' => 'M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9 2 2 4-4'],
                             ['label' => 'Plans',          'route' => route('admin.subscription-plans.index'),    'match' => 'admin.subscription-plans.*',      'icon' => 'M3.75 6.75h16.5M3.75 12h16.5M12 17.25h8.25'],
@@ -159,19 +165,15 @@
         }" class="flex h-screen">
             <div x-cloak x-show="sidebarOpen" class="fixed inset-0 z-40 bg-navy-900/45 backdrop-blur-sm lg:hidden" x-transition.opacity @click="sidebarOpen = false"></div>
 
-            <aside class="glass-panel fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-warm-300/40 shadow-panel transition duration-300 dark:border-warm-400/[0.08] lg:translate-x-0" :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
-                <div class="flex items-center justify-between px-5 pb-4 pt-5">
+            <aside class="glass-panel fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-warm-300/40 shadow-panel transition duration-300 dark:border-warm-400/[0.08] lg:translate-x-0" :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
+                <div class="flex items-center justify-between px-4 pb-3 pt-4">
                     <a href="{{ route($role.'.dashboard') }}" class="flex items-center gap-4 opacity-100 transition duration-200 hover:opacity-75">
                         <x-site-logo
                             icon-wrap-class="flex h-12 w-12 items-center justify-center rounded-2xl bg-navy-800 text-warm-100 shadow-card"
                             icon-class="h-7 w-7"
                             name-class="block font-display text-xl text-brand-ink"
                             logo-class="h-12 w-auto object-contain"
-                        >
-                            <x-slot name="subtitle">
-                                <span class="text-xs uppercase tracking-[0.28em] text-brand-muted">Modern SaaS workspace</span>
-                            </x-slot>
-                        </x-site-logo>
+                        />
                     </a>
                     <button type="button" class="rounded-2xl border border-warm-300/50 p-2 text-brand-muted lg:hidden" @click="sidebarOpen = false">
                         <svg class="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -281,9 +283,9 @@
                 </div>
             </aside>
 
-            <div class="flex flex-1 flex-col overflow-hidden lg:pl-72">
-                <header class="shrink-0 z-30 px-4 py-2 sm:px-6 lg:px-8">
-                    <div class="glass-panel flex items-center justify-between rounded-3xl px-5 py-4 shadow-card">
+            <div class="flex flex-1 flex-col overflow-hidden lg:pl-64">
+                <header class="shrink-0 z-30 px-3 py-2 sm:px-5 lg:px-6">
+                    <div class="glass-panel flex items-center justify-between rounded-3xl px-4 py-3 shadow-card">
                         <div class="flex items-center gap-3">
                             <button type="button" class="rounded-2xl border border-warm-300/50 bg-warm-100 p-3 text-brand-muted lg:hidden" @click="sidebarOpen = true">
                                 <svg class="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -321,7 +323,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                                 </svg>
                             </button>
-                            <div x-data="{ open: false }" class="relative">
+                            <div x-data="{ open: false, filter: 'all' }" class="relative">
                                 <button type="button" class="relative rounded-2xl border border-warm-400/30 bg-warm-100 p-3 text-brand-muted transition hover:border-accent hover:text-brand-primary" @click="open = !open" @click.outside="open = false">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 1-2.857.168 23.847 23.847 0 0 1-2.857-.168m5.714 0a8.967 8.967 0 0 0 1.455-.455A2.25 2.25 0 0 0 18 14.345V11.25a6 6 0 1 0-12 0v3.095c0 .928.568 1.76 1.688 2.182.466.175.953.328 1.455.455m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" /></svg>
                                     @if ($unreadNotificationsCount > 0)
@@ -343,13 +345,59 @@
                                         @endif
                                     </div>
 
+                                    <div class="flex items-center gap-2 border-b border-warm-300/40 px-5 py-3">
+                                        <button type="button"
+                                                @click="filter = 'all'"
+                                                :class="filter === 'all' ? 'border-brand-primary text-brand-primary bg-accent-light/50' : 'border-warm-300/50 text-brand-muted bg-warm-100'"
+                                                class="rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] transition">
+                                            All
+                                        </button>
+                                        <button type="button"
+                                                @click="filter = 'task'"
+                                                :class="filter === 'task' ? 'border-brand-primary text-brand-primary bg-accent-light/50' : 'border-warm-300/50 text-brand-muted bg-warm-100'"
+                                                class="rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] transition">
+                                            Tasks
+                                        </button>
+                                        <button type="button"
+                                                @click="filter = 'unread'"
+                                                :class="filter === 'unread' ? 'border-brand-primary text-brand-primary bg-accent-light/50' : 'border-warm-300/50 text-brand-muted bg-warm-100'"
+                                                class="rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] transition">
+                                            Unread
+                                        </button>
+                                    </div>
+
                                     <div class="max-h-96 overflow-y-auto">
                                         @forelse ($recentNotifications as $notification)
+                                            @php
+                                                $notificationCategory = $notification->data['category'] ?? 'general';
+                                            @endphp
                                             <form method="POST" action="{{ route('notifications.read', $notification->id) }}" class="border-b border-warm-300/40 last:border-b-0">
                                                 @csrf
                                                 <input type="hidden" name="redirect" value="{{ $notification->data['action_url'] ?? route('dashboard') }}">
-                                                <button type="submit" class="block w-full px-5 py-4 text-left transition hover:bg-warm-200/50 {{ $notification->read_at ? 'bg-warm-100' : 'bg-accent/10' }}">
-                                                    <p class="text-sm font-semibold text-brand-ink">{{ $notification->data['title'] ?? 'Notification' }}</p>
+                                                <button x-show="filter === 'all' || filter === '{{ $notificationCategory }}' || (filter === 'unread' && {{ $notification->read_at ? 'false' : 'true' }})"
+                                                        type="submit"
+                                                        class="block w-full px-5 py-4 text-left transition hover:bg-warm-200/50 {{ $notification->read_at ? 'bg-warm-100' : 'bg-accent/10' }}">
+                                                    <div class="flex items-start justify-between gap-3">
+                                                        <div class="flex min-w-0 items-center gap-2">
+                                                            @if ($notificationCategory === 'task')
+                                                                <span class="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-700">
+                                                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5.25h6m-6 4.5h6M9 14.25h6M6.75 3.75h10.5A2.25 2.25 0 0 1 19.5 6v12a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 18V6a2.25 2.25 0 0 1 2.25-2.25Z" />
+                                                                    </svg>
+                                                                </span>
+                                                            @else
+                                                                <span class="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-warm-200 text-brand-muted">
+                                                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 1-2.857.168 23.847 23.847 0 0 1-2.857-.168m5.714 0a8.967 8.967 0 0 0 1.455-.455A2.25 2.25 0 0 0 18 14.345V11.25a6 6 0 1 0-12 0v3.095c0 .928.568 1.76 1.688 2.182.466.175.953.328 1.455.455" />
+                                                                    </svg>
+                                                                </span>
+                                                            @endif
+                                                            <p class="truncate text-sm font-semibold text-brand-ink">{{ $notification->data['title'] ?? 'Notification' }}</p>
+                                                        </div>
+                                                        <span class="inline-flex shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] {{ $notificationCategory === 'task' ? 'bg-blue-100 text-blue-700' : 'bg-warm-200 text-brand-muted' }}">
+                                                            {{ $notificationCategory === 'task' ? 'Task' : 'General' }}
+                                                        </span>
+                                                    </div>
                                                     <p class="mt-1 text-xs leading-5 text-brand-muted">{{ $notification->data['message'] ?? 'New activity is available.' }}</p>
                                                     @if (!empty($notification->data['note']))
                                                         <p class="mt-2 rounded-2xl border border-warm-300/50 bg-warm-200/50 px-3 py-2 text-xs leading-5 text-brand-muted">{{ $notification->data['note'] }}</p>
@@ -381,8 +429,8 @@
                     </div>
                 </header>
 
-                <main class="flex-1 overflow-y-auto px-4 pb-8 pt-4 sm:px-6 lg:px-8">
-                    <div class="page-fade space-y-6">
+                <main class="flex-1 overflow-y-auto px-3 pb-6 pt-3 sm:px-5 lg:px-6">
+                    <div class="page-fade space-y-4">
                         @if (isset($header))
                             <section class="rounded-3xl border border-warm-300/50 bg-warm-100/90 px-6 py-6 shadow-panel dark:border-warm-400/[0.08] dark:bg-navy-800">
                                 {{ $header }}

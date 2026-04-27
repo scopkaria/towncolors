@@ -50,6 +50,10 @@ class SubscriptionRequestController extends Controller
             return back()->with('error', 'This request has already been reviewed.');
         }
 
+        if (! $subscriptionRequest->user) {
+            return back()->with('error', 'Cannot approve request because the client account no longer exists.');
+        }
+
         $data = $request->validate([
             'start_date'  => ['required', 'date'],
             'expiry_date' => ['required', 'date', 'after:start_date'],
@@ -79,7 +83,9 @@ class SubscriptionRequestController extends Controller
             'admin_notes' => $data['admin_notes'] ?? null,
         ]);
 
-        return back()->with('success', "Subscription approved for {$subscriptionRequest->user->name}.");
+        $requesterName = $subscriptionRequest->user?->name ?? 'client';
+
+        return back()->with('success', "Subscription approved for {$requesterName}.");
     }
 
     public function reject(Request $request, SubscriptionRequest $subscriptionRequest): RedirectResponse
@@ -99,7 +105,9 @@ class SubscriptionRequestController extends Controller
             'admin_notes' => $data['admin_notes'] ?? null,
         ]);
 
-        return back()->with('success', "Request from {$subscriptionRequest->user->name} rejected.");
+        $requesterName = $subscriptionRequest->user?->name ?? 'client';
+
+        return back()->with('success', "Request from {$requesterName} rejected.");
     }
 
     public function snapshot(): JsonResponse
