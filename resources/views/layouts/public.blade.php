@@ -53,15 +53,46 @@
 {{-- ══════════════════════════════════════════════════════════
      HEADER
 ══════════════════════════════════════════════════════════ --}}
-<header data-home-header x-data="{ open: false }"
+<header data-home-header x-data="{
+        open: false,
+        isDark: document.documentElement.classList.contains('dark'),
+        toggleDark() {
+            this.isDark = !this.isDark;
+            document.documentElement.classList.toggle('dark', this.isDark);
+            localStorage.setItem('darkMode', this.isDark.toString());
+        }
+    }"
     class="sticky top-0 z-40 border-b border-warm-300/40 bg-warm-100/95 backdrop-blur-md transition-colors duration-300
            dark:border-warm-400/[0.08] dark:bg-navy-900/90">
+    <div class="border-b border-warm-300/40 bg-warm-200/60 dark:border-warm-400/[0.08] dark:bg-navy-900/80">
+        <div class="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-5 py-2.5 text-xs sm:px-8 sm:text-sm">
+            <p class="text-brand-muted dark:text-warm-500">
+                Premium digital solutions for websites, systems, and growth.
+            </p>
 
-    <div class="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-5 py-4 sm:gap-6 sm:px-8 sm:py-5">
+            <div class="hidden items-center gap-4 text-brand-muted md:flex dark:text-warm-500">
+                <a href="{{ route('login.client') }}" class="transition hover:text-brand-ink dark:hover:text-warm-100">Login</a>
+                <a href="{{ route('register.client') }}" class="transition hover:text-brand-ink dark:hover:text-warm-100">My Account</a>
+                <span class="opacity-60">English</span>
+                <span class="opacity-60">USD</span>
+                <button type="button"
+                        @click="toggleDark()"
+                        :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+                        class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-warm-400/40 bg-warm-100 text-brand-muted transition hover:border-brand-primary/40 hover:text-brand-primary dark:border-warm-400/[0.12] dark:bg-navy-800 dark:text-warm-500">
+                    <svg x-show="!isDark" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0112 21c-5.385 0-9.75-4.365-9.75-9.75 0-4.06 2.49-7.538 6.027-8.99a.75.75 0 01.986.91A7.5 7.5 0 0018.82 12.73a.75.75 0 01.91.986z" />
+                    </svg>
+                    <svg x-show="isDark" x-cloak class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1.5m0 15V21m9-9h-1.5M4.5 12H3m15.364 6.364l-1.06-1.06M6.697 6.697l-1.06-1.06m12.727 0l-1.06 1.06M6.697 17.303l-1.06 1.06M12 7.5a4.5 4.5 0 100 9 4.5 4.5 0 000-9z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
 
-        {{-- ── Logo ── --}}
-          <a href="{{ url('/') }}"
-              data-home-logo
+    <div class="mx-auto flex w-full max-w-7xl items-center justify-between gap-5 px-5 py-5 sm:px-8">
+        <a href="{{ url('/') }}"
+           data-home-logo
            class="flex shrink-0 items-center gap-3 opacity-100 transition duration-200 hover:opacity-80">
             <x-site-logo
                 icon-wrap-class="flex h-10 w-10 items-center justify-center rounded-xl bg-navy-800 text-white shadow-card dark:bg-warm-100 dark:text-slate-900"
@@ -71,12 +102,10 @@
             />
         </a>
 
-        {{-- ── Desktop nav ── --}}
-        <nav data-home-menu class="hidden flex-1 items-center justify-center gap-0.5 md:flex" aria-label="Main navigation">
+        <nav data-home-menu class="hidden flex-1 items-center justify-center gap-1 lg:flex" aria-label="Main navigation">
             @foreach ($desktopNavLinks as $link)
                 <a href="{{ $link['url'] }}"
-                   class="relative rounded-xl px-3 py-2 text-[0.8125rem] font-semibold transition duration-200
-                          lg:px-4 lg:text-sm
+                   class="relative rounded-xl px-3 py-2 text-sm font-semibold transition duration-200
                           {{ $link['active']
                               ? 'text-brand-primary'
                               : 'text-brand-muted hover:text-brand-ink' }}">
@@ -88,32 +117,84 @@
             @endforeach
         </nav>
 
-        {{-- ── CTA + dark toggle + hamburger ── --}}
-        <div data-home-actions class="flex items-center gap-2 sm:gap-3">
-            <a href="{{ route('contact.show') }}"
-               class="btn-primary hidden rounded-xl px-7 sm:inline-flex">
+        <div class="hidden items-center gap-5 xl:flex">
+            <div class="text-right">
+                <p class="text-xs uppercase tracking-[0.16em] text-brand-muted dark:text-warm-500">Call Us</p>
+                <a href="tel:{{ $settings->phone ?: '+255758273300' }}" class="text-base font-bold text-brand-ink transition hover:text-brand-primary dark:text-warm-100">
+                    {{ $settings->phone ?: '+255 758 273 300' }}
+                </a>
+            </div>
+            <a href="{{ route('contact.show') }}" class="btn-primary rounded-xl px-7">
                 Get a Quote
                 <svg class="ml-1.5 h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0-4 4m4-4H3" />
                 </svg>
             </a>
+        </div>
 
-                <button type="button"
-                    class="rounded-xl border border-warm-400/40 bg-warm-100 p-2.5 text-brand-muted
-                           shadow-sm transition duration-200 hover:bg-warm-200/60 hover:text-brand-ink
-                           dark:border-warm-400/[0.08] dark:bg-navy-800 dark:text-warm-600 dark:hover:bg-warm-400/[0.05] dark:hover:text-warm-100 md:hidden"
-                    :aria-expanded="open.toString()"
-                    aria-label="Toggle navigation"
-                    @click="open = !open">
-                <svg x-show="!open" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                     stroke="currentColor" stroke-width="2">
+        <button type="button"
+                @click="toggleDark()"
+                :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+                class="rounded-xl border border-warm-400/40 bg-warm-100 p-2.5 text-brand-muted
+                       shadow-sm transition duration-200 hover:bg-warm-200/60 hover:text-brand-ink
+                       dark:border-warm-400/[0.08] dark:bg-navy-800 dark:text-warm-600 dark:hover:bg-warm-400/[0.05] dark:hover:text-warm-100 lg:hidden">
+            <svg x-show="!isDark" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0112 21c-5.385 0-9.75-4.365-9.75-9.75 0-4.06 2.49-7.538 6.027-8.99a.75.75 0 01.986.91A7.5 7.5 0 0018.82 12.73a.75.75 0 01.91.986z" />
+            </svg>
+            <svg x-show="isDark" x-cloak class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1.5m0 15V21m9-9h-1.5M4.5 12H3m15.364 6.364l-1.06-1.06M6.697 6.697l-1.06-1.06m12.727 0l-1.06 1.06M6.697 17.303l-1.06 1.06M12 7.5a4.5 4.5 0 100 9 4.5 4.5 0 000-9z" />
+            </svg>
+        </button>
+
+        <button type="button"
+                class="rounded-xl border border-warm-400/40 bg-warm-100 p-2.5 text-brand-muted
+                       shadow-sm transition duration-200 hover:bg-warm-200/60 hover:text-brand-ink
+                       dark:border-warm-400/[0.08] dark:bg-navy-800 dark:text-warm-600 dark:hover:bg-warm-400/[0.05] dark:hover:text-warm-100 lg:hidden"
+                :aria-expanded="open.toString()"
+                aria-label="Toggle navigation"
+                @click="open = !open">
+            <svg x-show="!open" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+            <svg x-show="open" x-cloak class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+    </div>
+
+    <div class="border-y border-warm-300/40 bg-gradient-to-r from-brand-primary via-orange-500 to-brand-primary dark:border-warm-400/[0.08]">
+        <div class="mx-auto flex w-full max-w-7xl flex-col gap-3 px-5 py-3 sm:px-8 lg:flex-row lg:items-center lg:justify-between">
+            <a href="{{ route('services.index') }}"
+               class="inline-flex items-center gap-2 rounded-xl bg-navy-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-navy-800 dark:bg-warm-100 dark:text-navy-900 dark:hover:bg-white">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
-                <svg x-show="open" x-cloak class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                     stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
+                All Services
+            </a>
+
+            <form action="{{ route('portfolio.public') }}" method="GET" class="flex w-full overflow-hidden rounded-xl bg-white shadow-sm lg:max-w-3xl">
+                <input name="q" type="text" placeholder="Keyword here..."
+                       class="w-full border-0 bg-white px-4 py-2.5 text-sm text-brand-ink placeholder:text-brand-muted focus:outline-none focus:ring-0">
+                <button type="submit" class="inline-flex items-center justify-center bg-navy-900 px-4 text-white transition hover:bg-navy-800">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </button>
+            </form>
+
+            <div class="hidden items-center gap-2 lg:flex">
+                <a href="{{ route('portfolio.public') }}" class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-navy-900 transition hover:scale-105" aria-label="View portfolio">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5A2.25 2.25 0 015.25 5.25h13.5A2.25 2.25 0 0121 7.5v9A2.25 2.25 0 0118.75 18.75H5.25A2.25 2.25 0 013 16.5v-9z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5l5.25-5.25a2.25 2.25 0 013.182 0L15 14.818l1.568-1.568a2.25 2.25 0 013.182 0L21 14.5" />
+                    </svg>
+                </a>
+                <a href="{{ route('contact.show') }}" class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-navy-900 transition hover:scale-105" aria-label="Contact us">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h6.75m-6.75 3h4.5m-8.25 6.75h12A2.25 2.25 0 0019.125 17.25V6.75A2.25 2.25 0 0016.875 4.5h-12A2.25 2.25 0 002.625 6.75v10.5A2.25 2.25 0 004.875 19.5z" />
+                    </svg>
+                </a>
+            </div>
         </div>
     </div>
 
